@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Redirecting - Please Wait...</title>
+    </head>
+<body>
+    <script type="text/javascript">
+        (function () {
+            function getFragment() {
+                if (window.location.hash.indexOf("#") === 0) {
+                    return parseQueryString(window.location.hash.substr(1));
+                } else {
+                    return {};
+                }
+            }
+
+            function parseQueryString(queryString) {
+                var data = {},
+                    pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
+
+                if (queryString === null) {
+                    return data;
+                }
+
+                pairs = queryString.split("&");
+
+                for (var i = 0; i < pairs.length; i++) {
+                    pair = pairs[i];
+                    separatorIndex = pair.indexOf("=");
+
+                    if (separatorIndex === -1) {
+                        escapedKey = pair;
+                        escapedValue = null;
+                    } else {
+                        escapedKey = pair.substr(0, separatorIndex);
+                        escapedValue = pair.substr(separatorIndex + 1);
+                    }
+
+                    key = decodeURIComponent(escapedKey);
+                    value = decodeURIComponent(escapedValue);
+
+                    data[key] = value;
+                }
+
+                return data;
+            }
+            //Obtain tokens
+            var fragments = getFragment();
+            //Check if token is valid
+            if (fragments.access_token && fragments.id_token) {
+                //Store token information and state
+                sessionStorage["rota-access-token"] = JSON.stringify(fragments);
+            }
+            //Go to home page
+            location.href = '/';
+        })();
+    </script>
+</body>
+</html>

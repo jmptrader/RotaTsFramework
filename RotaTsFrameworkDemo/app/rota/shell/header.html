@@ -1,0 +1,73 @@
+﻿<!--Header-->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!--Menu Toggle-->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle"
+                    ng-click="isCollapsed = !isCollapsed">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+                <img src="/Content/img/logo_bimar.png" alt="Bimar Logo">
+            </a>
+        </div>
+        <div id="navbar" class="navbar-collapse" collapse="isCollapsed">
+            <!--Menuler-->
+            <rt-menu></rt-menu>
+            <!--Şirket & Dil Secimi-->
+            <ul class="nav navbar-nav navbar-right">
+                <!--Dil Secimi-->
+                <li dropdown>
+                    <a href="#" dropdown-toggle>
+                        <img alt="" ng-src="/Content/img/{{selectedLanguage}}.png">
+                        <span>{{activeLanguageFriendlyName}}</span> <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu pull-right">
+                        <li ng-class="{active: selectedLanguage=='en-us'}">
+                            <a href="" ng-click="changeLanguage($event,'en-us')"><img alt="" src="/Content/img/en-us.png"> English</a>
+                        </li>
+                        <li ng-class="{active: selectedLanguage=='tr-tr'}">
+                            <a href="" ng-click="changeLanguage($event,'tr-tr')"><img alt="" src="/Content/img/tr-tr.png"> Türkçe</a>
+                        </li>
+                    </ul>
+                </li>
+                <!--Şirket Secimi-->
+                <li dropdown ng-if="selectedCompany">
+                    <a href dropdown-toggle>
+                        <i class="fa fa-tags"></i>
+                        {{selectedCompany.companyName}}
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="company in companies" ng-class="{active: company==selectedCompany}">
+                            <a href="#" ng-click="changeCompany(company,$event);">
+                                {{company.companyName}}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!--Current User-->
+                <li dropdown class="padding-right-10" ng-if="currentuser.fullname">
+                    <a href dropdown-toggle class="user">
+                        <i class="fa fa-user"></i>
+                        {{currentuser.fullname}}
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href ng-click="logOff()">
+                                <i class="fa fa-sign-out"></i>
+                                Log-out
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+

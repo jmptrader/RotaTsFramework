@@ -1,0 +1,73 @@
+﻿@using RotaTsFrameworkDemo.Helper
+@{
+    Layout = null;
+    var debugging = !Html.IsReleaseBuild();
+}
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+<!--<![endif]-->
+<head>
+    <!--Meta Bilgileri-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="author" content="Bimar">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    @if (debugging)
+    {
+        <link href="~/Content/css/site.css" rel="stylesheet" />
+    }
+    else
+    {
+        <link href="~/Content/css/index.min.css" rel="stylesheet" />
+    }
+
+    <!--Title-->
+    <title>{{appTitle}}</title>
+</head>
+<body>
+    <!--[if lt IE 7]>
+        <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+    <![endif]-->
+    <!--Master Page-->
+    <ui-view name="shell"></ui-view>
+    <!--RequireJs tum js dosyalarini yukler-->
+    <script>
+        (function(w) {
+            var appVersion = "@Html.GetSetting("appVersion","1.0.0")",
+                debugging = "@debugging" === "True",
+                enableJsCaching= @Html.GetSetting("enableJsCaching","true");
+
+            var globalSettings = {
+                appVersion: appVersion,
+                debugging: debugging,
+                cacheBusting: enableJsCaching ? ("v=" + (debugging ? (new Date()).getTime() : appVersion)) : undefined,
+                clientId:"@Html.GetSetting("clientId")",
+                authority: "@Html.GetSetting("authority")",
+                accountStore:"@Html.GetSetting("accountStore")",
+                allowAnonymousAccess:@Html.GetSetting("allowAnonymousAccess", "true"),
+                elmahLoggingEnabled:@Html.GetSetting("elmahLoggingEnabled","false")
+                }; //caching
+            //Export
+            w.globalSettings = globalSettings;
+        })(window);
+    </script>
+
+    @if (debugging)
+    {
+        <script src="~/app/rota/infrastructure/core/require.js" data-main="/app/rota/infrastructure/config/main"></script>
+    }
+    else
+    {
+        <script src="~/dist/rota/infrastructure/core/require.js" data-main="/dist/rota/infrastructure/config/main"></script>
+    }
+</body>
+</html>

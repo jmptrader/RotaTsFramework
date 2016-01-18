@@ -1,0 +1,17 @@
+﻿<ul class="breadcrumb">
+    <li ng-repeat="breadcrumb in breadcrumbs">
+        <ng-switch on="$last">
+            <span ng-switch-when="true">
+                <a ng-click="refresh()" href class="active">
+                    {{breadcrumb.name}}
+                </a>
+            </span>
+            <span ng-switch-default><a ui-sref="{{breadcrumb.state}}">{{breadcrumb.name}}</a></span>
+        </ng-switch>
+    </li>
+    <li>
+        <a class="btn btn-default btn-xs refresh" href ng-click="refresh()" tooltip="{{::'rota.yenile' | i18n}}">
+            <i class="fa fa-refresh "></i>
+        </a>
+    </li>
+</ul>

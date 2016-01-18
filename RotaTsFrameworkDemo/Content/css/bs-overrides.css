@@ -1,0 +1,217 @@
+﻿
+
+/* Sticky footer styles
+      -------------------------------------------------- */
+
+html,
+body {
+    height: 100%;
+    /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+#footer {
+    height: 60px;
+}
+
+#footer {
+    background-color: #f5f5f5;
+    border-top: 1px solid #E8E7E7;
+}
+
+    #footer > div {
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    #footer a {
+        text-decoration: none;
+        -ms-opacity: .7;
+        opacity: .7;
+    }
+
+        #footer a:hover {
+            -ms-opacity: 1;
+            opacity: 1;
+        }
+
+    #footer p {
+        font-size: .954em;
+    }
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+    #footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+
+
+/* Custom page CSS
+      -------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+#wrap .container.main {
+    padding-top: 52px;
+}
+
+.container .credit {
+    margin: 20px 0;
+}
+
+code {
+    font-size: 80%;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container-padding {
+    padding: 60px 15px 0;
+}
+
+.container .text-muted {
+    margin: 20px 0;
+}
+
+.footer > .container {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.navbar-brand {
+    padding-top: 10px;
+}
+
+.user {
+    color: #3276b1 !important;
+}
+
+.breadcrumb {
+    background: none;
+    margin: 0;
+    padding: 0;
+}
+
+    .breadcrumb .active {
+        font-weight: bold;
+    }
+
+    .breadcrumb > li:last-child:before {
+        content: none;
+    }
+
+    .breadcrumb > li:last-child a {
+        font-weight: bold;
+    }
+
+    .breadcrumb a.refresh {
+        margin-left: 4px;
+    }
+
+.content-body {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0px 0px 5px 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+
+li.rightside {
+    float: right;
+    line-height: 34px;
+}
+
+label {
+    color: rgb(138, 137, 137);
+    font-weight: normal;
+}
+
+    label > input[type=checkbox] + span {
+        display: inline-block;
+        margin-top: 2px;
+    }
+
+.dropdown-submenu {
+    position: relative;
+}
+
+    .dropdown-submenu > .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -6px;
+        margin-left: -1px;
+        /*-webkit-border-radius: 0 6px 6px 6px;
+        -moz-border-radius: 0 6px 6px 6px;
+        border-radius: 0 6px 6px 6px;*/
+    }
+    /*.dropdown-submenu:hover>.dropdown-menu{display:block;}*/
+    .dropdown-submenu > a:after {
+        display: block;
+        content: " ";
+        float: right;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 5px 0 5px 5px;
+        border-left-color: #cccccc;
+        margin-top: 5px;
+        margin-right: -10px;
+    }
+
+    .dropdown-submenu:hover > a:after {
+        border-left-color: #ffffff;
+    }
+
+    .dropdown-submenu.pull-left {
+        float: none;
+    }
+
+        .dropdown-submenu.pull-left > .dropdown-menu {
+            left: -100%;
+            margin-left: 10px;
+            -webkit-border-radius: 6px 0 6px 6px;
+            -moz-border-radius: 6px 0 6px 6px;
+            border-radius: 6px 0 6px 6px;
+        }
+
+
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background-color: #3276B1;
+    border-color: #3276B1;
+    color: #FFFFFF;
+}
+
+.bg-warning {
+    background-color: #C1B260;
+}
+
+.bg-success {
+    background-color: #6BA054;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.form-horizontal .control-label {
+    text-align: left !important;
+}

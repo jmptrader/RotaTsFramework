@@ -1,0 +1,15 @@
+﻿<!--ShellPage-->
+<div id="wrap">
+    <!--Header-->
+    <div ui-view="header"></div>
+    <!--Main-->
+    <ui-view></ui-view>
+    <!--Push down css-->
+    <div id="push"></div>
+</div>
+<!--Footer-->
+<ui-view name="footer"></ui-view>
+<!--Ajax Spinner-->
+<div data-ng-show="isBusy" class="page-splash">
+    <div rt-spinner="spinnerOptions"></div>
+</div>
