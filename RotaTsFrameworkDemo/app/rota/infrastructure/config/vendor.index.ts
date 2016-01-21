@@ -1,1 +1,2 @@
-﻿import "core/index"
+﻿import "./config"
+import "../core/index"

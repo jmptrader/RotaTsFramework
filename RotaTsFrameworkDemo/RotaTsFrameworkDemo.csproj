@@ -170,6 +170,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Startup.cs" />
+    <Content Include="app\rota\infrastructure\lib\underscore.min.js" />
+    <Content Include="app\rota\infrastructure\lib\underscore.string.min.js" />
     <Content Include="app\rota\shell\breadcrumb.html" />
     <Content Include="app\rota\shell\content.html" />
     <Content Include="app\rota\shell\error404.html" />
@@ -180,9 +186,6 @@
     <Content Include="app\rota\shell\notification.html" />
     <Content Include="app\rota\shell\shell.html" />
     <Content Include="App_Code\HtmlHelper.cs" />
-    <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -247,10 +250,17 @@
     <TypeScriptCompile Include="app\rota\infrastructure\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\core\index.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\lib\index.ts" />
-    <TypeScriptCompile Include="app\rota\infrastructure\services\common.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\common.interface.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\common.service.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\index.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\loader.interface.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\loader.service.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\logger.ts" />
-    <TypeScriptCompile Include="app\rota\infrastructure\services\routing.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\loader.config.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\routing.config.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\routing.service.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\routing.interface.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\service.interface.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />
@@ -268,6 +278,8 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\requirejs\require.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\toastr\toastr.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\underscore.string\underscore.string.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

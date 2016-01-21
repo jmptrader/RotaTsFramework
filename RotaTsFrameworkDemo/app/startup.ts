@@ -1,7 +1,7 @@
 ﻿import { App } from "./rota/infrastructure/config/app";
-import {RoutingService, IRouting} from "./rota/infrastructure/services/routing";
+import {Routing, IRouting} from "./rota/infrastructure/services/routing.service";
 import {IMainConfig} from "./rota/infrastructure/config/config";
-import { IBaseConfigProvider } from "./rota/infrastructure/base/baseconfig";
+import {IBaseConfigProvider} from "./rota/infrastructure/base/baseconfig";
 
 //Config phase
 App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
@@ -12,15 +12,15 @@ App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
 //Run phase
 App.run(["Routing", (routing: IRouting) => {
 
-    routing.addStates([{
-        name: 'todos',
-        controller: 'todosController',
-        templateUrl: 'app/todo/todos.html',
-        url: '/todos'
-    }, {
-            name: 'todo',
-            controller: 'todoController',
-            templateUrl: 'app/todo/todo.html',
-            url: '/todos/:id'
-        }]).go("todos");
+    //routing.addStates([{
+    //    name: 'todos',
+    //    controller: 'todosController',
+    //    templateUrl: 'app/todo/todos.html',
+    //    url: '/todos'
+    //}, {
+    //        name: 'todo',
+    //        controller: 'todoController',
+    //        templateUrl: 'app/todo/todo.html',
+    //        url: '/todos/:id'
+    //    }]).go("todos");
 }]);

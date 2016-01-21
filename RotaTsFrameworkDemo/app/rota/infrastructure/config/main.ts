@@ -4,12 +4,15 @@
     paths: {
         //'jquery': 'Scripts/jquery-2.1.4',
         //'toastr': 'Scripts/toastr',
-        'angular': './app/rota/core/angular',
-        'angular-ui-router': './app/rota/core/angular-ui-router',
+        'angular': './app/rota/infrastructure/core/angular',
+        'angular-ui-router': './app/rota/infrastructure/core/angular-ui-router',
 
-        base: './app/rota/base',
-        config: './app/rota/config',
-        core: './app/rota/core'
+        'underscore': './app/rota/infrastructure/lib/underscore.min',
+        'underscore-string': './app/rota/infrastructure/lib/underscore.string.min',
+
+        base: './app/rota/infrastructure/base',
+        config: './app/rota/infrastructure/config',
+        core: './app/rota/infrastructure/core'
     },
 
     shim: {
