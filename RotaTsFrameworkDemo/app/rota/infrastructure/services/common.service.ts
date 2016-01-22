@@ -2,8 +2,11 @@
 import {IRouteConfig} from './routing.config'
 
 class Common implements ICommon {
-    static $inject = ['$q', 'RouteConfig'];
-    constructor(private $q: ng.IQService, private routeconfig: IRouteConfig) { }
+    //#region Props
+    serviceName: string = "Common Service";
+    //states
+    static $inject = ['$q'];
+    constructor(private $q: ng.IQService) { }
 
     //#region Promise Stuff
     /**
@@ -39,12 +42,6 @@ class Common implements ICommon {
     //#endregion
 
     //#region Path Utils
-    /**
-     * Returns baseUrl based on requireJs 
-     * @returns {} 
-     */
-    get baseUrl(): string { return this.addTrailingSlash(this.routeconfig.baseUrl); }
-
     /**
      * Check whether or not provided value ends with html extension
      * @param value Arg

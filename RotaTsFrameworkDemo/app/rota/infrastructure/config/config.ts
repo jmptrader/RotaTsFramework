@@ -2,10 +2,17 @@
 
 
 interface IMainConfig extends IBaseConfig {
-    baseUrl: string;
+    baseUrl?: string;
+    appVersion?: string;
+    appTitle?: string;
 }
 
 class Config extends BaseConfig<IMainConfig> {
+    constructor() {
+        this.config.appVersion = '1.0.0';
+        this.config.appTitle = 'Bimar App';
+        super();
+    }
 }
 
 //#region Register

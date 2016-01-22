@@ -6,7 +6,8 @@ import {IBaseConfigProvider} from "./rota/infrastructure/base/baseconfig";
 //Config phase
 App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
     config.configure({
-        baseUrl: "http://localhost:17637/api/"
+        baseUrl: "http://localhost:17637/api/",
+        appTitle: "Bimar SPA Todo Sample"
     });
 }]);
 //Run phase

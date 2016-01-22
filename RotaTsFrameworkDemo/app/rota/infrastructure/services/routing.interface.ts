@@ -7,7 +7,11 @@ import IUrlMatcher = angular.ui.IUrlMatcher;
 
 
 interface IRouteConfig extends IBaseConfig {
-    baseUrl:string;
+    /**
+     * BasePath should come form requireJs baseUrl
+     */
+    basePath:string;
+    baseUrl: string;
     shellPath: string;
     error404StateUrl: string;
     error500StateUrl: string;
@@ -16,7 +20,11 @@ interface IRouteConfig extends IBaseConfig {
 }
 
 interface IRouting extends IBaseService {
-    //Methods
+    //props
+    states: IMenuModel[];
+    menus: IHierarchicalMenuItem[];
+    breadcrumbs: IBreadcrumb[];
+    //methods
     addMenus(states: IRotaState[]): IRouting;
     go(state: string, params?: any, options?: ng.ui.IStateOptions): ng.IPromise<any>;
     getState(stateName: string): IRotaState;
@@ -24,7 +32,7 @@ interface IRouting extends IBaseService {
     start(stateName: string, params?: any): void;
 }
 
-interface IMenuItem extends IBaseModel {
+interface IMenuItem {
     title?: string;
     titleI18N?: string;
     order?: number,
@@ -32,14 +40,27 @@ interface IMenuItem extends IBaseModel {
     isLink?: boolean;
     startGroup?: boolean;
     parentId?: number,
-    parentMenu?: IMenuItem;
-    subMenus?: IMenuItem[];
-    //state?: string | IUrlMatcher;
     showMenu?: boolean;
+    state?: string;
 }
 
-interface IRotaState extends ng.ui.IState, IMenuItem {
+interface IHierarchicalMenuItem extends IMenuItem {
+    parentMenu?: IHierarchicalMenuItem;
+    subMenus?: IHierarchicalMenuItem[];
+}
+
+interface IRotaState extends ng.ui.IState {
+    hierarchicalMenu?: IHierarchicalMenuItem;
     controllerUrl?: string;
 }
 
-export {IRouteConfig, IRouting, IRotaState, IMenuItem};
+interface IMenuModel extends IRotaState, IMenuItem, IBaseModel {
+}
+
+interface IBreadcrumb {
+    text: string;
+    state: string;
+}
+
+export {IRouteConfig, IRouting, IRotaState, IMenuItem, IMenuModel,
+IHierarchicalMenuItem, IBreadcrumb};

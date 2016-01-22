@@ -1,5 +1,5 @@
 ﻿import {Logger, ILogger} from "../services/logger";
-import {Common, ICommon} from "../services/common";
+import {Common, ICommon} from "../services/common.service";
 
 interface IBundle {
     [s: string]: any;
