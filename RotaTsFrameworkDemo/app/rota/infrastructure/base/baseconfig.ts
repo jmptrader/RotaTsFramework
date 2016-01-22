@@ -2,6 +2,7 @@
 }
 
 interface IBaseConfigProvider<TConfig extends IBaseConfig> {
+    config: TConfig;
     configure(config: TConfig): void;
 }
 

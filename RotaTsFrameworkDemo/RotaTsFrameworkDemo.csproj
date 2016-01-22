@@ -174,6 +174,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Startup.cs" />
+    <Content Include="app\rota\infrastructure\core\jquery-2.1.4.min.js" />
+    <Content Include="app\rota\infrastructure\lib\i18n.js" />
+    <Content Include="app\rota\infrastructure\lib\moment.min.js" />
+    <Content Include="app\rota\infrastructure\lib\toastr.min.js" />
     <Content Include="app\rota\infrastructure\lib\underscore.min.js" />
     <Content Include="app\rota\infrastructure\lib\underscore.string.min.js" />
     <Content Include="app\rota\shell\breadcrumb.html" />
@@ -218,6 +222,10 @@
     <Content Include="Content\img\logo_bimar.png" />
     <Content Include="Content\img\tr-tr.png" />
     <Content Include="favicon.ico" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -255,7 +263,11 @@
     <TypeScriptCompile Include="app\rota\infrastructure\services\index.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\loader.interface.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\loader.service.ts" />
-    <TypeScriptCompile Include="app\rota\infrastructure\services\logger.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\localization.interface.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\localization.service.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\logger.config.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\logger.interface.ts" />
+    <TypeScriptCompile Include="app\rota\infrastructure\services\logger.service.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\loader.config.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\routing.config.ts" />
     <TypeScriptCompile Include="app\rota\infrastructure\services\routing.service.ts" />
@@ -276,6 +288,8 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\es6-promise\es6-promise.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\moment\moment-node.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\moment\moment.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\requirejs\require.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\toastr\toastr.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\ui-router-extras\ui-router-extras.d.ts" />
