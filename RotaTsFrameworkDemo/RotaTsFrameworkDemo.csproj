@@ -180,6 +180,9 @@
     <Content Include="app\rota\infrastructure\lib\toastr.min.js" />
     <Content Include="app\rota\infrastructure\lib\underscore.min.js" />
     <Content Include="app\rota\infrastructure\lib\underscore.string.min.js" />
+    <Content Include="app\rota\infrastructure\resources\nls\en-US\resources.js" />
+    <Content Include="app\rota\infrastructure\resources\nls\resources.js" />
+    <Content Include="app\rota\infrastructure\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\shell\breadcrumb.html" />
     <Content Include="app\rota\shell\content.html" />
     <Content Include="app\rota\shell\error404.html" />
@@ -324,7 +327,7 @@
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
-    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
     <TypeScriptOutFile />
     <TypeScriptOutDir />
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>

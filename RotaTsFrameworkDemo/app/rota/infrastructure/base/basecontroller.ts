@@ -1,4 +1,4 @@
-﻿import {Logger, ILogger} from "../services/logger";
+﻿import {Logger, ILogger} from "../services/logger.service";
 import {Common, ICommon} from "../services/common.service";
 
 interface IBundle {

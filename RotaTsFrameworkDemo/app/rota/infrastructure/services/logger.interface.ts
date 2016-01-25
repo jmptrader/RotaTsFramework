@@ -3,6 +3,7 @@
 interface ILoggerConfig {
     debugEnabled: boolean;
     timeOuts: { [index: number]: number };
+    defaultTitles: { [index: number]: string };
 }
 export enum LogType {
     Info,
@@ -12,16 +13,10 @@ export enum LogType {
     Debug
 }
 
-export enum LogPlace {
-    Panel = 1,
-    Toast = 2,
-    Console = 4
-}
-
 export enum LogServices {
-    Console,
-    Toastr,
-    Notification
+    Console = 1,
+    Toastr = 2,
+    Notification = 4
 }
 
 export enum NotifyType {
@@ -32,8 +27,8 @@ export enum NotifyType {
 
 interface ILog {
     message: string;
-    title: string;
-    data: any;
+    title?: string;
+    data?: any;
 }
 
 interface INotify extends ILog {
@@ -57,12 +52,18 @@ interface IToastr extends IBaseLogger {
 }
 
 interface INotification extends IBaseLogger {
+    removeNotification(notify: INotify): void;
+    removeAll(includeSticky: boolean): void;
 }
 
 interface IConsole extends IBaseLogger {
+    important(message: string): void;
+    startTime(message: string, timerName: string): void;
+    endTime(message: string, timerName: string): void;
 }
 
-interface ILogger extends IBaseLogger,IBaseService {
+interface ILogger extends IBaseService {
+
 
 }
 
