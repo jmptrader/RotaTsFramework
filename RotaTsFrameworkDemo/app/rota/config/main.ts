@@ -12,6 +12,8 @@
         'underscore-string': './app/rota/infrastructure/lib/underscore.string.min',
         'i18n': './app/rota/infrastructure/lib/i18n',
         'moment': './app/rota/infrastructure/lib/moment.min',
+        //i18n
+        'rota-resource': 'i18n!./app/rota/infrastructure/resources/nls/resources',
         //relative paths
         base: './app/rota/infrastructure/base',
         config: './app/rota/infrastructure/config',

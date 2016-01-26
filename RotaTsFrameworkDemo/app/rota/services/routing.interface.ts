@@ -25,9 +25,8 @@ interface IRouting extends IBaseService {
     menus: IHierarchicalMenuItem[];
     breadcrumbs: IBreadcrumb[];
     //methods
-    addMenus(states: IRotaState[]): IRouting;
+    addMenus(states: IMenuModel[]): IRouting;
     go(state: string, params?: any, options?: ng.ui.IStateOptions): ng.IPromise<any>;
-    getState(stateName: string): IRotaState;
     reload(): ng.IPromise<any>;
     start(stateName: string, params?: any): void;
 }

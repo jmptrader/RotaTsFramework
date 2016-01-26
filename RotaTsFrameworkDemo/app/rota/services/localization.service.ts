@@ -5,7 +5,7 @@ import "i18n!resources/nls/resources";
 class Localization implements ILocalization {
     serviceName = "Localization Service";
     
-    private static $inject = [];
+    static $inject = [];
     constructor() {
        
     }

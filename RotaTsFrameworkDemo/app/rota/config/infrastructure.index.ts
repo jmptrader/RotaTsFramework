@@ -1,8 +1,10 @@
 ﻿import "../base/index"
-import "../services/index"
 import "../config/config"
+import "../services/index"
+import "../directives/index"
 
 angular.module('rota', [
     'rota.services',
-    'rota.config'
+    'rota.config',
+    'rota.directives'
 ]);
