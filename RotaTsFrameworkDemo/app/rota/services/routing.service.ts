@@ -150,7 +150,8 @@ class Routing implements IRouting {
             for (let state in section) {
                 views[state] = {
                     templateUrl: this.routeconfig.baseUrl + this.routeconfig.shellPath + section[state].templateUrl,
-                    controller: section[state].controller
+                    controller: section[state].controller,
+                    controllerAs: section[state].controllerAs
                 };
             }
         });
@@ -167,13 +168,13 @@ class Routing implements IRouting {
     private registerShellSections(): void {
         //shell sections
         var shellSections = [
-            { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController' } },
-            { 'header@shell': { templateUrl: 'header.html', controller: 'HeaderController' } },
-            { 'footer@shell': { templateUrl: 'footer.html' } }
+            { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController', controllerAs: 'shellvm' } },
+            { 'header@shell': { templateUrl: 'header.html', controller: 'HeaderController', controllerAs: 'headervm' } },
+            { 'footer@shell': { templateUrl: 'footer.html', controllerAs: 'footervm' } }
         ],
-            contentSections = [{ '@shell': { templateUrl: 'content.html' } },
-                { 'breadcrumb@shell.content': { templateUrl: 'breadcrumb.html', controller: 'BreadcrumbController' } },
-                { 'notification@shell.content': { templateUrl: 'notification.html', controller: 'NotificationController' } }
+            contentSections = [{ '@shell': { templateUrl: 'content.html', controllerAs: 'contentvm' } },
+                { 'breadcrumb@shell.content': { templateUrl: 'breadcrumb.html', controller: 'BreadcrumbController', controllerAs: 'breadcrumbvm' } },
+                { 'notification@shell.content': { templateUrl: 'notification.html', controller: 'NotificationController', controllerAs: 'notificationvm' } }
             ];
         //register shell state
         //UNDONE:add shell promise
@@ -257,6 +258,8 @@ class Routing implements IRouting {
         const stateObj: IRotaState = {
             templateUrl: templateFilePath,
             controller: state.controller,
+            //ControllerAs syntax used as default 'vm'
+            controllerAs: state.controllerAs || 'vm',
             hierarchicalMenu: state.hierarchicalMenu,
             url: '/' + state.url,
             //HACK:Tum paramlara navItems array parmetresini ekliyoruz!

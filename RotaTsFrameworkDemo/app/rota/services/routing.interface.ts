@@ -2,7 +2,6 @@
 import { IBaseConfig} from "../base/baseconfig";
 import { IBaseModel} from "../base/basemodels";
 import { IBaseService} from "./service.interface";
-import IUrlMatcher = angular.ui.IUrlMatcher; 
 //#endregion
 
 

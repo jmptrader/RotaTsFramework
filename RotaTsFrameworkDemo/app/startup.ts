@@ -1,7 +1,7 @@
-﻿import { App } from "./rota/infrastructure/config/app";
-import {Routing, IRouting} from "./rota/infrastructure/services/routing.service";
-import {IMainConfig} from "./rota/infrastructure/config/config";
-import {IBaseConfigProvider} from "./rota/infrastructure/base/baseconfig";
+﻿import { App } from "./rota/config/app";
+import {Routing, IRouting} from "./rota/services/routing.service";
+import {IMainConfig} from "./rota/config/config";
+import {IBaseConfigProvider} from "./rota/base/baseconfig";
 
 //Config phase
 App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
