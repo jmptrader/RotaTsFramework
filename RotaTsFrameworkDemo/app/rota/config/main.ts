@@ -22,6 +22,9 @@
     },
 
     shim: {
+        jquery: {
+            exports: '$'
+        },
         bootstrap: {
             deps: ['jquery']
         },

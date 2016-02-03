@@ -2,4 +2,4 @@
 import "./underscore.min"
 import "./underscore.string.min"
 import "./spin.min"
-import "./bootstrap"
+import "bootstrap"

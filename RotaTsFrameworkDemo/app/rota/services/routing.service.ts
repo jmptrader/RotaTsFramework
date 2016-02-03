@@ -265,7 +265,7 @@ class Routing implements IRouting {
             hierarchicalMenu: state.hierarchicalMenu,
             url: '/' + state.url,
             //HACK:Tum paramlara navItems array parmetresini ekliyoruz!
-            params: angular.extend(state.params || {}, { navItems: { array: true } }),
+            params: angular.extend({ id: 'new', navItems: { array: true } }, state.params),
             //Resolve params
             resolve: {
                 $modalInstance: () => angular.noop(),

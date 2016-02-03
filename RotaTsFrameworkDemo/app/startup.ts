@@ -16,7 +16,7 @@ App.run(["Routing", (routing: IRouting) => {
     routing.addMenus([
         {
             title: 'Todos',
-            menuIcon:'list',
+            menuIcon: 'list',
             id: 1,
             name: 'shell.content.todos',
             controller: 'todosController',
@@ -25,12 +25,13 @@ App.run(["Routing", (routing: IRouting) => {
         }, {
             id: 2,
             menuIcon: 'flag-o',
-            title:'Todo',
+            title: 'Todo',
             parentId: 1,
             name: 'shell.content.todo',
             controller: 'todoController',
             templateUrl: 'app/todo/todo.html',
             url: 'todos/:id'
+           
         }
     ]).start('shell.content.todos');
 }]);

@@ -2,6 +2,7 @@
 import "../config/config"
 import "../services/index"
 import "../directives/index"
+import "../lib/index"
 import "../shell/shell.controller"
 
 angular.module('rota', [
