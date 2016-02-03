@@ -303,66 +303,6 @@ class Logger implements ILogger {
         this.logServices[LogServices.Notification] = new Notification(loggerconfig);
         this.logServices[LogServices.Toastr] = new Toastr(loggerconfig);
     }
-    /**
-     * Show log message with title
-     * @param log Log message
-     * @param logServiceType Services the message will be shown through.
-     */
-    log(log: ILog, logServiceType: LogServices = LogServices.Toastr | LogServices.Console | LogServices.Notification): void {
-        for (let logS = LogServices.Console; logS <= LogServices.Notification; logS++) {
-            if ((logServiceType & logS) === logS) {
-                this.logServices[logS].log(log);
-            }
-        }
-    }
-    /**
-     * Show error message with title
-     * @param log Log message
-     * @param logServiceType Services the message will be shown through.
-     */
-    error(log: ILog, logServiceType: LogServices = LogServices.Toastr | LogServices.Console | LogServices.Notification): void {
-        for (let logS = LogServices.Console; logS <= LogServices.Notification; logS++) {
-            if ((logServiceType & logS) === logS) {
-                this.logServices[logS].error(log);
-            }
-        }
-    }
-    /**
-     * Show warning message with title
-     * @param log Log message
-     * @param logServiceType Services the message will be shown through.
-     */
-    warn(log: ILog, logServiceType: LogServices = LogServices.Toastr | LogServices.Console | LogServices.Notification): void {
-        for (let logS = LogServices.Console; logS <= LogServices.Notification; logS++) {
-            if ((logServiceType & logS) === logS) {
-                this.logServices[logS].warn(log);
-            }
-        }
-    }
-    /**
-    * Show success message with title
-    * @param log Log message
-    * @param logServiceType Services the message will be shown through.
-    */
-    success(log: ILog, logServiceType: LogServices = LogServices.Toastr | LogServices.Console | LogServices.Notification): void {
-        for (let logS = LogServices.Console; logS <= LogServices.Notification; logS++) {
-            if ((logServiceType & logS) === logS) {
-                this.logServices[logS].success(log);
-            }
-        }
-    }
-    /**
-    * Show info message with title
-    * @param log Log message
-    * @param logServiceType Services the message will be shown through.
-    */
-    info(log: ILog, logServiceType: LogServices = LogServices.Toastr | LogServices.Console | LogServices.Notification): void {
-        for (let logS = LogServices.Console; logS <= LogServices.Notification; logS++) {
-            if ((logServiceType & logS) === logS) {
-                this.logServices[logS].info(log);
-            }
-        }
-    }
 }
 
 //#endregion

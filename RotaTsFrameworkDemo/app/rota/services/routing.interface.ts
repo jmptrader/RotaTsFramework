@@ -9,7 +9,7 @@ interface IRouteConfig extends IBaseConfig {
     /**
      * BasePath should come form requireJs baseUrl
      */
-    basePath:string;
+    basePath: string;
     baseUrl: string;
     shellPath: string;
     error404StateUrl: string;
@@ -23,6 +23,7 @@ interface IRouting extends IBaseService {
     states: IMenuModel[];
     menus: IHierarchicalMenuItem[];
     breadcrumbs: IBreadcrumb[];
+    activeMenu: IHierarchicalMenuItem;
     //methods
     addMenus(states: IMenuModel[]): IRouting;
     go(state: string, params?: any, options?: ng.ui.IStateOptions): ng.IPromise<any>;

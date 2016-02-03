@@ -1,5 +1,5 @@
-﻿import {App} from "app/rota/infrastructure/config/app";
-import {BaseListController, IBundle} from "app/rota/infrastructure/base/baselistcontroller";
+﻿import {App} from "app/rota/config/app";
+import {BaseListController, IBundle} from "app/rota/base/baselistcontroller";
 
 import {ITodoModel} from "./todos.models";
 import {ITodoApi} from "./todos.service";

@@ -261,6 +261,7 @@
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
     <TypeScriptCompile Include="app\rota\services\common.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\common.service.ts" />
@@ -277,7 +278,7 @@
     <TypeScriptCompile Include="app\rota\services\routing.service.ts" />
     <TypeScriptCompile Include="app\rota\services\routing.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\service.interface.ts" />
-    <TypeScriptCompile Include="app\rota\shell\controllers\shell.controller.ts" />
+    <TypeScriptCompile Include="app\rota\shell\shell.controller.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />

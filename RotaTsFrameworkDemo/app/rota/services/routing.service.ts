@@ -29,8 +29,13 @@ class Routing implements IRouting {
      */
     private _breadcrumbs: IBreadcrumb[];
     get breadcrumbs(): IBreadcrumb[] { return this._breadcrumbs; }
-
+    /**
+     * Active Menu
+     */
+    private _activeMenu: IHierarchicalMenuItem;
+    get activeMenu(): IHierarchicalMenuItem { return this._activeMenu; }
     //#endregion
+
     static $inject = ['$state', '$stateParams', '$rootScope', '$q', '$urlRouter', '$location',
         '$timeout', 'StateProvider', 'RouteConfig', 'Loader', 'Common', 'Config'];
     //ctor
@@ -68,12 +73,6 @@ class Routing implements IRouting {
             //UNDONE:Removed 
         });
         this.$rootScope.$on('$stateChangeSuccess', (event, toState: IRotaState) => {
-            //Browser title bilgisini burda set ediyoruz
-            var setTitles = (): void=> {
-                var projectTitle = `${this.config.appTitle} ${this.config.appVersion}`;
-                this.$rootScope.appTitle = (toState && toState.hierarchicalMenu) ?
-                    (projectTitle + ' ' + toState.hierarchicalMenu.title) : projectTitle;
-            }
             //Breadcrumb datasini hazirlar
             var setBreadcrumb = (): void => {
                 var menu = toState.hierarchicalMenu;
@@ -96,11 +95,12 @@ class Routing implements IRouting {
                 var menu = toState && toState.hierarchicalMenu;
                 if (toState.name === 'shell' || menu) {
                     //Set active menu
-                    this.$rootScope.activeMenu = menu;
+                    this._activeMenu = menu;
+                    //Broadcast menu changes
+                    this.$rootScope.$broadcast(this.config.eventNames.menuChanged, menu);
                 }
             }
 
-            setTitles();
             setActiveMenu();
             setBreadcrumb();
         });
@@ -169,12 +169,12 @@ class Routing implements IRouting {
         //shell sections
         var shellSections = [
             { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController', controllerAs: 'shellvm' } },
-            { 'header@shell': { templateUrl: 'header.html', controller: 'HeaderController', controllerAs: 'headervm' } },
-            { 'footer@shell': { templateUrl: 'footer.html', controllerAs: 'footervm' } }
+            { 'header@shell': { templateUrl: 'header.html' } },
+            { 'footer@shell': { templateUrl: 'footer.html' } }
         ],
-            contentSections = [{ '@shell': { templateUrl: 'content.html', controllerAs: 'contentvm' } },
-                { 'breadcrumb@shell.content': { templateUrl: 'breadcrumb.html', controller: 'BreadcrumbController', controllerAs: 'breadcrumbvm' } },
-                { 'notification@shell.content': { templateUrl: 'notification.html', controller: 'NotificationController', controllerAs: 'notificationvm' } }
+            contentSections = [{ '@shell': { templateUrl: 'content.html' } },
+                { 'breadcrumb@shell.content': { templateUrl: 'breadcrumb.html' } },
+                { 'notification@shell.content': { templateUrl: 'notification.html' } }
             ];
         //register shell state
         //UNDONE:add shell promise

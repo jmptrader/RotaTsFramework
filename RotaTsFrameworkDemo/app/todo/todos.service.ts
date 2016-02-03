@@ -1,5 +1,5 @@
-﻿import { App } from "app/rota/infrastructure/config/app";
-import { IBaseApi, BaseApi } from "app/rota/infrastructure/base/baseapi";
+﻿import { App } from "app/rota/config/app";
+import { IBaseApi, BaseApi } from "app/rota/base/baseapi";
 import {ITodoModel}  from "todos.models";
 
 interface ITodoApi extends IBaseApi {

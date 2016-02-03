@@ -6,6 +6,7 @@ interface IEvents {
     loginRequired: string;
     ajaxStarted: string;
     ajaxFinished: string;
+    menuChanged: string;
 }
 
 interface IMainConfig extends IBaseConfig {
@@ -13,7 +14,7 @@ interface IMainConfig extends IBaseConfig {
     appVersion?: string;
     appTitle?: string;
     debugMode?: boolean;
-    eventNames: IEvents;
+    eventNames?: IEvents;
 }
 
 class Config extends BaseConfig<IMainConfig> {
@@ -25,7 +26,8 @@ class Config extends BaseConfig<IMainConfig> {
             userLoginChanged: 'userLoginChanged',
             ajaxFinished: 'ajaxFinished',
             ajaxStarted: 'ajaxStarted',
-            loginRequired: 'loginRequired'
+            loginRequired: 'loginRequired',
+            menuChanged: 'menuChanged'
         }
 
         super();
