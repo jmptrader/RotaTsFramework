@@ -28,10 +28,10 @@ interface SpinnerOptions {
 }
 
 
-declare class Spinner {
+ interface Spinner {
     /** The Spinner's HTML element - can be used to manually insert the spinner into the DOM  */
-    public el: HTMLElement;
-    constructor(options?: SpinnerOptions);
+    el: HTMLElement;
+    new(options?: SpinnerOptions);
 
     /**
      * Adds the spinner to the given target element. If this instance is already
@@ -47,4 +47,10 @@ declare class Spinner {
     stop(): Spinner;
     lines(el:HTMLElement, o:SpinnerOptions):HTMLElement;
     opacity(el:HTMLElement, i:number, val:number, o:SpinnerOptions):void;
+}
+
+
+declare var spinner: Spinner;
+declare module "spinner" {
+    export = spinner;
 }

@@ -22,7 +22,7 @@ class Loader implements ILoader {
     generatePath(settings: ILoaderSettings): string {
         let relativePath = settings.controllerUrl;
         if (!relativePath && (settings.useTemplateUrlPath || this.loaderconfig.useTemplateUrlPath)) {
-            relativePath = settings.templateUrl.replace('.html', 'controller.js');
+            relativePath = settings.templateUrl.replace('.html', '.controller.js');
         }
         const controllerFullName = this.routeconfig.baseUrl + relativePath;
         return controllerFullName;

@@ -217,7 +217,7 @@ class Routing implements IRouting {
         parentStates.forEach((state: IMenuModel) => {
             var menu = angular.copy<IHierarchicalMenuItem>(state);
             menu.parentMenu = parentMenu;
-            menu.state = <string>state.url;
+            menu.state = state.name;
 
             state.hierarchicalMenu = menu;
             //Set substates

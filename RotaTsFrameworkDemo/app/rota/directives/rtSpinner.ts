@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import "spin";
+import * as spinner from "spinner";
 //#endregion
 
 //#region Interfaces
@@ -19,7 +19,7 @@ function menuDirective() {
             if (scope.rtSpinner) {
                 scope.rtSpinner.stop();
             }
-            scope.rtSpinner = new Spinner(options);
+            scope.rtSpinner = new spinner(options);
             scope.rtSpinner.spin(element[0]);
         }, true);
     }

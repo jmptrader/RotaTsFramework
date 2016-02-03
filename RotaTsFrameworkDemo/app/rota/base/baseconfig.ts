@@ -10,7 +10,7 @@ class BaseConfig<TConfig extends IBaseConfig> implements ng.IServiceProvider, IB
     config: TConfig;
 
     configure(config: TConfig): void {
-        this.config = config;
+        this.config = angular.extend(this.config, config);
     }
 
     $get(): TConfig {

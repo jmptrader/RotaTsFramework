@@ -1,6 +1,6 @@
 ﻿<div>
     <h4>Todo List</h4>
-    <a class="pull-right" ui-sref="todo({id:'new'})">New Todo</a>
+    <a class="pull-right" ui-sref="shell.content.todo({id:'new'})">New Todo</a>
     <table class="table table-bordered">
         <tr ng-repeat="item in vm.model" ng-class="{'done':item.Done}">
             <td class="text-center">

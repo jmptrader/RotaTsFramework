@@ -73,6 +73,7 @@ class Notification implements INotification {
     }
 
     constructor(private loggerconfig: ILoggerConfig) {
+        this.notifications = {};
         this.notifications[NotifyType.Sticky] = [];
         this.notifications[NotifyType.RouteCurrent] = [];
         this.notifications[NotifyType.RouteNext] = [];
@@ -301,6 +302,7 @@ class Logger implements ILogger {
         loggerconfig.defaultTitles[LogType.Error] = 'Error';//this.localization.get('rota.titlerror') || ;
         loggerconfig.defaultTitles[LogType.Debug] = 'Debug';//this.localization.get('rota.titledebug') || ;
         //Register services
+        this.logServices = {};
         this.logServices[LogServices.Console] = new Console($log, config);
         this.logServices[LogServices.Notification] = new Notification(loggerconfig);
         this.logServices[LogServices.Toastr] = new Toastr(loggerconfig);

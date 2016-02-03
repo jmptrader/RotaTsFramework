@@ -13,7 +13,8 @@
         'underscore-string': './app/rota/lib/underscore.string.min',
         'i18n': './app/rota/lib/i18n',
         'moment': './app/rota/lib/moment.min',
-        'spin': './app/rota/lib/spin.min',
+        'spinner': './app/rota/lib/spin.min',
+        'bootstrap': './app/rota/lib/bootstrap.min',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
@@ -21,8 +22,8 @@
     },
 
     shim: {
-        jquery: {
-            exports: '$'
+        bootstrap: {
+            deps: ['jquery']
         },
         toastr: {
             deps: ['jquery']

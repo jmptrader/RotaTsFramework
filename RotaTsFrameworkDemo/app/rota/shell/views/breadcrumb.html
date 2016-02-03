@@ -3,10 +3,10 @@
         <ng-switch on="$last">
             <span ng-switch-when="true">
                 <a ng-click="shellvm.refresh()" href class="active">
-                    {{breadcrumb.name}}
+                    {{breadcrumb.text}}
                 </a>
             </span>
-            <span ng-switch-default><a ui-sref="{{breadcrumb.state}}">{{breadcrumb.name}}</a></span>
+            <span ng-switch-default><a ui-sref="{{breadcrumb.state}}">{{breadcrumb.text}}</a></span>
         </ng-switch>
     </li>
     <li>

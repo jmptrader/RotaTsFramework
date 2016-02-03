@@ -107,7 +107,7 @@ class ShellController {
      * Set breadcrumb listener
      */
     private setBreadcrumbListener() {
-        this.$scope.$watchCollection<IBreadcrumb[]>(() => this.routing.breadcrumbs, newVal => {
+        this.$scope.$watch<IBreadcrumb[]>(() => this.routing.breadcrumbs, newVal => {
             if (newVal) {
                 this._breadcrumbs = newVal;
             }
@@ -117,7 +117,7 @@ class ShellController {
      * Set active menu & app title
      */
     private setActiveMenuListener() {
-        this.$rootScope.$on(this.config.eventNames.menuChanged, (menu: IHierarchicalMenuItem) => {
+        this.$scope.$watch<IHierarchicalMenuItem>(() => this.routing.activeMenu, (menu) => {
             this._activeMenu = menu;
             //set app title
             var projectTitle = `${this.config.appTitle} ${this.config.appVersion}`;

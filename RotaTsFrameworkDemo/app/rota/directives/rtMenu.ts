@@ -69,7 +69,8 @@ function menuDirective($compile: ng.ICompileService, routing: IRouting) {
     }
 
     const directive = <ng.IDirective>{
-        restrict: 'A',
+        restrict: 'EA',
+        replace: true,
         link: link
     };
     return directive;

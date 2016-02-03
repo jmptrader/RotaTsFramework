@@ -23,6 +23,8 @@ class LoggerConfig extends BaseConfig<ILoggerConfig> {
         config.timeOuts[LogType.Success] = 3000;
         config.timeOuts[LogType.Debug] = 6000;
 
+        config.defaultTitles = {};
+
         this.config = config;
         super();
     }

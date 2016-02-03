@@ -13,18 +13,24 @@ App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
 //Run phase
 App.run(["Routing", (routing: IRouting) => {
 
-    routing.addMenus([{
-        id: 1,
-        name: 'todos',
-        controller: 'todosController',
-        templateUrl: 'app/todo/todos.html',
-        url: '/todos'
-    }, {
+    routing.addMenus([
+        {
+            title: 'Todos',
+            menuIcon:'list',
+            id: 1,
+            name: 'shell.content.todos',
+            controller: 'todosController',
+            templateUrl: 'app/todo/todos.html',
+            url: 'todos'
+        }, {
             id: 2,
+            menuIcon: 'flag-o',
+            title:'Todo',
             parentId: 1,
-            name: 'todo',
+            name: 'shell.content.todo',
             controller: 'todoController',
             templateUrl: 'app/todo/todo.html',
-            url: '/todos/:id'
-        }]).go("todos");
+            url: 'todos/:id'
+        }
+    ]).start('shell.content.todos');
 }]);

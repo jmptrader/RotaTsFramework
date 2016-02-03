@@ -176,6 +176,7 @@
     <Compile Include="Startup.cs" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
+    <Content Include="app\rota\lib\bootstrap.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
