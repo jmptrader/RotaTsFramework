@@ -6,7 +6,8 @@ import {ICommon, IRotaRootScope} from './common.interface';
 import {IMainConfig} from '../config/config';
 
 //Modules
-import {RouteConfig} from "./routing.config";
+import "./routing.config";
+import "./loader.service";
 import * as _ from "underscore";
 //#endregion
 
@@ -174,7 +175,8 @@ class Routing implements IRouting {
         ],
             contentSections = [{ '@shell': { templateUrl: 'content.html' } },
                 { 'breadcrumb@shell.content': { templateUrl: 'breadcrumb.html' } },
-                { 'notification@shell.content': { templateUrl: 'notification.html' } }
+                { 'notification@shell.content': { templateUrl: 'notification.html' } },
+                { 'badges@shell.content': { templateUrl: 'badges.html' } }
             ];
         //register shell state
         //UNDONE:add shell promise
@@ -360,7 +362,7 @@ config.$inject = ['$provide', '$stateProvider', '$urlRouterProvider'];
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.routing.service', ['ui.router']);
+var module: ng.IModule = angular.module('rota.routing.service', ['rota.routing.config', 'rota.loader.service', 'ui.router']);
 
 module.service('Routing', Routing)
     .config(config);

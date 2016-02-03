@@ -1,5 +1,5 @@
-﻿import "./directives/rtMenu"
-import "./directives/rtSpinner"
+﻿import "./rtMenu"
+import "./rtSpinner"
 
 angular.module('rota.directives',
     ['rota.directives.rtmenu',

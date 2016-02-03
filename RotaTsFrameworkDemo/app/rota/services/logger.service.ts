@@ -2,8 +2,10 @@
 import {IToastr, LogType, INotification, INotify, NotifyType, ILog, IBaseLogger, ILoggerConfig, ILogger, IConsole, LogServices} from './logger.interface';
 import {IMainConfig} from '../config/config';
 import {IBaseConfigProvider} from "../base/baseconfig";
+import "./logger.config";
 import * as toastr from "toastr";
 import * as moment from "moment";
+import * as angular from "angular";
 //#endregion
 
 //#region Log Services
@@ -308,11 +310,11 @@ class Logger implements ILogger {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.log.service', []);
+var module: ng.IModule = angular.module('rota.log.service', ['rota.log.config']);
 module.service('Logger', Logger);
 //Config 
 module.config([
-    '$logProvider', 'LogConfigProvider',
+    '$logProvider', 'LoggerConfigProvider',
     ($logProvider: ng.ILogProvider, loggerConfigProvider: IBaseConfigProvider<ILoggerConfig>) => {
         if ($logProvider.debugEnabled) {
             $logProvider.debugEnabled(loggerConfigProvider.config.debugEnabled);

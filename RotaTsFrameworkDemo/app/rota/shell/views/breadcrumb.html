@@ -1,8 +1,8 @@
 ﻿<ul class="breadcrumb">
-    <li ng-repeat="breadcrumb in breadcrumbs">
+    <li ng-repeat="breadcrumb in shellvm.breadcrumbs">
         <ng-switch on="$last">
             <span ng-switch-when="true">
-                <a ng-click="refresh()" href class="active">
+                <a ng-click="shellvm.refresh()" href class="active">
                     {{breadcrumb.name}}
                 </a>
             </span>
@@ -10,7 +10,7 @@
         </ng-switch>
     </li>
     <li>
-        <a class="btn btn-default btn-xs refresh" href ng-click="refresh()" tooltip="{{::'rota.yenile' | i18n}}">
+        <a class="btn btn-default btn-xs refresh" href ng-click="shellvm.refresh()" tooltip="yenile">
             <i class="fa fa-refresh "></i>
         </a>
     </li>

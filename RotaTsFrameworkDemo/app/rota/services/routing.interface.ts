@@ -9,13 +9,13 @@ interface IRouteConfig extends IBaseConfig {
     /**
      * BasePath should come form requireJs baseUrl
      */
-    basePath: string;
-    baseUrl: string;
-    shellPath: string;
-    error404StateUrl: string;
-    error500StateUrl: string;
-    inactiveStateUrl: string;
-    startUpState: string;
+    basePath?: string;
+    baseUrl?: string;
+    shellPath?: string;
+    error404StateUrl?: string;
+    error500StateUrl?: string;
+    inactiveStateUrl?: string;
+    startUpState?: string;
 }
 
 interface IRouting extends IBaseService {

@@ -1,6 +1,6 @@
-﻿import "./logger"
-import "./routing"
-import "./common"
+﻿import "./logger.service"
+import "./routing.service"
+import "./common.service"
 
 //Register Logger
 angular.module('rota.services.log',

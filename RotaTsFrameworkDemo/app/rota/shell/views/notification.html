@@ -1,4 +1,4 @@
-﻿<div ng-class="['alert', 'alert-'+notification.type,'alert-block']" ng-repeat="notification in notifications" ng-show="notifications.length">
+﻿<div ng-class="['alert', 'alert-'+notification.type,'alert-block']" ng-repeat="notification in shellvm.notifications" ng-show="notifications.length">
     <a class="close" data-dismiss="alert" ng-click="removeNotification(notification)" href="">×</a>
     <h4 class="alert-heading">
         <i class="fa-fw fa fa-{{notification.icon}}"></i>

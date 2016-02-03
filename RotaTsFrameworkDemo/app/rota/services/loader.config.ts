@@ -8,15 +8,17 @@ import { BaseConfig } from "../base/baseconfig";
 class LoaderConfig extends BaseConfig<ILoaderConfig> {
     constructor() {
         //set default values
-        this.config.useBaseUrl =
-            this.config.useTemplateUrlPath = true;
+        var config: ILoaderConfig = {};
+        config.useBaseUrl =
+            config.useTemplateUrlPath = true;
+        this.config = config;
         super();
     }
 }
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.routing.config', []);
+var module: ng.IModule = angular.module('rota.loader.config', []);
 module.provider('LoaderConfig', LoaderConfig);
 //#endregion
 

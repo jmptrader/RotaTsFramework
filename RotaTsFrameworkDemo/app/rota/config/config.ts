@@ -1,5 +1,5 @@
 ﻿import { IBaseConfig, BaseConfig } from "../base/baseconfig";
-
+import * as angular from "angular";
 
 interface IEvents {
     userLoginChanged: string;
@@ -7,6 +7,7 @@ interface IEvents {
     ajaxStarted: string;
     ajaxFinished: string;
     menuChanged: string;
+    badgeChanged: string;
 }
 
 interface IMainConfig extends IBaseConfig {
@@ -19,17 +20,19 @@ interface IMainConfig extends IBaseConfig {
 
 class Config extends BaseConfig<IMainConfig> {
     constructor() {
-        this.config.appVersion = '1.0.0';
-        this.config.appTitle = 'Bimar App';
-        this.config.debugMode = true;
-        this.config.eventNames = {
+        var config: IMainConfig = {};
+        config.appVersion = '1.0.0';
+        config.appTitle = 'Bimar App';
+        config.debugMode = true;
+        config.eventNames = {
             userLoginChanged: 'userLoginChanged',
             ajaxFinished: 'ajaxFinished',
             ajaxStarted: 'ajaxStarted',
             loginRequired: 'loginRequired',
-            menuChanged: 'menuChanged'
+            menuChanged: 'menuChanged',
+            badgeChanged: 'badgeChanged'
         }
-
+        this.config = config;
         super();
     }
 }

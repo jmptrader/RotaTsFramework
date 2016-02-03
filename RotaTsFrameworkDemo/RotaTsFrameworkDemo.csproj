@@ -175,6 +175,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Startup.cs" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
+    <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
@@ -184,6 +185,7 @@
     <Content Include="app\rota\resources\nls\en-US\resources.js" />
     <Content Include="app\rota\resources\nls\resources.js" />
     <Content Include="app\rota\resources\nls\tr-tr\resources.js" />
+    <Content Include="app\rota\shell\views\badges.html" />
     <Content Include="app\rota\shell\views\breadcrumb.html" />
     <Content Include="app\rota\shell\views\content.html" />
     <Content Include="app\rota\shell\views\error404.html" />
@@ -279,7 +281,9 @@
     <TypeScriptCompile Include="app\rota\services\routing.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\service.interface.ts" />
     <TypeScriptCompile Include="app\rota\shell\shell.controller.ts" />
+    <TypeScriptCompile Include="app\rota\shell\shell.interface.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
+    <TypeScriptCompile Include="app\todo\todo.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />
     <TypeScriptCompile Include="app\todo\todos.service.ts" />

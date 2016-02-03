@@ -2,7 +2,9 @@
 import {IHierarchicalMenuItem} from './routing.interface';
 
 interface IRotaRootScope extends ng.IRootScopeService {
+    appTitle: string;
     forms: any;
+    isCollapsed: boolean;
 }
 
 interface ICommon extends IBaseService {

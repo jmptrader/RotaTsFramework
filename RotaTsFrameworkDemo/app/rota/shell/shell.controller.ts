@@ -3,8 +3,11 @@ import {ICommon, IRotaRootScope} from '../services/common.interface';
 import {IRouting, IBreadcrumb, IHierarchicalMenuItem} from '../services/routing.interface';
 import {IMainConfig} from '../config/config';
 import {INotification, INotify, ILogger} from '../services/logger.interface';
-//Routing service is dependency
+import {IBadge, BadgeType} from './shell.interface';
+//Dependencies
 import "../services/routing.service";
+import "../config/config";
+import "../services/logger.service";
 //#endregion
 
 //#region Shell Controller
@@ -12,7 +15,6 @@ import "../services/routing.service";
  * Shell controller 
  */
 class ShellController {
-    //#region Props
     /**
      * Indicate whether the spinner will be shown
      */
@@ -39,11 +41,10 @@ class ShellController {
     private _activeMenu: IHierarchicalMenuItem;
     get activeMenu(): IHierarchicalMenuItem { return this._activeMenu; }
     /**
-     * App title changed depends on route changes
+     * Menu badges
      */
-    private _appTitle: string;
-    get appTitle(): string { return this._appTitle; }
-    //#endregion
+    private _badges: IBadge[];
+    get badges(): IBadge[] { return this._badges; }
 
     static $inject = ['$rootScope', '$scope', 'Routing', 'Config', 'Logger'];
     constructor(private $rootScope: IRotaRootScope,
@@ -56,8 +57,10 @@ class ShellController {
         this.setNotificationListener();
         this.setBreadcrumbListener();
         this.setActiveMenuListener();
+        this.initBadgerItems();
         //forms availablty in modal
         $rootScope.forms = {};
+        $rootScope.isCollapsed = true;
     }
     /**
      * Set spinner settings
@@ -111,6 +114,56 @@ class ShellController {
         });
     }
     /**
+     * Set active menu & app title
+     */
+    private setActiveMenuListener() {
+        this.$rootScope.$on(this.config.eventNames.menuChanged, (menu: IHierarchicalMenuItem) => {
+            this._activeMenu = menu;
+            //set app title
+            var projectTitle = `${this.config.appTitle} ${this.config.appVersion}`;
+            this.$rootScope.appTitle = menu ? (projectTitle + ' ' + menu.title) : projectTitle;
+        });
+    }
+    /**
+   * Init menu badge items
+   */
+    private initBadgerItems() {
+        this.$rootScope.$on(this.config.eventNames.badgeChanged, (event: ng.IAngularEvent, badge: BadgeType, show: boolean) => {
+            this._badges[badge].show = show;
+        });
+        this._badges = [
+            {
+                color: 'info',
+                icon: 'edit',
+                text: 'kayitduzeltme' //localization.get('rota.kayitduzeltme')
+            },
+            //Form New Item Mode
+            {
+                color: 'info',
+                icon: 'plus',
+                text: 'yenikayit' //localization.get('rota.yenikayit')
+            },
+            //Form Invalid
+            {
+                color: 'danger',
+                icon: 'exclamation',
+                tooltip: 'zorunlualanlarvar' //localization.get('rota.zorunlualanlarvar')
+            },
+            //Form Editing Started
+            {
+                color: 'success',
+                icon: 'pencil',
+                tooltip: 'duzeltiliyor' //localization.get('rota.duzeltiliyor')
+            },
+            //List record count
+            {
+                color: 'success',
+                icon: 'check',
+                tooltip: 'kayitsayisi' //localization.get('rota.kayitsayisi')
+            }
+        ];
+    }
+    /**
     * Refresh state
     */
     refresh(): void {
@@ -122,15 +175,6 @@ class ShellController {
      */
     removeNotification(notification: INotify) {
         (<INotification>this.logger.notification).removeNotification(notification);
-    }
-
-    setActiveMenuListener() {
-        this.$rootScope.$on(this.config.eventNames.menuChanged, (menu: IHierarchicalMenuItem) => {
-            this._activeMenu = menu;
-            //set title
-            var projectTitle = `${this.config.appTitle} ${this.config.appVersion}`;
-            this._appTitle = menu ? (projectTitle + ' ' + menu.title) : projectTitle;
-        });
     }
 }
 //#endregion

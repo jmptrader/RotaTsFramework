@@ -12,12 +12,14 @@ class RouteConfig extends BaseConfig<IRouteConfig> {
          *  var globalConfigs = requirejs.s.contexts._.config;
                     return globalConfigs.baseUrl;
          */
-        this.config.basePath = '';
-        this.config.baseUrl = '';
-        this.config.shellPath = 'rota/shell/';
-        this.config.error404StateUrl = this.config.shellPath + 'error404.html';
-        this.config.error500StateUrl = this.config.shellPath + 'error500.html';
-        this.config.inactiveStateUrl = '/';
+        var config: IRouteConfig = {};
+        config.basePath = '';
+        config.baseUrl = '';
+        config.shellPath = 'app/rota/shell/views/';
+        config.error404StateUrl = config.shellPath + 'error404.html';
+        config.error500StateUrl = config.shellPath + 'error500.html';
+        config.inactiveStateUrl = '/';
+        this.config = config;
         super();
     }
 }

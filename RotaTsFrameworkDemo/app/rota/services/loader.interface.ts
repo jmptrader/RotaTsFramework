@@ -2,8 +2,8 @@
 import { IBaseService} from "./service.interface";
 
 interface ILoaderConfig extends IBaseConfig {
-    useTemplateUrlPath: boolean;
-    useBaseUrl: boolean;
+    useTemplateUrlPath?: boolean;
+    useBaseUrl?: boolean;
 }
 
 interface ILoaderSettings {

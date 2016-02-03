@@ -1,9 +1,9 @@
 ﻿import { IBaseService} from "./service.interface";
 
 interface ILoggerConfig {
-    debugEnabled: boolean;
-    timeOuts: { [index: number]: number };
-    defaultTitles: { [index: number]: string };
+    debugEnabled?: boolean;
+    timeOuts?: { [index: number]: number };
+    defaultTitles?: { [index: number]: string };
 }
 export enum LogType {
     Info,

@@ -1,6 +1,8 @@
 ﻿//#region Imports
 import {ILoaderConfig, ILoader, ILoaderSettings} from './loader.interface';
 import {IRouteConfig} from "./routing.interface";
+
+import './loader.config';
 //#endregion
 
 /**
@@ -20,7 +22,7 @@ class Loader implements ILoader {
     generatePath(settings: ILoaderSettings): string {
         let relativePath = settings.controllerUrl;
         if (!relativePath && (settings.useTemplateUrlPath || this.loaderconfig.useTemplateUrlPath)) {
-            relativePath = settings.templateUrl.replace('.html', '.js');
+            relativePath = settings.templateUrl.replace('.html', 'controller.js');
         }
         const controllerFullName = this.routeconfig.baseUrl + relativePath;
         return controllerFullName;
@@ -46,7 +48,7 @@ class Loader implements ILoader {
     }
 }
 //#region Register
-var module: ng.IModule = angular.module('rota.routing.loader', []);
+var module: ng.IModule = angular.module('rota.loader.service', ['rota.loader.config']);
 module.service('Loader', Loader);
 //#endregion
 

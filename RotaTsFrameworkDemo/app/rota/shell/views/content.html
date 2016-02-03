@@ -5,12 +5,9 @@
                 <a href>
                     <b>
                         <!--Menu Caption-->
-                        <i ng-class="['fa', 'fa-' + active_menu.icon]"></i> {{active_menu.caption || active_menu.title}}
+                        <i ng-class="['fa', 'fa-' + shellvm.active_menu.icon]"></i> {{shellvm.active_menu.title}}
                         <!--Menu notify Icons-->
-                        <span ng-repeat="notifyItem in notifyItems" ng-class="['anim-fadeinleft','margin-right-2','badge', 'alert-' + notifyItem.color]" ng-if="notifyItem.show" tooltip-html="notifyItem.tooltip" tooltip-placement="bottom">
-                            <i ng-if="notifyItem.icon" ng-class="['fa','fa-' + notifyItem.icon]"></i>
-                            {{notifyItem.description}}
-                        </span>
+                        <ui-view name="badges"></ui-view>
                     </b>
                 </a>
             </li>
@@ -25,8 +22,8 @@
             <div ui-view="notification"></div>
             <!--Content Page-->
             <!--<rt-form>-->
-                <!--Wrapper default form - Bkz:BaseController-->
-                <div ui-view class="anim-fadeinright"></div>
+            <!--Wrapper default form - Bkz:BaseController-->
+            <div ui-view class="anim-fadeinright"></div>
             <!--</rt-form>-->
         </div>
     </div>
