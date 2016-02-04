@@ -7,7 +7,7 @@ import {ILoader} from './loader.interface';
 import {IRouteConfig} from './routing.interface';
 import {IDialogOptions, IDialogScope, IConfirmOptions, IConfirmScope,
 IProgressOptions, IProgressScope, IProgressModalInstance, IPromptOptions,
-IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IModalService} from './dialogs.interface';
+IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs} from './dialogs.interface';
 //static
 import "angular"
 import "angular-bootstrap"
@@ -16,7 +16,7 @@ import "angular-bootstrap"
 /**
  * Dialog service
  */
-class Dialogs implements IModalService {
+class Dialogs implements IDialogs {
     serviceName = 'Dialog Service';
 
     static $inject = ['$rootScope', '$q', '$modal', '$templateCache', 'Routing', 'Config', 'RouteConfig', 'Common', 'Loader'];
@@ -302,3 +302,10 @@ class Dialogs implements IModalService {
             '</form>');
     }
 }
+
+//#region Register
+var module: ng.IModule = angular.module('rota.misc.dialog', ['ui.bootstrap']);
+module.service('Dialogs', Dialogs);
+//#endregion
+
+export {Dialogs, IDialogs}

@@ -1,6 +1,8 @@
 ﻿import "./logger.service"
 import "./routing.service"
+import "./dialogs.service"
 import "./common.service"
+import "./interceptors"
 
 //Register Logger
 angular.module('rota.services.log',
@@ -16,7 +18,9 @@ angular.module('rota.services.routing',
 //Register UI
 angular.module('rota.services.misc',
     [
-        'rota.misc.common'
+        'rota.misc.common',
+        'rota.misc.dialog',
+        'rota.misc.httpRequestTracker'
     ]);
 //Rota module index
 angular.module('rota.services',

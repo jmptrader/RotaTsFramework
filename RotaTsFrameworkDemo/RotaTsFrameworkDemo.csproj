@@ -271,6 +271,7 @@
     <TypeScriptCompile Include="app\rota\services\dialogs.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.service.ts" />
     <TypeScriptCompile Include="app\rota\services\index.ts" />
+    <TypeScriptCompile Include="app\rota\services\interceptors.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.service.ts" />
     <TypeScriptCompile Include="app\rota\services\localization.interface.ts" />

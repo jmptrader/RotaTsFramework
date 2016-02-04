@@ -61,7 +61,7 @@ interface IModalOptions extends ng.ui.bootstrap.IModalSettings {
     param: any;
 }
 
-interface IModalService extends IBaseService {
+interface IDialogs extends IBaseService {
     showDialog(options: IDialogOptions): ng.IPromise<any>;
     showConfirm(options: IConfirmOptions): ng.IPromise<any>;
     showProgress(options: IProgressOptions): IProgressModalInstance;
@@ -71,4 +71,4 @@ interface IModalService extends IBaseService {
 }
 
 export {IDialogOptions, IDialogScope, IConfirmOptions, IConfirmScope, IProgressOptions, IProgressScope,
-IProgressModalInstance, IPromptOptions, IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IModalService}
+IProgressModalInstance, IPromptOptions, IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs}

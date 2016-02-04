@@ -1,5 +1,6 @@
 ﻿import {Logger, ILogger} from "../services/logger.service";
 import {Common, ICommon} from "../services/common.service";
+import {Dialogs, IDialogs} from './services/dialogs.service';
 
 interface IBundle {
     [s: string]: any;
@@ -26,6 +27,7 @@ class BaseController implements IBaseController {
     $stateParams: ng.ui.IStateParamsService;
     logger: ILogger;
     common: ICommon;
+    dialogs: IDialogs;
 
     constructor(bundle: IBundle, ...args: any[]) {
         this.initBundle(bundle);
@@ -39,6 +41,7 @@ class BaseController implements IBaseController {
         this.$http = bundle['$http'];
         this.logger = bundle["logger"];
         this.common = bundle["common"];
+        this.dialogs = bundle["dialogs"];
         this.$stateParams = bundle["$stateParams"];
         this.$window = bundle["$window"];
     }
