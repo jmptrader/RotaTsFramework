@@ -7,6 +7,8 @@
         'angular': './app/rota/core/angular',
         'angular-ui-router': './app/rota/core/angular-ui-router',
         'angular-bootstrap': './app/rota/core/ui-bootstrap-tpls-1.1.2.min',
+        'angular-sanitize': './app/rota/core/angular-sanitize',
+        'angular-animate': './app/rota/core/angular-animate',
         //libs
         'toastr': './app/rota/lib/toastr.min',
         'underscore': './app/rota/lib/underscore.min',
@@ -18,7 +20,8 @@
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
-        core: './app/rota/core'
+        core: './app/rota/core',
+        lib: './app/rota/lib'
     },
 
     shim: {
@@ -38,6 +41,12 @@
             deps: ['angular']
         },
         'angular-bootstrap': {
+            deps: ['angular']
+        },
+        'angular-sanitize': {
+            deps: ['angular']
+        },
+        'angular-animate': {
             deps: ['angular']
         }
     }

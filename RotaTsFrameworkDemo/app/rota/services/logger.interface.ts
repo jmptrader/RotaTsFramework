@@ -5,26 +5,6 @@ interface ILoggerConfig {
     timeOuts?: { [index: number]: number };
     defaultTitles?: { [index: number]: string };
 }
-export enum LogType {
-    Info,
-    Error,
-    Warn,
-    Success,
-    Debug
-}
-
-export enum LogServices {
-    Console = 1,
-    Toastr = 2,
-    Notification = 4
-}
-
-export enum NotifyType {
-    Sticky,
-    RouteCurrent,
-    RouteNext
-}
-
 interface ILog {
     message: string;
     title?: string;

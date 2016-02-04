@@ -1,11 +1,34 @@
 ﻿//#region Imports
-import {IToastr, LogType, INotification, INotify, NotifyType, ILog, IBaseLogger, ILoggerConfig, ILogger, IConsole, LogServices} from './logger.interface';
+import {IToastr, INotification, INotify, ILog, IBaseLogger, ILoggerConfig, ILogger, IConsole} from './logger.interface';
 import {IMainConfig} from '../config/config';
 import {IBaseConfigProvider} from "../base/baseconfig";
+//static
 import "./logger.config";
 import * as toastr from "toastr";
 import * as moment from "moment";
 import * as angular from "angular";
+//#endregion
+
+//#region Enums
+export enum LogType {
+    Info,
+    Error,
+    Warn,
+    Success,
+    Debug
+}
+
+export enum LogServices {
+    Console = 1,
+    Toastr = 2,
+    Notification = 4
+}
+
+export enum NotifyType {
+    Sticky,
+    RouteCurrent,
+    RouteNext
+}
 //#endregion
 
 //#region Log Services

@@ -4,7 +4,7 @@ import * as spinner from "spinner";
 
 //#region Interfaces
 interface ISpinAttributes extends ng.IAttributes {
-    spinnerOptionsName: string;
+    rtSpinner: string;
 }
 
 interface ISpinScope extends ng.IScope {
@@ -15,7 +15,7 @@ interface ISpinScope extends ng.IScope {
 //#region Directive
 function menuDirective() {
     function link(scope: ISpinScope, element: ng.IAugmentedJQuery, attrs: ISpinAttributes): void {
-        scope.$watch(attrs.spinnerOptionsName, options => {
+        scope.$watch(attrs.rtSpinner, options => {
             if (scope.rtSpinner) {
                 scope.rtSpinner.stop();
             }

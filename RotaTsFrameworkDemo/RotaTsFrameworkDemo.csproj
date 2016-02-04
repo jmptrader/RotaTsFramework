@@ -174,6 +174,8 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Startup.cs" />
+    <Content Include="app\rota\core\angular-animate.js" />
+    <Content Include="app\rota\core\angular-sanitize.js" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
     <Content Include="app\rota\lib\bootstrap.min.js" />
@@ -266,6 +268,8 @@
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
+    <TypeScriptCompile Include="app\rota\services\caching.interface.ts" />
+    <TypeScriptCompile Include="app\rota\services\caching.service.ts" />
     <TypeScriptCompile Include="app\rota\services\common.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\common.service.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.interface.ts" />

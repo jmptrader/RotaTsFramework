@@ -15,8 +15,13 @@ class TodoController extends BaseCrudController<ITodoModel> {
     }
 
     save(model: ITodoModel): ng.IPromise<ITodoModel> {
+        this.dialogs.showConfirm({ message: 'Ar you sure to save ?' }).then(() => {
+            this.logger.notification.info({ message: 'Yer you are sure' });
+        }, () => {
+            this.logger.notification.error({ message: 'Nope you are not sure' });
+        });
+
         return this.todoApi.save(model).then((model: ITodoModel) => {
-            this.goBack();
             return model;
         });
     }

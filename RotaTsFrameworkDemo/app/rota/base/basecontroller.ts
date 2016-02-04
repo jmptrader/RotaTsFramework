@@ -1,6 +1,6 @@
 ﻿import {Logger, ILogger} from "../services/logger.service";
 import {Common, ICommon} from "../services/common.service";
-import {Dialogs, IDialogs} from './services/dialogs.service';
+import {Dialogs, IDialogs} from '../services/dialogs.service';
 
 interface IBundle {
     [s: string]: any;
@@ -14,6 +14,7 @@ interface IBaseController {
     $window: ng.IWindowService;
     logger: ILogger;
     common: ICommon;
+    dialogs: IDialogs;
 
     goBack(): void;
 }

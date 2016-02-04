@@ -24,7 +24,7 @@ class ShellController {
      * Notification panels
      */
     private _notifications: INotify[];
-    get notifications(): INotify[] { return null; }
+    get notifications(): INotify[] { return this._notifications; }
     /**
      * Ajax spinner options
      */

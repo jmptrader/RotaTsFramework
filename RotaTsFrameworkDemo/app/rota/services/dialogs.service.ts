@@ -10,7 +10,6 @@ IProgressOptions, IProgressScope, IProgressModalInstance, IPromptOptions,
 IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs} from './dialogs.interface';
 //static
 import "angular"
-import "angular-bootstrap"
 //#endregion
 
 /**
@@ -19,7 +18,7 @@ import "angular-bootstrap"
 class Dialogs implements IDialogs {
     serviceName = 'Dialog Service';
 
-    static $inject = ['$rootScope', '$q', '$modal', '$templateCache', 'Routing', 'Config', 'RouteConfig', 'Common', 'Loader'];
+    static $inject = ['$rootScope', '$q', '$uibModal', '$templateCache', 'Routing', 'Config', 'RouteConfig', 'Common', 'Loader'];
     constructor(private $rootScope: IRotaRootScope,
         private $q: ng.IQService,
         private $modal: ng.ui.bootstrap.IModalService,
@@ -41,7 +40,7 @@ class Dialogs implements IDialogs {
     showDialog(options: IDialogOptions): ng.IPromise<any> {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalSimpleDialog.tpl.html',
-            controller: ['$scope', '$modalInstance', 'options',
+            controller: ['$scope', '$uibModalInstance', 'options',
                 ($scope: IDialogScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IDialogOptions) => {
                     $scope.title = options.title || 'Onay';//self.localization.get('rota.onay');
                     $scope.message = options.message || '';
@@ -69,7 +68,7 @@ class Dialogs implements IDialogs {
     showConfirm(options: IConfirmOptions): ng.IPromise<any> {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalDialog.tpl.html',
-            controller: ['$scope', '$modalInstance', 'options',
+            controller: ['$scope', '$uibModalInstance', 'options',
                 ($scope: IConfirmScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IConfirmOptions) => {
                     $scope.title = options.title || 'Onay';//this.localization.get('rota.onay');
                     $scope.message = options.message || '';
@@ -100,7 +99,7 @@ class Dialogs implements IDialogs {
     showProgress(options: IProgressOptions): IProgressModalInstance {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalProgress.tpl.html',
-            controller: ['$scope', '$timeout', '$modalInstance', 'options',
+            controller: ['$scope', '$timeout', '$uibModalInstance', 'options',
                 ($scope: IProgressScope, $timeout: ng.ITimeoutService,
                     $modalInstance: IProgressModalInstance, options: IProgressOptions) => {
                     $modalInstance.percent =
@@ -136,7 +135,7 @@ class Dialogs implements IDialogs {
     showPrompt(options: IPromptOptions): ng.IPromise<any> {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalPromptDialog.tpl.html',
-            controller: ['$scope', '$modalInstance', 'options',
+            controller: ['$scope', '$uibModalInstance', 'options',
                 ($scope: IPromptScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IPromptOptions) => {
                     $scope.title = options.title || '';
                     $scope.subTitle = options.subTitle || '';
@@ -170,7 +169,7 @@ class Dialogs implements IDialogs {
     showFileUpload(options: IFileUploadOptions): ng.IPromise<any> {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalFileUpload.tpl.html',
-            controller: ['$scope', '$modalInstance', 'options',
+            controller: ['$scope', '$uibModalInstance', 'options',
                 ($scope: IFileUploadScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IFileUploadOptions) => {
                     $scope.model = {};
                     $scope.allowedExtensions = options.allowedExtensions;
@@ -206,7 +205,9 @@ class Dialogs implements IDialogs {
             keyboard: false,
             backdrop: 'static',
             size: 'md',
-            animation: false
+            animation: false,
+            bindToController: true,
+            controllerAs: 'vm'
         }
         const modalOptions: ng.ui.bootstrap.IModalSettings = angular.extend(defaultModalOptions, options); 
         //resolve data

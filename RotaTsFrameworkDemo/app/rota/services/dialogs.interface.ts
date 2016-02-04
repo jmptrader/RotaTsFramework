@@ -63,6 +63,10 @@ interface IModalOptions extends ng.ui.bootstrap.IModalSettings {
 
 interface IDialogs extends IBaseService {
     showDialog(options: IDialogOptions): ng.IPromise<any>;
+     /**
+     * Show confirm dialog with ok,cancel buttons
+     * @param options Confirm options
+     */
     showConfirm(options: IConfirmOptions): ng.IPromise<any>;
     showProgress(options: IProgressOptions): IProgressModalInstance;
     showPrompt(options: IPromptOptions): ng.IPromise<any>;
