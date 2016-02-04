@@ -268,6 +268,8 @@
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
     <TypeScriptCompile Include="app\rota\services\common.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\common.service.ts" />
+    <TypeScriptCompile Include="app\rota\services\dialogs.interface.ts" />
+    <TypeScriptCompile Include="app\rota\services\dialogs.service.ts" />
     <TypeScriptCompile Include="app\rota\services\index.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.service.ts" />
@@ -288,6 +290,7 @@
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />
     <TypeScriptCompile Include="app\todo\todos.service.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-component-router.d.ts" />
