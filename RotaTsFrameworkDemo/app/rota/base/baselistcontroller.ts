@@ -5,27 +5,42 @@ IListControllerScope, IPager, IPagingListModel, IListPageOptions} from "./interf
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
 
-abstract class BaseListController<TModel extends IBaseModel> extends BaseModelController<TModel> implements IBaseListController<TModel> {
-    private static newItemFieldName: string = 'id';
+//#region BaseListController
 
+/**
+ * Base List Controller
+ */
+abstract class BaseListController<TModel extends IBaseModel> extends BaseModelController<TModel> implements IBaseListController<TModel> {
+    //#region Props
+    private static newItemFieldName = 'id';
+    /**
+     * List controller options
+     */
     private listPageOptions: IListPageOptions;
     $scope: IListControllerScope<TModel>;
-
+    /**
+     * Grid Api
+     * @returns {} Grid Api
+     */
     get gridApi(): uiGrid.IGridApi { return this.$scope.gridApi; }
     set gridApi(value: uiGrid.IGridApi) { this.$scope.gridApi = value; }
-
+    /**
+     * Grid options
+     * @returns {} Grid options
+     */
     get gridOptions(): uiGrid.IGridOptions { return this.$scope[this.config.gridDefaultOptionsName]; }
     set gridOptions(value: uiGrid.IGridOptions) { this.$scope[this.config.gridDefaultOptionsName] = value; }
-
+    /**
+     * Grid data
+     * @returns {} 
+     */
     get gridData(): TModel[] { return <TModel[]>this.gridOptions.data; }
-
+    /**
+     * Selected rows
+     * @returns {} 
+     */
     get gridSeletedRows(): any[] { return this.gridApi.selection.getSelectedRows(); }
-
-
-    abstract getModel(...args: any[]): ng.IPromise<Array<TModel>> | Array<TModel> |
-        ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
-
-    abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
+    //#endregion
 
     constructor(bundle: IBundle, options?: IListPageOptions) {
         super(bundle);
@@ -38,8 +53,29 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
 
         this.initGrid();
     }
+    /**
+    * Initialize grid
+    */
+    private initGrid(): void {
+        const options = this.getDefaultGridOptions();
+        this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
 
-    initSearchModel(pager?: IPager) {
+        if (this.listPageOptions.initialLoad) {
+            this.initSearchModel();
+        }
+    }
+    abstract getModel(...args: any[]): ng.IPromise<Array<TModel>> | Array<TModel> |
+        ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
+    /**
+     * Grid Columns
+     * @param options Grid Columns
+     */
+    abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
+    /**
+     * Starts getting model and binding
+     * @param pager
+     */
+    initSearchModel(pager?: IPager): void {
         const filterpager = angular.extend({}, this.$scope.filter, pager ||
             {
                 currentPage: 1,
@@ -48,7 +84,10 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
 
         this.initModel(filterpager);
     }
-
+    /**
+     * Set model after data fetched
+     * @param model Model
+     */
     protected setModel(model: IPagingListModel<TModel> | Array<TModel>): IPagingListModel<TModel> | Array<TModel> {
         if (this.listPageOptions.pagingEnabled) {
             this.gridOptions.totalItems = (<IPagingListModel<TModel>>model).total || 0;
@@ -58,7 +97,9 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
         }
         return model;
     }
-    //Default grid options
+    /**
+     * Default grid options
+     */
     protected getDefaultGridOptions(): uiGrid.IGridOptions {
         return {
             //Row selection
@@ -99,35 +140,33 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
             }
         };
     }
-
-    private initGrid(): void {
-        const options = this.getDefaultGridOptions();
-        this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
-
-        if (this.listPageOptions.initialLoad) {
-            this.initSearchModel();
-        }
-    }
-
-    //Clear grid data
+    /**
+     * Clear grid
+     */
     clearGrid(): void {
         this.gridOptions.data = [];
     }
-    //Clear selected rows
+    /**
+     * Clear selected rows
+     */
     clearSelectedRows(): void {
         this.gridApi.selection.clearSelectedRows();
     }
-    //Export grid
-    exportGrid(rowType: string, format: string) {
+    /**
+     * Export grid
+     * @param rowType
+     * @param format
+     */
+    exportGrid(rowType: string, format: string): void {
         this.gridApi.exporter[format](rowType, 'all');
     }
-
+    //UNDONE edit funtion
     goEditState(id: number) {
         //For navigation in crud page,navItems is populated depending on the current list
         //var uniqueFields = _.pluck(this.rowData, NEW_ITEM_FIELD_NAME);
         //return this.editState && this.go(this.editState, { id: id || 'new', navItems: uniqueFields });
     }
 }
+//#endregion
 
-//Export
 export {BaseListController}
