@@ -1,16 +1,11 @@
-﻿import "./infrastructure.index"
-import {IBaseController, BaseController} from "../base/basecontroller";
+﻿//#region Imports
+import {IBaseController} from "../base/interfaces";
 import {IBaseApi, BaseApi} from "../base/baseapi";
-
-interface IRotaApp {
-    rotaModule: ng.IModule;
-    addController(controllerName: string, controller: typeof BaseController, dependencies?: string[]): void;
-    addApi(apiName: string, api: typeof BaseApi, dependencies?: string[]): void;
-    configure(fn: Function): IRotaApp;
-    configure(fn: any[]): IRotaApp;
-    run(fn: Function): IRotaApp;
-    run(fn: any[]): IRotaApp;
-}
+import {IRotaApp} from './app.interface';
+//deps
+import {BaseController} from '../base/basecontroller';
+import "./infrastructure.index"
+//#endregion
 
 class RotaApp implements IRotaApp {
     rotaModule: angular.IModule;
@@ -30,7 +25,7 @@ class RotaApp implements IRotaApp {
     addController(controllerName: string, controller: typeof BaseController, dependencies?: string[]): void {
         //Built-in dependencies - Ek dependencies ile birleştiriliyor
         const deps: any[] = ['$rootScope', '$scope', '$q', '$http', '$window',
-            '$stateParams', 'Logger', 'Common','Dialogs'].concat(dependencies || []);
+            '$stateParams', 'Logger', 'Common', 'Dialogs', 'Routing', 'Config'].concat(dependencies || []);
         const controllerCtor: Function = (...args: any[]): IBaseController => {
             var bundle: { [s: string]: any; } = {
                 '$rootScope': args[0],
@@ -41,9 +36,11 @@ class RotaApp implements IRotaApp {
                 '$stateParams': args[5],
                 'logger': args[6],
                 'common': args[7],
-                'dialogs': args[8]
+                'dialogs': args[8],
+                'routing': args[9],
+                'config': args[10]
             }
-            var instance: IBaseController = new controller(bundle, args[9]);
+            var instance: IBaseController = new controller(bundle, args[11]);
             //Instance'i dondur
             return instance;
         }; //Fonksiyonu son obje olarak dizinin sonuna ekle

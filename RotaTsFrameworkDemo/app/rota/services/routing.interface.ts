@@ -1,6 +1,5 @@
 ﻿//#region Imports
-import { IBaseConfig} from "../base/baseconfig";
-import { IBaseModel} from "../base/basemodels";
+import { IBaseModel,IBaseConfig} from "../base/interfaces";
 import { IBaseService} from "./service.interface";
 //#endregion
 

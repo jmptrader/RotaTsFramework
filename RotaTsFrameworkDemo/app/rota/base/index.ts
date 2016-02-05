@@ -1,3 +1,5 @@
 ﻿import "./basecontroller"
+import "./basemodelcontroller"
 import "./basecrudcontroller"
+import "./baselistcontroller"
 import "./baseconfig"

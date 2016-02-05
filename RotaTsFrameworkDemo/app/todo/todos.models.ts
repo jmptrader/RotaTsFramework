@@ -1,4 +1,4 @@
-﻿import {IBaseListModel, IBaseCrudModel, IBaseModel} from "../rota/base/basemodels";
+﻿import {IBaseModel} from "../rota/base/interfaces";
 
 interface ITodoModel extends IBaseModel {
     text: string;

@@ -9,7 +9,7 @@
 @import url('select.min.css');
 @import url('select2_custom.css');
 @import url('datetimepicker.css');
-@import url('angular-grid.min.css');
+@import url('ui-grid.min.css');
 @import url('theme-fresh.min.css');
 /*#endregion */
 
@@ -368,125 +368,57 @@ ul.nav-tabs {
     }
 /*#endregion */
 
-/*#region Angular Grid Overrides */
-.ag-fresh .ag-paging-row-summary-panel,
-.ag-paging-page-summary-panel,
-.ag-fresh .ag-paging-button {
-    font-size: .9em;
-    font-weight: bold;
+/*#region Grid Classes */
+.grid {
+    width: 100%;
+    height: 600px;
+    border-bottom: 3px solid #ABC5DC;
 }
 
-.ag-paging-page-summary-panel {
-    float: right;
+.ui-grid-row-selected > [ui-grid-row] > .ui-grid-cell {
+    background-color: #A9C7DD !important;
 }
 
-.ag-fresh .ag-paging-button {
-    display: inline-block;
-    padding: 2px 9px;
-    margin-right: 4px;
-    border-radius: 3px;
-    border: solid 1px #c0c0c0;
-    background: #e9e9e9;
-    box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
-    text-decoration: none;
-    color: #717171;
-    text-shadow: 0px 1px 0px rgba(255,255,255, 1);
+.ui-grid-selection-row-header-buttons.ui-grid-row-selected {
+    color: #386190;
 }
 
-    .ag-fresh .ag-paging-button[disabled],
-    .ag-fresh .ag-paging-button[disabled] :hover {
-        background: #CACACA !important;
-    }
-
-    .ag-fresh .ag-paging-button:hover {
-        background: #fefefe;
-        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#f0f0f0));
-        background: -moz-linear-gradient(0% 0% 270deg,#FEFEFE, #f0f0f0);
-    }
-
-    .ag-fresh .ag-paging-button.active {
-        border: none;
-        background: #616161;
-        box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
-        color: #f0f0f0;
-        text-shadow: 0px 0px 3px rgba(0,0,0, .5);
-    }
-
-.ag-root {
-    font-size: 13px;
-    border-bottom: 2px solid #5D98CC !important;
-}
-
-.ag-fresh .ag-root {
-    border: 1px solid #DAD2D2;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-}
-
-.ag-fresh .ag-header-container {
-    border-bottom: 1px solid #DAD2D2;
-    background: #eeeeee; /* Old browsers */
-    background: -moz-linear-gradient(top, #ffffff 0%, #eeeeee 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#eeeeee)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #ffffff 0%,#eeeeee 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #ffffff 0%,#eeeeee 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #ffffff 0%,#eeeeee 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #ffffff 0%,#eeeeee 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeee',GradientType=0 ); /* IE6-9 */
-}
-
-.ag-fresh .ag-header-group-cell,
-.ag-fresh .ag-header-cell {
-    border-right: 1px solid #DAD2D2;
-}
-
-.ag-fresh .ag-header-group-cell-with-group {
-    border-bottom: 1px solid #DAD2D2;
-}
-
-.ag-fresh .ag-header-cell-text {
-    padding-left: 2px;
-    font-weight: bold;
-    font-size: .9em;
-}
-
-.col-italic {
-    font-style: italic;
+.ui-grid-pager-panel {
+    background-color: #ebebeb;
 }
 
 .col-align-center {
     text-align: center;
+    line-height: 29px;
 }
 
-.col-2-line > span {
-    margin: 2px 4px;
-    display: block;
-    text-align: left;
+.col-valign-center {
+    line-height: 29px;
+    padding-left: 5px;
 }
 
-    .col-2-line > span > span {
-        margin-right: 3px;
+.col-pull-right {
+    float: right;
+    margin-right: 3px;
+}
+
+    .grid .badge,
+    .col-pull-right .badge {
+        margin-left: 2px;
     }
 
-.ag-fresh .ag-body {
-    background-color: #ffffff;
+.action-buttons {
+    text-align: center;
+    padding: 2px 5px;
 }
 
-.ag-row:hover {
-    background-color: #CACACA;
-    cursor: pointer;
+    .action-buttons a {
+        padding-left: 5px;
+    }
+
+.col-blue {
 }
 
-
-
-.ag-fresh .ag-paging-panel {
-    padding: 9px;
-    background: #ebebeb;
-    border: 1px solid #DAD2D2;
-}
-
-.ag-fresh .ag-group-cell {
-    font-style: normal;
-}
 /*#endregion */
 
 /*#region Editor */

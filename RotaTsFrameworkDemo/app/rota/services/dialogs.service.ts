@@ -309,4 +309,4 @@ var module: ng.IModule = angular.module('rota.misc.dialog', ['ui.bootstrap']);
 module.service('Dialogs', Dialogs);
 //#endregion
 
-export {Dialogs, IDialogs}
+export {Dialogs}

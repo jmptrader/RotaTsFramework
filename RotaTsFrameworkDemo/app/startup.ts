@@ -1,7 +1,8 @@
-﻿import { App } from "./rota/config/app";
-import {Routing, IRouting} from "./rota/services/routing.service";
+﻿import {IRouting} from "./rota/services/routing.interface";
 import {IMainConfig} from "./rota/config/config";
-import {IBaseConfigProvider} from "./rota/base/baseconfig";
+import {IBaseConfigProvider} from "./rota/base/interfaces";
+//deps
+import { App } from "./rota/config/app";
 
 //Config phase
 App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
@@ -31,7 +32,7 @@ App.run(["Routing", (routing: IRouting) => {
             controller: 'todoController',
             templateUrl: 'app/todo/todo.html',
             url: 'todos/:id'
-           
+
         }
     ]).start('shell.content.todos');
 }]);

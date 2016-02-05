@@ -3,13 +3,15 @@ import "./underscore.min"
 import "./underscore.string.min"
 import "spinner"
 import "bootstrap"
+import "grid"
 
 import * as angular from "angular"
 
 angular.module('rota.lib',
     [
-        ////Grid 
-        //'angularGrid',
+        //Grid plugins
+        'ui.grid', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.pagination', 'ui.grid.exporter', 'ui.grid.grouping'
+     
         ////Datetime picker
         //'ui.dateTimeInput',
         //'ui.bootstrap.datetimepicker',

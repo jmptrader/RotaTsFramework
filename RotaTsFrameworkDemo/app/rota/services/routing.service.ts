@@ -368,4 +368,4 @@ module.service('Routing', Routing)
     .config(config);
 //#endregion
 
-export {IRouting, Routing}
+export {Routing}

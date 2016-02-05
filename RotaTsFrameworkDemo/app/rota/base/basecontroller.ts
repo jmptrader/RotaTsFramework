@@ -1,38 +1,39 @@
-﻿import {Logger, ILogger} from "../services/logger.service";
-import {Common, ICommon} from "../services/common.service";
-import {Dialogs, IDialogs} from '../services/dialogs.service';
+﻿//#region Imports
+import {ILogger, IBaseLogger} from "../services/logger.interface";
+import {ICommon} from "../services/common.interface";
+import {IRotaRootScope} from "../services/common.interface";
+import {IDialogs} from '../services/dialogs.interface';
+import {IBaseController, IBundle} from './interfaces';
+import {IMainConfig} from '../config/config.interface';
+import {IRouting} from '../services/routing.interface';
+//#endregion
 
-interface IBundle {
-    [s: string]: any;
-}
-interface IBaseController {
-    $rootScope: ng.IRootScopeService;
-    $q: angular.IQService;
-    $http: ng.IHttpService;
-    $scope: ng.IScope;
-    $stateParams: ng.ui.IStateParamsService;
-    $window: ng.IWindowService;
-    logger: ILogger;
-    common: ICommon;
-    dialogs: IDialogs;
-
-    goBack(): void;
-}
-
+//#region BaseController
 class BaseController implements IBaseController {
-    $rootScope: ng.IRootScopeService;
-    $q: ng.IQService;
-    $http: ng.IHttpService;
-    $scope: ng.IScope;
-    $window: ng.IWindowService;
-    $stateParams: ng.ui.IStateParamsService;
-    logger: ILogger;
-    common: ICommon;
-    dialogs: IDialogs;
+    //#region Props
+    //services
+    protected $rootScope: IRotaRootScope;
+    protected $q: ng.IQService;
+    protected $http: ng.IHttpService;
+    protected $scope: ng.IScope;
+    protected $window: ng.IWindowService;
+    protected $stateParams: ng.ui.IStateParamsService;
+    protected logger: ILogger;
+    protected common: ICommon;
+    protected dialogs: IDialogs;
+    protected config: IMainConfig;
+    protected routing: IRouting;
+    //shortcuts for loggers
+    get notification(): IBaseLogger { return this.logger.notification; }
+    get toastr(): IBaseLogger { return this.logger.toastr; }
+    get console(): IBaseLogger { return this.logger.console; }
+    //registered events for off methods while scope destroying
+    protected registeredEvents: Function[];
+    //#endregion
 
     constructor(bundle: IBundle, ...args: any[]) {
         this.initBundle(bundle);
-        return this;
+        this.registerEvents();
     }
 
     initBundle(bundle: IBundle): void {
@@ -45,11 +46,32 @@ class BaseController implements IBaseController {
         this.dialogs = bundle["dialogs"];
         this.$stateParams = bundle["$stateParams"];
         this.$window = bundle["$window"];
+        this.config = bundle["config"];
+        this.routing = bundle["routing"];
     }
 
-    goBack(): void {
-        this.$window.history.back();
+    getLocal(key: string, value: string): string {
+        return "";//key && this.localization.get(key, value);
+    }
+
+    registerEvent(eventName: string, fn: () => void): void {
+        const offFn = this.$scope.$on(eventName, fn);
+        this.registeredEvents.push(offFn);
+    }
+
+    registerEvents(): void {
+        this.registeredEvents = [];
+        this.registerEvent("$destroy", this.destroy);
+    }
+
+    destroy(): void {
+        this.registeredEvents.forEach(fn => {
+            fn();
+        });
+        this.registeredEvents = [];
     }
 }
-//Export
-export {IBaseController, BaseController, IBundle}
+//#endregion
+
+export {BaseController}
+

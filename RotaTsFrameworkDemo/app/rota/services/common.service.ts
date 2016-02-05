@@ -101,4 +101,4 @@ var module: ng.IModule = angular.module('rota.misc.common', [])
     .service('Common', Common);
 //#endregion
 
-export {Common, ICommon}
+export {Common}

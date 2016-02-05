@@ -183,6 +183,7 @@
     <Content Include="app\rota\lib\moment.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
     <Content Include="app\rota\lib\toastr.min.js" />
+    <Content Include="app\rota\lib\ui-grid.min.js" />
     <Content Include="app\rota\lib\underscore.min.js" />
     <Content Include="app\rota\lib\underscore.string.min.js" />
     <Content Include="app\rota\resources\nls\en-US\resources.js" />
@@ -208,7 +209,6 @@
     <Content Include="app\rota\core\require.js" />
     <Content Include="app\todo\todo.html" />
     <Content Include="app\todo\todos.html" />
-    <Content Include="Content\css\angular-grid.min.css" />
     <Content Include="Content\css\bootstrap.min.css" />
     <Content Include="Content\css\bs-overrides.css" />
     <Content Include="Content\css\datetimepicker.css" />
@@ -222,6 +222,8 @@
     <Content Include="Content\css\site.css" />
     <Content Include="Content\css\theme-fresh.min.css" />
     <Content Include="Content\css\toastr.min.css" />
+    <Content Include="Content\css\ui-grid.min.css" />
+    <Content Include="Content\css\ui-grid.svg" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\bimar-logo-sm.png" />
@@ -245,7 +247,11 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Content\css\ui-grid.eot" />
+    <Content Include="Content\css\ui-grid.ttf" />
+    <Content Include="Content\css\ui-grid.woff" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
@@ -256,15 +262,18 @@
     <TypeScriptCompile Include="app\rota\base\basecrudcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\baselistcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodelcontroller.ts" />
-    <TypeScriptCompile Include="app\rota\base\basemodels.ts" />
     <TypeScriptCompile Include="app\rota\base\index.ts" />
+    <TypeScriptCompile Include="app\rota\base\interfaces.ts" />
+    <TypeScriptCompile Include="app\rota\config\app.interface.ts" />
     <TypeScriptCompile Include="app\rota\config\app.ts" />
+    <TypeScriptCompile Include="app\rota\config\config.interface.ts" />
     <TypeScriptCompile Include="app\rota\config\config.ts" />
     <TypeScriptCompile Include="app\rota\config\infrastructure.index.ts" />
     <TypeScriptCompile Include="app\rota\config\main.ts" />
     <TypeScriptCompile Include="app\rota\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
@@ -312,6 +321,7 @@
     <TypeScriptCompile Include="Scripts\typings\requirejs\require.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\spin\spin.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\toastr\toastr.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\ui-grid\ui-grid.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\ui-router-extras\ui-router-extras.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore.string\underscore.string.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />

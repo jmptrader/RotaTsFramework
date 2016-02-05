@@ -1,4 +1,4 @@
-﻿import { IBaseConfig} from "../base/baseconfig";
+﻿import { IBaseConfig} from "../base/interfaces";
 import { IBaseService} from "./service.interface";
 
 interface ILoaderConfig extends IBaseConfig {

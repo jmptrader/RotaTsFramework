@@ -1,10 +1,4 @@
-﻿interface IBaseConfig {
-}
-
-interface IBaseConfigProvider<TConfig extends IBaseConfig> {
-    config: TConfig;
-    configure(config: TConfig): void;
-}
+﻿import {IBaseConfigProvider, IBaseConfig} from './interfaces';
 
 class BaseConfig<TConfig extends IBaseConfig> implements ng.IServiceProvider, IBaseConfigProvider<TConfig> {
     config: TConfig;
@@ -18,4 +12,4 @@ class BaseConfig<TConfig extends IBaseConfig> implements ng.IServiceProvider, IB
     }
 }
 //Export
-export { BaseConfig, IBaseConfigProvider, IBaseConfig}
+export { BaseConfig}

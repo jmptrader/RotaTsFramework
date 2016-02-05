@@ -1,13 +1,6 @@
-﻿import {IMainConfig}  from "../config/config";
+﻿import {IMainConfig}  from "../config/config.interface";
+import {IBaseApi} from './interfaces';
 
-interface IBaseApi {
-    $rootScope: ng.IRootScopeService;
-    $q: angular.IQService;
-    $http: ng.IHttpService;
-    config: IMainConfig;
-    get<T>(url: string, params?: any): angular.IPromise<any>;
-    post<T>(url: string, params?: any): angular.IPromise<any>;
-}
 
 class BaseApi implements IBaseApi {
     $rootScope: ng.IRootScopeService;
@@ -27,14 +20,14 @@ class BaseApi implements IBaseApi {
         this.config = bundle['config'];
     }
 
-    get<T>(url: string, params?: any): angular.IPromise<any> {
+    get<T>(url: string, params?: any): angular.IPromise<T> {
         return this.$http.get(this.config.baseUrl + url, params)
             .then((response: ng.IHttpPromiseCallbackArg<T>): T=> {
                 return response.data;
             });
     }
 
-    post<T>(url: string, params: any = {}): angular.IPromise<any> {
+    post<T>(url: string, params: any = {}): angular.IPromise<T> {
         return this.$http.post(this.config.baseUrl + url, params)
             .then((response: ng.IHttpPromiseCallbackArg<T>): T=> {
                 return response.data;

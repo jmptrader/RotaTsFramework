@@ -1,23 +1,11 @@
-﻿import { IBaseConfig, BaseConfig } from "../base/baseconfig";
+﻿//#region Imports
+import {IMainConfig} from './config.interface';
+//deps
+import { BaseConfig } from "../base/baseconfig";
 import * as angular from "angular";
+//#endregion
 
-interface IEvents {
-    userLoginChanged: string;
-    loginRequired: string;
-    ajaxStarted: string;
-    ajaxFinished: string;
-    menuChanged: string;
-    badgeChanged: string;
-}
-
-interface IMainConfig extends IBaseConfig {
-    baseUrl?: string;
-    appVersion?: string;
-    appTitle?: string;
-    debugMode?: boolean;
-    eventNames?: IEvents;
-}
-
+//#region Config
 class Config extends BaseConfig<IMainConfig> {
     constructor() {
         var config: IMainConfig = {};
@@ -32,10 +20,13 @@ class Config extends BaseConfig<IMainConfig> {
             menuChanged: 'menuChanged',
             badgeChanged: 'badgeChanged'
         }
+        config.gridDefaultPageSize = 25;
+        config.gridDefaultOptionsName = 'defaultGridOptions';
         this.config = config;
         super();
     }
 }
+//#endregion
 
 //#region Register
 var module: ng.IModule = angular.module('rota.config', []);

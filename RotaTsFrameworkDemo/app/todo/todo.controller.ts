@@ -1,5 +1,6 @@
 ﻿import {App} from "app/rota/config/app";
-import {BaseCrudController, IBundle} from "app/rota/base/basecrudcontroller";
+import {BaseCrudController} from "app/rota/base/basecrudcontroller";
+import {IBundle} from 'app/rota/base/interfaces';
 
 import {ITodoModel} from "./todos.models";
 import {ITodoApi} from "./todos.service";
@@ -28,7 +29,7 @@ class TodoController extends BaseCrudController<ITodoModel> {
 
     deleteById(id: number): ng.IPromise<any> {
         return this.todoApi.deleteById(id).then(() => {
-            this.goBack();
+            //this.routing.goBack();
         });
     }
 

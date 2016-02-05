@@ -17,6 +17,7 @@
         'moment': './app/rota/lib/moment.min',
         'spinner': './app/rota/lib/spin.min',
         'bootstrap': './app/rota/lib/bootstrap.min',
+        'grid': './app/rota/lib/ui-grid.min',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
@@ -47,6 +48,9 @@
             deps: ['angular']
         },
         'angular-animate': {
+            deps: ['angular']
+        },
+        grid: {
             deps: ['angular']
         }
     }

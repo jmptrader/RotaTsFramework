@@ -1,32 +1,46 @@
-﻿import {IBaseController, BaseController, IBundle} from "./basecontroller"
-import {IScopeModel, IBaseModel, IBaseListModel} from "./basemodels"
+﻿import {BaseController} from "./basecontroller"
+import {IModelControllerScope, IBaseModel, IBaseModelController, IBundle, IPagingListModel} from "./interfaces"
 
-interface IBaseModelController<TModel extends IBaseModel> extends IBaseController {
-    model: TModel | IBaseListModel<TModel>;
-    getModel(): ng.IPromise<TModel> | TModel | ng.IPromise<IBaseListModel<TModel> | IBaseListModel<TModel>>;
-}
 
 abstract class BaseModelController<TModel extends IBaseModel> extends BaseController implements IBaseModelController<TModel> {
-    $scope: IScopeModel<TModel>;
+    $scope: IModelControllerScope<TModel>;
 
-    private _model: TModel | IBaseListModel<TModel>;
-    get model(): TModel | IBaseListModel<TModel> { return this._model; }
-    set model(value: TModel | IBaseListModel<TModel>) { this._model = value; }
+    get model(): TModel | Array<TModel> | IPagingListModel<TModel> { return this.$scope.model; }
+    set model(value: TModel | Array<TModel> | IPagingListModel<TModel>) { this.$scope.model = value; }
 
     constructor(bundle: IBundle) {
         super(bundle);
-        this.initModel();
     }
    
     //#endregion
-    abstract getModel(): ng.IPromise<TModel> | TModel | ng.IPromise<IBaseListModel<TModel> | IBaseListModel<TModel>>;
+    abstract getModel(...args: any[]): ng.IPromise<TModel> | TModel | ng.IPromise<Array<TModel>> |
+        Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
 
-    private initModel(): void {
-        const model = this.getModel();
-        this.common.makePromise(model).then((data: TModel | IBaseListModel<TModel>) => {
-            return this.model = data;
+    protected updateModel(model: TModel | Array<TModel> | IPagingListModel<TModel>): ng.IPromise<TModel | Array<TModel> | IPagingListModel<TModel>> {
+        const updatedModel = this.setModel(model);
+        return this.common.makePromise(updatedModel).then((data: TModel | Array<TModel>) => {
+            if (data) {
+                this.model = data;
+                //fire model loaded event
+                this.loadedModel(data);
+            }
+            return data;
+        });
+    }
+
+    protected setModel(model: TModel | Array<TModel> | IPagingListModel<TModel>): TModel | Array<TModel> | IPagingListModel<TModel> {
+        return model;
+    }
+
+    protected loadedModel(model: TModel | Array<TModel> | IPagingListModel<TModel>): void {
+    }
+
+    protected initModel(...args: any[]): void {
+        const model = this.getModel(args);
+        this.common.makePromise(model).then((data: TModel | Array<TModel> | IPagingListModel<TModel>) => {
+            return this.updateModel(data);
         });
     }
 }
 //Export
-export {IBaseModelController, BaseModelController, IBundle}
+export {BaseModelController, }

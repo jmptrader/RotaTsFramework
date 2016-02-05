@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {IToastr, INotification, INotify, ILog, IBaseLogger, ILoggerConfig, ILogger, IConsole} from './logger.interface';
 import {IMainConfig} from '../config/config';
-import {IBaseConfigProvider} from "../base/baseconfig";
+import {IBaseConfigProvider} from "../base/interfaces";
 //static
 import "./logger.config";
 import * as toastr from "toastr";
@@ -348,4 +348,4 @@ module.config([
 ]);
 //#endregion
 
-export {ILogger, Logger}
+export {Logger}
