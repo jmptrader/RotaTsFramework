@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import {IModelControllerScope, IBaseModel, IBaseModelController, IBundle, IPagingListModel, IBaseModelFilter} from "./interfaces"
+import {IBaseModel, IBaseModelController, IBundle, IPagingListModel, IBaseModelFilter} from "./interfaces"
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -8,10 +8,13 @@ import {BaseController} from "./basecontroller"
 
 abstract class BaseModelController<TModel extends IBaseModel> extends BaseController implements IBaseModelController<TModel> {
     //#region Props
-    $scope: IModelControllerScope<TModel>;
-
-    get model(): TModel | Array<TModel> | IPagingListModel<TModel> { return this.$scope.model; }
-    set model(value: TModel | Array<TModel> | IPagingListModel<TModel>) { this.$scope.model = value; }
+    private _model: TModel | Array<TModel> | IPagingListModel<TModel>;
+    /**
+     * Model object
+     * @returns {} 
+     */
+    get model(): TModel | Array<TModel> | IPagingListModel<TModel> { return this._model; }
+    set model(value: TModel | Array<TModel> | IPagingListModel<TModel>) { this._model = value; }
     //#endregion
     
     constructor(bundle: IBundle) {

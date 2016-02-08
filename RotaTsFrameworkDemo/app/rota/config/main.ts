@@ -53,6 +53,9 @@
         },
         grid: {
             deps: ['angular']
+        },
+        hotkeys: {
+            deps: ['angular']
         }
     }
 });

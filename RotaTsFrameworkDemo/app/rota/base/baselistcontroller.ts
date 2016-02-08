@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModelController, IBaseModel, IBaseListController,
-IListControllerScope, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
+IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
@@ -17,23 +17,26 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     /**
      * List controller options
      */
-    private listPageOptions: IListPageOptions;
-    $scope: IListControllerScope<TModel>;
+    protected listPageOptions: IListPageOptions;
+    // $scope: IListControllerScope<TModel>;
+    private _gridApi: uiGrid.IGridApi;
     /**
      * Grid Api
-     * @returns {} Grid Api
+     * @returns {uiGrid.IGridApi} Grid Api
      */
-    get gridApi(): uiGrid.IGridApi { return this.$scope.gridApi; }
-    set gridApi(value: uiGrid.IGridApi) { this.$scope.gridApi = value; }
+    get gridApi(): uiGrid.IGridApi { return this._gridApi; }
+    set gridApi(value: uiGrid.IGridApi) { this._gridApi = value; }
+
+    private _gridOptions: uiGrid.IGridOptions;
     /**
      * Grid options
-     * @returns {} Grid options
+     * @returns {uiGrid.IGridOptions} Grid options
      */
-    get gridOptions(): uiGrid.IGridOptions { return this.$scope[this.config.gridDefaultOptionsName]; }
-    set gridOptions(value: uiGrid.IGridOptions) { this.$scope[this.config.gridDefaultOptionsName] = value; }
+    get gridOptions(): uiGrid.IGridOptions { return this._gridOptions; }
+    set gridOptions(value: uiGrid.IGridOptions) { this._gridOptions = value; }
     /**
      * Grid data
-     * @returns {} 
+     * @returns {TModel[]} 
      */
     get gridData(): TModel[] { return <TModel[]>this.gridOptions.data; }
     /**
@@ -41,6 +44,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @returns {} 
      */
     get gridSeletedRows(): any[] { return this.gridApi.selection.getSelectedRows(); }
+
+    private _filter: any;
+    /**
+     * Filter object,includes all filter criteria to send getModel method as param
+     * @returns {any} 
+     */
+    get filter(): any { return this._filter; }
+    set filter(value: any) { this._filter = value; }
     //#endregion
 
     constructor(bundle: IBundle, options?: IListPageOptions) {
@@ -77,21 +88,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @returns {uiGrid.IColumnDef} ui-grid columns definition
      */
     abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
-    /**
-     * Starts getting model and binding
-     * @param pager
-     */
-    initSearchModel(pager?: IPager): void {
-        let filter = angular.extend({}, this.$scope.filter);
-        if (this.listPageOptions.pagingEnabled) {
-            filter = angular.extend(filter, pager ||
-                {
-                    currentPage: 1,
-                    pageSize: this.config.gridDefaultPageSize
-                });
-        }
-        this.initModel(filter);
-    }
     /**
      * Set model after data fetched
      * @param model Model
@@ -150,6 +146,21 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             //'ng-repeat="col in colContainer.renderedColumns track by col.colDef.name" ' +
             //'class="ui-grid-cell" ui-grid-cell></div>'
         };
+    }
+    /**
+    * Starts getting model and binding
+    * @param pager Paging pager
+    */
+    initSearchModel(pager?: IPager): void {
+        let filter = angular.extend({}, this.filter);
+        if (this.listPageOptions.pagingEnabled) {
+            filter = angular.extend(filter, pager ||
+                {
+                    currentPage: 1,
+                    pageSize: this.config.gridDefaultPageSize
+                });
+        }
+        this.initModel(filter);
     }
     /**
      * Clear grid

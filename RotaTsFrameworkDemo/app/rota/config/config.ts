@@ -21,7 +21,7 @@ class Config extends BaseConfig<IMainConfig> {
             badgeChanged: 'badgeChanged'
         }
         config.gridDefaultPageSize = 25;
-        config.gridDefaultOptionsName = 'defaultGridOptions';
+        config.gridDefaultOptionsName = 'vm.gridOptions';
         this.config = config;
         super();
     }

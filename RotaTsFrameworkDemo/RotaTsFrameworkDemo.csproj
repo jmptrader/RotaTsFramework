@@ -274,6 +274,7 @@
     <TypeScriptCompile Include="app\rota\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtButton.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtForm.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtListButtons.ts" />
