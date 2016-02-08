@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import {IModelControllerScope, IBaseModel, IBaseModelController, IBundle, IPagingListModel} from "./interfaces"
+import {IModelControllerScope, IBaseModel, IBaseModelController, IBundle, IPagingListModel, IBaseModelFilter} from "./interfaces"
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -18,10 +18,10 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         super(bundle);
     }
     /**
-     * Abstract get model method
+     * @abstract Abstract get model method
      * @param args Optional params
      */
-    abstract getModel(...args: any[]): ng.IPromise<TModel> | TModel | ng.IPromise<Array<TModel>> |
+    abstract getModel(modelFilter: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<Array<TModel>> |
         Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
      * Update model after fetching data
@@ -55,8 +55,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * Initiates getting data
      * @param args Optional params
      */
-    protected initModel(...args: any[]): void {
-        const model = this.getModel(args);
+    protected initModel(modelFilter: IBaseModelFilter): void {
+        const model = this.getModel(modelFilter);
         this.common.makePromise(model).then((data: TModel | Array<TModel> | IPagingListModel<TModel>) => {
             return this.updateModel(data);
         });

@@ -1,4 +1,4 @@
-﻿import {IBaseModel} from "../rota/base/interfaces";
+﻿import {IBaseModel, IBaseListModelFilter} from "../rota/base/interfaces";
 
 interface ITodoModel extends IBaseModel {
     text: string;
@@ -6,5 +6,9 @@ interface ITodoModel extends IBaseModel {
     id: number;
 }
 
-export {ITodoModel}
+interface ITodoFilter extends IBaseListModelFilter {
+
+}
+
+export {ITodoModel, ITodoFilter}
 

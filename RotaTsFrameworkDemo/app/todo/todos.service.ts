@@ -1,9 +1,10 @@
 ﻿import { App } from "app/rota/config/app";
 import { IBaseApi, BaseApi } from "app/rota/base/baseapi";
-import {ITodoModel}  from "todos.models";
+import {ITodoModel, ITodoFilter}  from "todos.models";
+
 
 interface ITodoApi extends IBaseApi {
-    getTodos(): ng.IPromise<ITodoModel[]>;
+    getTodos(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]>;
     getTodoById(id: number): angular.IPromise<ITodoModel>;
     save(model: ITodoModel): ng.IPromise<ITodoModel>;
     deleteById(id: number): ng.IPromise<any>;
@@ -11,8 +12,8 @@ interface ITodoApi extends IBaseApi {
 
 class TodoApi extends BaseApi implements ITodoApi {
 
-    getTodos(): ng.IPromise<ITodoModel[]> {
-        return this.post<ITodoModel[]>("todo/getall");
+    getTodos(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
+        return this.post<ITodoModel[]>("todo/getall", modelFilter);
     }
 
     getTodoById(id: number): ng.IPromise<ITodoModel> {

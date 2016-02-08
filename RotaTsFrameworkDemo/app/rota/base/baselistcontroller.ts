@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModelController, IBaseModel, IBaseListController,
-IListControllerScope, IPager, IPagingListModel, IListPageOptions} from "./interfaces"
+IListControllerScope, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
@@ -10,7 +10,8 @@ import {BaseModelController} from "./basemodelcontroller"
 /**
  * Base List Controller
  */
-abstract class BaseListController<TModel extends IBaseModel> extends BaseModelController<TModel> implements IBaseListController<TModel> {
+abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
+    extends BaseModelController<TModel> implements IBaseListController<TModel, TModelFilter> {
     //#region Props
     private static newItemFieldName = 'id';
     /**
@@ -64,11 +65,16 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
             this.initSearchModel();
         }
     }
-    abstract getModel(...args: any[]): ng.IPromise<Array<TModel>> | Array<TModel> |
+    /**
+     * @abstract Get model
+     * @param args Model
+     */
+    abstract getModel(modelFilter?: TModelFilter): ng.IPromise<Array<TModel>> | Array<TModel> |
         ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
-     * Grid Columns
+     * @abstract Grid Columns
      * @param options Grid Columns
+     * @returns {uiGrid.IColumnDef} ui-grid columns definition
      */
     abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
     /**
@@ -76,13 +82,15 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
      * @param pager
      */
     initSearchModel(pager?: IPager): void {
-        const filterpager = angular.extend({}, this.$scope.filter, pager ||
-            {
-                currentPage: 1,
-                pageSize: this.config.gridDefaultPageSize
-            });
-
-        this.initModel(filterpager);
+        let filter = angular.extend({}, this.$scope.filter);
+        if (this.listPageOptions.pagingEnabled) {
+            filter = angular.extend(filter, pager ||
+                {
+                    currentPage: 1,
+                    pageSize: this.config.gridDefaultPageSize
+                });
+        }
+        this.initModel(filter);
     }
     /**
      * Set model after data fetched
@@ -138,6 +146,9 @@ abstract class BaseListController<TModel extends IBaseModel> extends BaseModelCo
                     this.initSearchModel({ currentPage: currentPage, pageSize: pageSize });
                 });
             }
+            //rowTemplate: '<div style="background-color: aquamarine" ng-click="grid.appScope.goEditState(row)" ' +
+            //'ng-repeat="col in colContainer.renderedColumns track by col.colDef.name" ' +
+            //'class="ui-grid-cell" ui-grid-cell></div>'
         };
     }
     /**

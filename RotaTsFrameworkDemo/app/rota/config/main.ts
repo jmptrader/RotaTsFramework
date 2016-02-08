@@ -18,6 +18,7 @@
         'spinner': './app/rota/lib/spin.min',
         'bootstrap': './app/rota/lib/bootstrap.min',
         'grid': './app/rota/lib/ui-grid.min',
+        'hotkeys': './app/rota/lib/hotkeys.min',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',

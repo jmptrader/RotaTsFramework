@@ -1,7 +1,7 @@
 ﻿import {IMainConfig} from '../config/config.interface';
 
 interface IGridDirectiveAttrs extends ng.IAttributes {
-    options?: uiGrid.IGridOptions;
+    options?: string;
 }
 
 gridDirective.$inject = ['$compile', 'Config'];

@@ -5,7 +5,7 @@
 @import url('font-awesome.min.css');
 /*Components*/
 @import url('toastr.min.css');
-@import url('hotkeys.css');
+@import url('hotkeys.min.css');
 @import url('select.min.css');
 @import url('select2_custom.css');
 @import url('datetimepicker.css');

@@ -1,12 +1,12 @@
 ﻿import {App} from "app/rota/config/app";
 import {IBundle} from 'app/rota/base/interfaces';
-import {ITodoModel} from "./todos.models";
+import {ITodoModel, ITodoFilter} from "./todos.models";
 import {ITodoApi} from "./todos.service";
 //deps
 import {BaseListController} from "app/rota/base/baselistcontroller";
 import "./todos.service";
 
-class TodosController extends BaseListController<ITodoModel> {
+class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
     todoApi: ITodoApi;
 
     constructor(bundle: IBundle, todoApi: ITodoApi) {
@@ -14,8 +14,8 @@ class TodosController extends BaseListController<ITodoModel> {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
     }
 
-    getModel(): ng.IPromise<ITodoModel[]> {
-        return this.todoApi.getTodos();
+    getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
+        return this.todoApi.getTodos(modelFilter);
     }
 
     getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[] {

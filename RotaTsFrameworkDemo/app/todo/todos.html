@@ -2,6 +2,14 @@
     <h4>Todo List</h4>
     <a class="pull-right" ui-sref="shell.content.todo({id:'new'})">New Todo</a>
 
-
+    <rt-panel title="Filtre" icon="filter">
+        <div class="form-group col-md-7">
+            <label class="control-label col-md-3">Todo Text</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" ng-model="filter.Text"/>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </rt-panel>
     <rt-grid></rt-grid>
 </div>

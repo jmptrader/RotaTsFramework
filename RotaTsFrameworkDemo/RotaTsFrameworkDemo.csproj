@@ -179,6 +179,7 @@
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
     <Content Include="app\rota\lib\bootstrap.min.js" />
+    <Content Include="app\rota\lib\hotkeys.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
@@ -213,7 +214,7 @@
     <Content Include="Content\css\bs-overrides.css" />
     <Content Include="Content\css\datetimepicker.css" />
     <Content Include="Content\css\font-awesome.min.css" />
-    <Content Include="Content\css\hotkeys.css" />
+    <Content Include="Content\css\hotkeys.min.css" />
     <Content Include="Content\css\index.min.css" />
     <Content Include="Content\css\rota.css" />
     <Content Include="Content\css\select.min.css" />
@@ -273,8 +274,11 @@
     <TypeScriptCompile Include="app\rota\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtForm.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtListButtons.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtPanel.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
     <TypeScriptCompile Include="app\rota\services\caching.interface.ts" />
@@ -304,6 +308,7 @@
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />
     <TypeScriptCompile Include="app\todo\todos.service.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-hotkeys\angular-hotkeys.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
