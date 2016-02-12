@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {ICommon, IRotaRootScope} from '../services/common.interface';
 import {IRouting, IBreadcrumb, IHierarchicalMenuItem} from '../services/routing.interface';
-import {IMainConfig} from '../config/config';
+import {IMainConfig} from '../config/config.interface';
 import {INotification, INotify, ILogger} from '../services/logger.interface';
 import {IBadge, BadgeType} from './shell.interface';
 //Dependencies

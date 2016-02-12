@@ -74,6 +74,7 @@
         titleerror: 'Hata',
         titlewarn: 'Uyarı',
         titlesuccess: 'Başarılı',
+        titledebug: 'Debug',
         seciniz: "Seçim Yapınız..",
         required_validator_messagetemplate: "'%displayName%' girilmesi zorunlu alandır",
         email_validator_messagetemplate: "'%displayName%' geçersiz email adresi",

@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {IRotaRootScope} from './common.interface';
 import {IRouting} from './routing.interface';
-import {IMainConfig} from '../config/config';
+import {IMainConfig} from '../config/config.interface';
 import {ICommon} from './common.interface';
 import {ILoader} from './loader.interface';
 import {IRouteConfig} from './routing.interface';

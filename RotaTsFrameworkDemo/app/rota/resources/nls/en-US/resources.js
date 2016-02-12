@@ -75,6 +75,7 @@
         titlewarn: 'Warning',
         onay: "Confirm",
         titlesuccess: 'Success',
+        titledebug:'Debug',
         seciniz: "Choose Item..",
         required_validator_messagetemplate: "'%displayName%' field is mandatory.",
         email_validator_messagetemplate: "'%displayName%' not valid email address",

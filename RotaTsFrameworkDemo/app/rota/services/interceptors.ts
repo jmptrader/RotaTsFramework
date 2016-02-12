@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import {IMainConfig} from '../config/config';
+import {IMainConfig} from '../config/config.interface';
 import {ILogger} from './logger.interface';
 //#endregion
 

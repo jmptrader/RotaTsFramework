@@ -1,8 +1,10 @@
 ﻿//#region Imports
 import {IToastr, INotification, INotify, ILog, IBaseLogger, ILoggerConfig, ILogger, IConsole} from './logger.interface';
-import {IMainConfig} from '../config/config';
+import {IMainConfig} from '../config/config.interface';
 import {IBaseConfigProvider} from "../base/interfaces";
-//static
+import {ILocalization} from './localization.interface';
+//deps
+import {Localization} from './localization.service';
 import "./logger.config";
 import * as toastr from "toastr";
 import * as moment from "moment";
@@ -316,14 +318,13 @@ class Logger implements ILogger {
      */
     get toastr(): IBaseLogger { return this.logServices[LogServices.Toastr]; }
     //#endregion
-    static $inject = ['$log', 'Config', 'LoggerConfig'];
-    constructor($log: ng.ILogService, config: IMainConfig, loggerconfig: ILoggerConfig) {
-        //UNDONE:Localization undone
-        loggerconfig.defaultTitles[LogType.Info] = 'Info';//this.localization.get('rota.titleinfo') || ;
-        loggerconfig.defaultTitles[LogType.Warn] = 'Warning';//this.localization.get('rota.titlewarn') || ;
-        loggerconfig.defaultTitles[LogType.Success] = 'Success';//this.localization.get('rota.titlesuccess') || ;
-        loggerconfig.defaultTitles[LogType.Error] = 'Error';//this.localization.get('rota.titlerror') || ;
-        loggerconfig.defaultTitles[LogType.Debug] = 'Debug';//this.localization.get('rota.titledebug') || ;
+    static $inject = ['$log', 'Config', 'LoggerConfig', 'Localization'];
+    constructor($log: ng.ILogService, config: IMainConfig, loggerconfig: ILoggerConfig, localization: ILocalization) {
+        loggerconfig.defaultTitles[LogType.Info] = localization.getLocal('rota.titleinfo');
+        loggerconfig.defaultTitles[LogType.Warn] = localization.getLocal('rota.titlewarn');
+        loggerconfig.defaultTitles[LogType.Success] = localization.getLocal('rota.titlesuccess');
+        loggerconfig.defaultTitles[LogType.Error] = localization.getLocal('rota.titleerror');
+        loggerconfig.defaultTitles[LogType.Debug] = localization.getLocal('rota.titledebug');
         //Register services
         this.logServices = {};
         this.logServices[LogServices.Console] = new Console($log, config);

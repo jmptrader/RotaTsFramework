@@ -1,5 +1,5 @@
 ﻿import {IRouting} from "./rota/services/routing.interface";
-import {IMainConfig} from "./rota/config/config";
+import {IMainConfig} from "./rota/config/config.interface";
 import {IBaseConfigProvider} from "./rota/base/interfaces";
 //deps
 import { App } from "./rota/config/app";
@@ -7,7 +7,6 @@ import { App } from "./rota/config/app";
 //Config phase
 App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
     config.configure({
-        baseUrl: "http://localhost:17637/api/",
         appTitle: "Bimar SPA Todo Sample"
     });
 }]);

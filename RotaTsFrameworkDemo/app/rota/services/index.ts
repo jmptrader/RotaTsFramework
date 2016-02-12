@@ -3,6 +3,7 @@ import "./routing.service"
 import "./dialogs.service"
 import "./common.service"
 import "./caching.service"
+import "./localization.service"
 import "./interceptors"
 
 //Register Logger
@@ -22,7 +23,8 @@ angular.module('rota.services.misc',
         'rota.misc.common',
         'rota.misc.dialog',
         'rota.misc.httpRequestTracker',
-        'rota.misc.caching'
+        'rota.misc.caching',
+        'rota.misc.localization'
     ]);
 //Rota module index
 angular.module('rota.services',

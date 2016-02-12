@@ -11,20 +11,30 @@
         'angular-animate': './app/rota/core/angular-animate',
         //libs
         'toastr': './app/rota/lib/toastr.min',
-        'underscore': './app/rota/lib/underscore.min',
+        underscore: './app/rota/lib/underscore.min',
         'underscore-string': './app/rota/lib/underscore.string.min',
-        'i18n': './app/rota/lib/i18n',
-        'moment': './app/rota/lib/moment.min',
-        'spinner': './app/rota/lib/spin.min',
-        'bootstrap': './app/rota/lib/bootstrap.min',
-        'grid': './app/rota/lib/ui-grid.min',
-        'hotkeys': './app/rota/lib/hotkeys.min',
+        i18n: './app/rota/lib/i18n',
+        moment: './app/rota/lib/moment.min',
+        spinner: './app/rota/lib/spin.min',
+        bootstrap: './app/rota/lib/bootstrap.min',
+        grid: './app/rota/lib/ui-grid.min',
+        hotkeys: './app/rota/lib/hotkeys.min',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
         core: './app/rota/core',
-        lib: './app/rota/lib'
+        lib: './app/rota/lib',
+        'rota-resources': './app/rota/resources',
+        'app-resources': './app/resources'
     },
+
+    //Set the config for the i18n
+    //module ID
+    //config: {
+    //    i18n: {
+    //        locale: 'tr-tr'
+    //    }
+    //},
 
     shim: {
         jquery: {
@@ -60,7 +70,7 @@
     }
 });
 
-require(['config/vendor.index'], (): void  => {
+require(['config/vendor.index'], (): void => {
     require(['app/startup'], (): void => {
         //Tum rota dosyalari yuklendiktan sonra angulari başlatiyoruz
         angular.element(document).ready(() => {

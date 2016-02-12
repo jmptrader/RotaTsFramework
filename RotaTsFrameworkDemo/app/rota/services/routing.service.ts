@@ -1,9 +1,9 @@
 ﻿//#region Imports
 import {IRouteConfig, IRouting, IRotaState, IMenuModel, IMenuItem,
-IHierarchicalMenuItem, IBreadcrumb} from "./routing.interface";
+    IHierarchicalMenuItem, IBreadcrumb} from "./routing.interface";
 import {ILoader} from './loader.interface';
 import {ICommon, IRotaRootScope} from './common.interface';
-import {IMainConfig} from '../config/config';
+import {IMainConfig} from '../config/config.interface';
 
 //Modules
 import "./routing.config";
@@ -275,7 +275,7 @@ class Routing implements IRouting {
             }
         };
         //#endregion
-     
+
         //Controller load
         if (angular.isString(stateObj.controller)) {
             const cntResolve = this.loader.resolve({
@@ -284,7 +284,7 @@ class Routing implements IRouting {
             });
             stateObj.resolve = angular.extend(stateObj.resolve, cntResolve);
         }
-        
+
         //Authentication
         //UNDONE:State lere security promise eklenmeli
         //stateObj.resolve = angular.extend(stateObj.resolve, self.getAuthPromise(state));

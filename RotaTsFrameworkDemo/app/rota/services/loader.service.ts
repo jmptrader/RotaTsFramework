@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {ILoaderConfig, ILoader, ILoaderSettings} from './loader.interface';
 import {IRouteConfig} from "./routing.interface";
-
+//deps
 import './loader.config';
 //#endregion
 
@@ -52,4 +52,4 @@ var module: ng.IModule = angular.module('rota.loader.service', ['rota.loader.con
 module.service('Loader', Loader);
 //#endregion
 
-export {Loader, ILoader, ILoaderSettings};
+export {Loader};
