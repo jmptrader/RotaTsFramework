@@ -11,12 +11,12 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     private _model: TModel | Array<TModel> | IPagingListModel<TModel>;
     /**
      * Model object
-     * @returns {} 
+     * @returns {}
      */
     get model(): TModel | Array<TModel> | IPagingListModel<TModel> { return this._model; }
     set model(value: TModel | Array<TModel> | IPagingListModel<TModel>) { this._model = value; }
     //#endregion
-    
+
     constructor(bundle: IBundle) {
         super(bundle);
     }
@@ -42,6 +42,12 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         });
     }
     /**
+     * Fired if there is an error while model loading
+     * @param reason Error reason
+     */
+    protected errorModel(reason: any): void {
+    }
+    /**
      * Set model for some optional modifications
      * @param model Model
      */
@@ -62,6 +68,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         const model = this.getModel(modelFilter);
         this.common.makePromise(model).then((data: TModel | Array<TModel> | IPagingListModel<TModel>) => {
             return this.updateModel(data);
+        }, (reason: any) => {
+            this.errorModel(reason);
         });
     }
 }

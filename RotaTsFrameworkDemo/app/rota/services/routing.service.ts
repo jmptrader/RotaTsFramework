@@ -2,9 +2,9 @@
 import {IRouteConfig, IRouting, IRotaState, IMenuModel, IMenuItem,
     IHierarchicalMenuItem, IBreadcrumb} from "./routing.interface";
 import {ILoader} from './loader.interface';
+import {ILogger} from './logger.interface';
 import {ICommon, IRotaRootScope} from './common.interface';
 import {IMainConfig} from '../config/config.interface';
-
 //Modules
 import "./routing.config";
 import "./loader.service";
@@ -38,7 +38,7 @@ class Routing implements IRouting {
     //#endregion
 
     static $inject = ['$state', '$stateParams', '$rootScope', '$q', '$urlRouter', '$location',
-        '$timeout', 'StateProvider', 'RouteConfig', 'Loader', 'Common', 'Config'];
+        '$timeout', 'StateProvider', 'RouteConfig', 'Loader', 'Common', 'Config', 'Logger'];
     //ctor
     constructor(private $state: ng.ui.IStateService,
         private $stateParams: ng.ui.IStateParamsService,
@@ -51,7 +51,8 @@ class Routing implements IRouting {
         private routeconfig: IRouteConfig,
         private loader: ILoader,
         private common: ICommon,
-        private config: IMainConfig) {
+        private config: IMainConfig,
+        private logger: ILogger) {
         //Register static states and events
         this.init();
     }
@@ -202,7 +203,7 @@ class Routing implements IRouting {
         const rootMenus = this.getStatesByParentId();
 
         if (!rootMenus.length) {
-            //TODO:log error not found rootmenus
+            this.logger.console.warn({ message: 'root menus not found' });
         }
         //generate menus recursively
         return this.getMenusRecursively(rootMenus);
@@ -249,8 +250,8 @@ class Routing implements IRouting {
     private registerState(state: IRotaState): IRouting {
         //Check if already defined
         if (this.getState(state.name)) {
-            //TODO:Log already registered warn
-            return;
+            this.logger.console.warn({ message: 'state already registered ' + state.name });
+            return null;
         }
         //set temlate path based on baseUrl - works both html and dynamic file server
         const templateFilePath = (this.common.isHtml(<string>state.templateUrl) ?

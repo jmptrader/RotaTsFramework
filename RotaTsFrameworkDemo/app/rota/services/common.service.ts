@@ -1,8 +1,12 @@
-﻿import {ICommon} from './common.interface';
+﻿//#region Imports
+import {ICommon} from './common.interface';
 import {IRouteConfig} from './routing.config'
 
+//#endregion
+
+//#region Common Service
+
 class Common implements ICommon {
-    //#region Props
     serviceName: string = "Common Service";
     //states
     static $inject = ['$q'];
@@ -95,6 +99,8 @@ class Common implements ICommon {
     }
     //#endregion
 }
+
+//#endregion
 
 //#region Register
 var module: ng.IModule = angular.module('rota.misc.common', [])

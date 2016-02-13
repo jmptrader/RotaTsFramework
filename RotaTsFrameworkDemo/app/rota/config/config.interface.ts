@@ -9,7 +9,7 @@ interface IEvents {
 }
 
 interface IMainConfig extends IBaseConfig {
-    baseUrl?: string;
+    defaultApiUrl?: string;
     appVersion?: string;
     appTitle?: string;
     debugMode?: boolean;

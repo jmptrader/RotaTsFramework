@@ -8,24 +8,34 @@ import "./infrastructure.index"
 //#endregion
 
 class RotaApp implements IRotaApp {
+    //#region Props
     rotaModule: angular.IModule;
     private controllerProvider: angular.IControllerProvider;
     private provideService: angular.auto.IProvideService;
 
+    private static defaultControllerSystemDependencies = ['$rootScope', '$scope', '$q', '$http', '$window', '$stateParams'];
+    private static defaultControllerDependencies = ['Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization'];
+    //#endregion
+
     constructor(moduleName: string) {
         this.rotaModule = angular.module(moduleName, ["rota"]);
-        
+
         //TODO:annotation injection
         this.configure(($controllerProvider: ng.IControllerProvider, $provide: angular.auto.IProvideService) => {
             this.controllerProvider = $controllerProvider;
             this.provideService = $provide;
         });
     }
-
-    addController(controllerName: string, controller: typeof BaseController, dependencies?: string[]): void {
-        //Built-in dependencies - Ek dependencies ile birleştiriliyor
-        const deps: any[] = ['$rootScope', '$scope', '$q', '$http', '$window',
-            '$stateParams', 'Logger', 'Common', 'Dialogs', 'Routing', 'Config'].concat(dependencies || []);
+    /**
+     * Add controller with dependencies
+     * @param controllerName Controller name
+     * @param controller Controller instance
+     * @param dependencies Dependencies 
+     */
+    addController(controllerName: string, controller: typeof BaseController, ...dependencies: string[]): void {
+        //merge all deps
+        const deps = new Array<any>().concat(RotaApp.defaultControllerSystemDependencies,
+            RotaApp.defaultControllerDependencies, dependencies || []);
         const controllerCtor: Function = (...args: any[]): IBaseController => {
             var bundle: { [s: string]: any; } = {
                 '$rootScope': args[0],
@@ -38,9 +48,10 @@ class RotaApp implements IRotaApp {
                 'common': args[7],
                 'dialogs': args[8],
                 'routing': args[9],
-                'config': args[10]
+                'config': args[10],
+                'localization': args[11]
             }
-            var instance: IBaseController = new controller(bundle, args[11]);
+            var instance: IBaseController = new controller(bundle, args[12]);
             //Instance'i dondur
             return instance;
         }; //Fonksiyonu son obje olarak dizinin sonuna ekle

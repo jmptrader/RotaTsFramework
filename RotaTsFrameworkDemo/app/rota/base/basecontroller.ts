@@ -6,6 +6,7 @@ import {IDialogs} from '../services/dialogs.interface';
 import {IBaseController, IBundle} from './interfaces';
 import {IMainConfig} from '../config/config.interface';
 import {IRouting} from '../services/routing.interface';
+import {ILocalization} from '../services/localization.interface';
 //#endregion
 
 //#region BaseController
@@ -23,6 +24,7 @@ class BaseController implements IBaseController {
     protected dialogs: IDialogs;
     protected config: IMainConfig;
     protected routing: IRouting;
+    protected localization: ILocalization;
     //shortcuts for loggers
     get notification(): IBaseLogger { return this.logger.notification; }
     get toastr(): IBaseLogger { return this.logger.toastr; }
@@ -48,10 +50,7 @@ class BaseController implements IBaseController {
         this.$window = bundle["$window"];
         this.config = bundle["config"];
         this.routing = bundle["routing"];
-    }
-
-    getLocal(key: string, value: string): string {
-        return "";//key && this.localization.get(key, value);
+        this.localization = bundle["localization"];
     }
 
     registerEvent(eventName: string, fn: () => void): void {

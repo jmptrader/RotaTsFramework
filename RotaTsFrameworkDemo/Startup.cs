@@ -20,7 +20,7 @@ namespace RotaTsFrameworkDemo
               //Enable SignalR
             //app.MapSignalR();
              //Use webapi
-            //app.UseWebApi(config);
+            app.UseWebApi(config);
         }
     }
 }

@@ -38,4 +38,4 @@ class TodoController extends BaseCrudController<ITodoModel> {
     }
 }
 
-App.addController("todoController", TodoController, ["todoApi"]);
+App.addController("todoController", TodoController, "todoApi");

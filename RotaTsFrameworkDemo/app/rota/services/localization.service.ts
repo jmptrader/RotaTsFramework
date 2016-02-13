@@ -2,27 +2,26 @@
 import {ILocalization, IResource} from "./localization.interface";
 import {ICaching} from "./caching.interface";
 //deps - resource files
-import rotaresource = require('i18n!rota-resources/nls/resources');
-import appresource = require('i18n!app-resources/nls/resources');
+import * as rotaresource from 'i18n!rota-resources/nls/resources';
+import * as appresource from 'i18n!app-resources/nls/resources';
 //#endregion
 
 //#region Localization Service
-const activeLanguageCacheName = "active.language";
-
 class Localization implements ILocalization {
     serviceName = "Localization Service";
+    static activeLanguageCacheName = "active.language";
     /**
     * Gets current language code
     * @returns {string} 
     */
-    get currentLanguage(): string { return this.caching.restoreFromCache<string>(activeLanguageCacheName); }
+    get currentLanguage(): string { return this.caching.restoreFromCache<string>(Localization.activeLanguageCacheName); }
     /**
      * Change current language and reload page
      * @param value Language to change
      */
     set currentLanguage(value: string) {
         if (value === this.currentLanguage) return;
-        this.caching.saveToCache(activeLanguageCacheName, value);
+        this.caching.saveToCache(Localization.activeLanguageCacheName, value);
         this.$window.location.reload();
     }
 

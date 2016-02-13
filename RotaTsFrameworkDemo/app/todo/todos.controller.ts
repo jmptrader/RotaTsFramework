@@ -20,12 +20,23 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
 
     getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[] {
         return [{
-            name: 'Text',
             displayName: 'Text',
-            width: '30%',
-            field: "Text"
-        }];
+            width: '*',
+            field: "text"
+        },
+        
+            {
+                name: 'Buttons',
+                cellClass: 'col-align-center',
+                width: '5%',
+                displayName: '',
+                enableColumnMenu: false,
+                pinnedLeft: true ,
+                cellTemplate: '<a ui-sref="shell.content.todo" tooltip=\'Detay\'' +
+                'tooltip-placement="bottom"><i class="fa fa-2x fa-edit text-info"></i></a>'
+            }    
+        ];
     }
 }
 
-App.addController("todosController", TodosController, ["todoApi"]);
+App.addController("todosController", TodosController, "todoApi");

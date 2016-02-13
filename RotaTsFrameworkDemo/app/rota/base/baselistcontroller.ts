@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModelController, IBaseModel, IBaseListController,
-IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
+    IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
@@ -65,29 +65,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
         this.initGrid();
     }
-    /**
-    * Initialize grid
-    */
-    private initGrid(): void {
-        const options = this.getDefaultGridOptions();
-        this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
 
-        if (this.listPageOptions.initialLoad) {
-            this.initSearchModel();
-        }
-    }
+    //#region BaseModelController methods
     /**
-     * @abstract Get model
-     * @param args Model
-     */
+    * @abstract Get model
+    * @param args Model
+    */
     abstract getModel(modelFilter?: TModelFilter): ng.IPromise<Array<TModel>> | Array<TModel> |
         ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
-    /**
-     * @abstract Grid Columns
-     * @param options Grid Columns
-     * @returns {uiGrid.IColumnDef} ui-grid columns definition
-     */
-    abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
     /**
      * Set model after data fetched
      * @param model Model
@@ -101,6 +86,46 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         }
         return model;
     }
+    /**
+     * Override loadedMethod to show notfound message
+     * @param model Model
+     */
+    protected loadedModel(model: TModel | Array<TModel> | IPagingListModel<TModel>): void {
+        let noData = model === undefined || model === null;
+
+        if (!noData) {
+            if (this.listPageOptions.pagingEnabled) {
+                noData = (<IPagingListModel<TModel>>model).data.length === 0;
+            } else {
+                noData = (<Array<TModel>>model).length === 0;
+            }
+        }
+
+        if (noData) {
+            this.toastr.warn({ message: this.localization.getLocal("rota.kayitbulunamadi") });
+        }
+    }
+
+    //#endregion
+
+    //#region Grid methods
+    /**
+    * Initialize grid
+    */
+    private initGrid(): void {
+        const options = this.getDefaultGridOptions();
+        this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
+
+        if (this.listPageOptions.initialLoad) {
+            this.initSearchModel();
+        }
+    }
+    /**
+     * @abstract Grid Columns
+     * @param options Grid Columns
+     * @returns {uiGrid.IColumnDef} ui-grid columns definition
+     */
+    abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
     /**
      * Default grid options
      */
@@ -148,21 +173,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         };
     }
     /**
-    * Starts getting model and binding
-    * @param pager Paging pager
-    */
-    initSearchModel(pager?: IPager): void {
-        let filter = angular.extend({}, this.filter);
-        if (this.listPageOptions.pagingEnabled) {
-            filter = angular.extend(filter, pager ||
-                {
-                    currentPage: 1,
-                    pageSize: this.config.gridDefaultPageSize
-                });
-        }
-        this.initModel(filter);
-    }
-    /**
      * Clear grid
      */
     clearGrid(): void {
@@ -182,12 +192,33 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     exportGrid(rowType: string, format: string): void {
         this.gridApi.exporter[format](rowType, 'all');
     }
+
+    //#endregion
+
+    //#region List Model methods
+    /**
+    * Starts getting model and binding
+    * @param pager Paging pager
+    */
+    initSearchModel(pager?: IPager): void {
+        let filter = angular.extend({}, this.filter);
+        if (this.listPageOptions.pagingEnabled) {
+            filter = angular.extend(filter, pager ||
+                {
+                    currentPage: 1,
+                    pageSize: this.config.gridDefaultPageSize
+                });
+        }
+        this.initModel(filter);
+    }
     //UNDONE edit funtion
     goEditState(id: number) {
         //For navigation in crud page,navItems is populated depending on the current list
         //var uniqueFields = _.pluck(this.rowData, NEW_ITEM_FIELD_NAME);
         //return this.editState && this.go(this.editState, { id: id || 'new', navItems: uniqueFields });
     }
+
+    //#endregion
 }
 //#endregion
 

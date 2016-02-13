@@ -21,14 +21,14 @@ class BaseApi implements IBaseApi {
     }
 
     get<T>(url: string, params?: any): angular.IPromise<T> {
-        return this.$http.get(this.config.baseUrl + url, params)
+        return this.$http.get(this.config.defaultApiUrl + url, params)
             .then((response: ng.IHttpPromiseCallbackArg<T>): T=> {
                 return response.data;
             });
     }
 
     post<T>(url: string, params: any = {}): angular.IPromise<T> {
-        return this.$http.post(this.config.baseUrl + url, params)
+        return this.$http.post(this.config.defaultApiUrl + url, params)
             .then((response: ng.IHttpPromiseCallbackArg<T>): T=> {
                 return response.data;
             });

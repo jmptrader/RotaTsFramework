@@ -12,6 +12,7 @@ class Config extends BaseConfig<IMainConfig> {
             appVersion: '1.0.0',
             appTitle: 'Bimar App',
             debugMode: true,
+            defaultApiUrl:'/api/',
             eventNames: {
                 userLoginChanged: 'userLoginChanged',
                 ajaxFinished: 'ajaxFinished',

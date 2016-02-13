@@ -3,7 +3,13 @@ import {BaseApi} from '../base/baseapi';
 
 interface IRotaApp {
     rotaModule: ng.IModule;
-    addController(controllerName: string, controller: typeof BaseController, dependencies?: string[]): void;
+     /**
+     * Add controller with dependencies
+     * @param controllerName Controller name
+     * @param controller Controller instance
+     * @param dependencies Dependencies 
+     */
+    addController(controllerName: string, controller: typeof BaseController, ...dependencies: string[]): void;
     addApi(apiName: string, api: typeof BaseApi, dependencies?: string[]): void;
     configure(fn: Function): IRotaApp;
     configure(fn: any[]): IRotaApp;

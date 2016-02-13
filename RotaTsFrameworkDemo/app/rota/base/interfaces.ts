@@ -1,57 +1,14 @@
 ﻿import {ICacheable} from '../services/caching.interface';
 
+//#region Misc
 interface IBundle {
     [s: string]: any;
 }
-interface IBaseController {
 
-}
-
-interface IBaseModel {
-    id: number;
-}
-
-interface ICacheableModel extends IBaseModel, ICacheable {
-
-}
-
-interface IBaseModelFilter {
-
-}
-
-interface IBaseListModelFilter extends IBaseModelFilter, IPager {
-
-}
-
-interface IBaseCrudModel extends IBaseModel {
-}
+//#endregion
 
 
-interface IPagingListModel<TModel extends IBaseModel> {
-    data: Array<TModel>;
-    total?: number;
-}
-
-//interface IModelControllerScope<TModel extends IBaseModel> extends ng.IScope {
-//    model: TModel | Array<TModel> | IPagingListModel<TModel>
-//}
-
-//interface IListControllerScope<TModel extends IBaseModel> extends IModelControllerScope<TModel> {
-//    gridApi: uiGrid.IGridApi;
-//    filter: any;
-//}
-
-type IModel<TModel extends IBaseModel> = TModel | Array<TModel> | IPagingListModel<TModel>;
-type IModelPromise<TModel extends IBaseModel> = ng.IPromise<TModel | Array<TModel> | IPagingListModel<TModel>>;
-
-interface IBaseModelController<TModel extends IBaseModel> extends IBaseController {
-    model: IModel<TModel>;
-    getModel(modelFilter: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<Array<TModel>> | Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
-}
-
-interface IBaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter> extends IBaseModelController<TModel> {
-    getModel(modelFilter?: TModelFilter): ng.IPromise<Array<TModel>> | Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
-}
+//#region Main Base Classes
 
 interface IBaseConfig {
 }
@@ -65,6 +22,38 @@ interface IBaseApi {
     get<T>(url: string, params?: any): angular.IPromise<T>;
     post<T>(url: string, params?: any): angular.IPromise<T>;
 }
+//#endregion
+
+//#region Base Models
+
+interface IBaseModel {
+    id: number;
+}
+
+interface ICacheableModel extends IBaseModel, ICacheable {
+
+}
+
+interface IBaseModelFilter {
+
+}
+
+interface IBaseCrudModel extends IBaseModel {
+}
+
+
+interface IPagingListModel<TModel extends IBaseModel> {
+    data: Array<TModel>;
+    total?: number;
+}
+//#endregion
+
+
+
+//#region ListController Stuffs
+interface IBaseListModelFilter extends IBaseModelFilter, IPager {
+
+}
 
 interface IPager {
     currentPage?: number;
@@ -77,6 +66,25 @@ interface IListPageOptions {
     pagingEnabled?: boolean;
     newItemFieldName?: string;
 }
+//#endregion
+
+//#region Base Controllers
+interface IBaseController {
+}
+
+interface IBaseModelController<TModel extends IBaseModel> extends IBaseController {
+    model: TModel | Array<TModel> | IPagingListModel<TModel>;
+    getModel(modelFilter: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<Array<TModel>> | Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
+}
+
+interface IBaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter> extends IBaseModelController<TModel> {
+    getModel(modelFilter?: TModelFilter): ng.IPromise<Array<TModel>> | Array<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
+}
+
+//#endregion
+
+
+
 
 interface IModelStateParams extends ng.ui.IStateParamsService {
     id: number;
