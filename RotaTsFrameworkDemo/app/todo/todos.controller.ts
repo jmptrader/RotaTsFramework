@@ -1,5 +1,5 @@
 ﻿import {App} from "app/rota/config/app";
-import {IBundle} from 'app/rota/base/interfaces';
+import {IBundle, IGridOptions} from 'app/rota/base/interfaces';
 import {ITodoModel, ITodoFilter} from "./todos.models";
 import {ITodoApi} from "./todos.service";
 //deps
@@ -18,23 +18,12 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         return this.todoApi.getTodos(modelFilter);
     }
 
-    getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[] {
+    getGridColumns(options: IGridOptions): uiGrid.IColumnDef[] {
         return [{
             displayName: 'Text',
             width: '*',
             field: "text"
-        },
-        
-            {
-                name: 'Buttons',
-                cellClass: 'col-align-center',
-                width: '5%',
-                displayName: '',
-                enableColumnMenu: false,
-                pinnedLeft: true ,
-                cellTemplate: '<a ui-sref="shell.content.todo" tooltip=\'Detay\'' +
-                'tooltip-placement="bottom"><i class="fa fa-2x fa-edit text-info"></i></a>'
-            }    
+        }
         ];
     }
 }

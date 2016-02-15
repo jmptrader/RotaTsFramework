@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModelController, IBaseModel, IBaseListController,
-    IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter} from "./interfaces"
+    IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter, IGridOptions} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
@@ -27,13 +27,13 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     get gridApi(): uiGrid.IGridApi { return this._gridApi; }
     set gridApi(value: uiGrid.IGridApi) { this._gridApi = value; }
 
-    private _gridOptions: uiGrid.IGridOptions;
+    private _gridOptions: IGridOptions;
     /**
      * Grid options
      * @returns {uiGrid.IGridOptions} Grid options
      */
-    get gridOptions(): uiGrid.IGridOptions { return this._gridOptions; }
-    set gridOptions(value: uiGrid.IGridOptions) { this._gridOptions = value; }
+    get gridOptions(): IGridOptions { return this._gridOptions; }
+    set gridOptions(value: IGridOptions) { this._gridOptions = value; }
     /**
      * Grid data
      * @returns {TModel[]} 
@@ -115,24 +115,59 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     private initGrid(): void {
         const options = this.getDefaultGridOptions();
         this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
-
+        //default buttons
+        const defaultButtons = this.getDefaultGridButtons();
+        this.gridOptions.columnDefs = this.gridOptions.columnDefs.concat(defaultButtons);
+        //load initially if enabled
         if (this.listPageOptions.initialLoad) {
             this.initSearchModel();
         }
+    }
+    /**
+     * Get default buttons
+     */
+    protected getDefaultGridButtons(): uiGrid.IColumnDef[] {
+        const buttons: uiGrid.IColumnDef[] = [];
+        const getButton = (name: string, template: string): any => {
+            return {
+                name: name,
+                cellClass: 'col-align-center',
+                width: '30',
+                displayName: '',
+                enableColumnMenu: false,
+                cellTemplate: template
+            };
+        }
+        //edit button
+        if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
+            const editbutton = getButton('edit-button',
+                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'id\'])"' +
+                ' tooltip=\'Detay\' tooltip-placement="bottom"><i class="glyphicon glyphicon-edit"></i></a>');
+            buttons.push(editbutton);
+        }
+        //delete button
+        if (this.gridOptions.showDeleteButton) {
+            const editbutton = getButton('delete-button', '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.deleteEntity() tooltip=\'Detay\'' +
+                'tooltip-placement="bottom"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
+            buttons.push(editbutton);
+        }
+        return buttons;
     }
     /**
      * @abstract Grid Columns
      * @param options Grid Columns
      * @returns {uiGrid.IColumnDef} ui-grid columns definition
      */
-    abstract getGridColumns(options: uiGrid.IGridOptions): uiGrid.IColumnDef[];
+    abstract getGridColumns(options: IGridOptions): uiGrid.IColumnDef[];
     /**
      * Default grid options
      */
-    protected getDefaultGridOptions(): uiGrid.IGridOptions {
+    protected getDefaultGridOptions(): IGridOptions {
         return {
+            showEditButton: true,
+            showDeleteButton: false,
             //Row selection
-            enableRowSelection: true,
+            enableRowSelection: false,
             enableSelectAll: true,
             multiSelect: true,
             //Data
@@ -192,7 +227,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     exportGrid(rowType: string, format: string): void {
         this.gridApi.exporter[format](rowType, 'all');
     }
-
     //#endregion
 
     //#region List Model methods
@@ -211,11 +245,12 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         }
         this.initModel(filter);
     }
-    //UNDONE edit funtion
-    goEditState(id: number) {
-        //For navigation in crud page,navItems is populated depending on the current list
-        //var uniqueFields = _.pluck(this.rowData, NEW_ITEM_FIELD_NAME);
-        //return this.editState && this.go(this.editState, { id: id || 'new', navItems: uniqueFields });
+    /**
+     * Go detail state with id param provided
+     * @param id
+     */
+    goToDetailState(id: string) {
+        return this.routing.go(this.listPageOptions.editState, id && { id: id });
     }
 
     //#endregion

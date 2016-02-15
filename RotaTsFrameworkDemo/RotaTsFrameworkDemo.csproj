@@ -237,9 +237,11 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\bimar-logo-sm.png" />
     <Content Include="Content\img\de.png" />
+    <Content Include="Content\img\edit.png" />
     <Content Include="Content\img\en-us.png" />
     <Content Include="Content\img\es.png" />
     <Content Include="Content\img\logo_bimar.png" />
+    <Content Include="Content\img\remove.png" />
     <Content Include="Content\img\tr-tr.png" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\moment-with-locales.js" />

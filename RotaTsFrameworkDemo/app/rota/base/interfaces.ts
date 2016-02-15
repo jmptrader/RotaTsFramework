@@ -48,11 +48,14 @@ interface IPagingListModel<TModel extends IBaseModel> {
 }
 //#endregion
 
-
-
 //#region ListController Stuffs
 interface IBaseListModelFilter extends IBaseModelFilter, IPager {
 
+}
+
+interface IGridOptions extends uiGrid.IGridOptionsOf<any> {
+    showEditButton?: boolean;
+    showDeleteButton?: boolean;
 }
 
 interface IPager {
@@ -100,4 +103,4 @@ interface IBaseCrudController<TModel extends IBaseCrudModel> extends IBaseModelC
 export {IBundle, IBaseController, IBaseModel, IBaseCrudModel,
 IBaseModelController, ICacheableModel, IBaseListController,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
-IListPageOptions, IModelStateParams, IBaseCrudController, IBaseListModelFilter, IBaseModelFilter}
+IListPageOptions, IModelStateParams, IBaseCrudController, IBaseListModelFilter, IBaseModelFilter, IGridOptions}
