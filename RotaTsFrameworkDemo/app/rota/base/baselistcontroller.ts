@@ -1,6 +1,6 @@
 ﻿//#region Imports
-import {IBundle, IBaseModelController, IBaseModel, IBaseListController,
-    IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter, IGridOptions} from "./interfaces"
+import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
+    IGridOptions, IListModel} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 //#endregion
@@ -10,15 +10,14 @@ import {BaseModelController} from "./basemodelcontroller"
 /**
  * Base List Controller
  */
-abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
-    extends BaseModelController<TModel> implements IBaseListController<TModel, TModelFilter> {
+abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter> extends BaseModelController<TModel>  {
     //#region Props
     private static newItemFieldName = 'id';
     /**
      * List controller options
      */
     protected listPageOptions: IListPageOptions;
-    // $scope: IListControllerScope<TModel>;
+
     private _gridApi: uiGrid.IGridApi;
     /**
      * Grid Api
@@ -36,9 +35,9 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     set gridOptions(value: IGridOptions) { this._gridOptions = value; }
     /**
      * Grid data
-     * @returns {TModel[]} 
+     * @returns {IListModel<TModel>}
      */
-    get gridData(): TModel[] { return <TModel[]>this.gridOptions.data; }
+    get gridData(): IListModel<TModel> { return <IListModel<TModel>>this.gridOptions.data; }
     /**
      * Selected rows
      * @returns {} 
@@ -48,10 +47,10 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     private _filter: any;
     /**
      * Filter object,includes all filter criteria to send getModel method as param
-     * @returns {any} 
+     * @returns {IBaseListModelFilter}
      */
-    get filter(): any { return this._filter; }
-    set filter(value: any) { this._filter = value; }
+    get filter(): IBaseListModelFilter { return this._filter; }
+    set filter(value: IBaseListModelFilter) { this._filter = value; }
     //#endregion
 
     constructor(bundle: IBundle, options?: IListPageOptions) {
@@ -71,18 +70,18 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * @abstract Get model
     * @param args Model
     */
-    abstract getModel(modelFilter?: TModelFilter): ng.IPromise<Array<TModel>> | Array<TModel> |
-        ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
+    abstract getModel(modelFilter?: IBaseListModelFilter): ng.IPromise<IListModel<TModel>> |
+        IListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
      * Set model after data fetched
      * @param model Model
      */
-    protected setModel(model: IPagingListModel<TModel> | Array<TModel>): IPagingListModel<TModel> | Array<TModel> {
+    protected setModel(model: IListModel<TModel> | IPagingListModel<TModel>): IListModel<TModel> | IPagingListModel<TModel> {
         if (this.listPageOptions.pagingEnabled) {
             this.gridOptions.totalItems = (<IPagingListModel<TModel>>model).total || 0;
             this.gridOptions.data = (<IPagingListModel<TModel>>model).data;
         } else {
-            this.gridOptions.data = <Array<TModel>>model;
+            this.gridOptions.data = <IListModel<TModel>>model;
         }
         return model;
     }
@@ -90,14 +89,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * Override loadedMethod to show notfound message
      * @param model Model
      */
-    protected loadedModel(model: TModel | Array<TModel> | IPagingListModel<TModel>): void {
+    protected loadedModel(model: IListModel<TModel> | IPagingListModel<TModel>): void {
         let noData = model === undefined || model === null;
 
         if (!noData) {
             if (this.listPageOptions.pagingEnabled) {
                 noData = (<IPagingListModel<TModel>>model).data.length === 0;
             } else {
-                noData = (<Array<TModel>>model).length === 0;
+                noData = (<IListModel<TModel>>model).length === 0;
             }
         }
 
@@ -105,7 +104,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             this.toastr.warn({ message: this.localization.getLocal("rota.kayitbulunamadi") });
         }
     }
-
     //#endregion
 
     //#region Grid methods
@@ -141,14 +139,15 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         //edit button
         if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
             const editbutton = getButton('edit-button',
-                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'id\'])"' +
-                ' tooltip=\'Detay\' tooltip-placement="bottom"><i class="glyphicon glyphicon-edit"></i></a>');
+                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])"' +
+                ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="glyphicon glyphicon-edit"></i></a>');
             buttons.push(editbutton);
         }
         //delete button
         if (this.gridOptions.showDeleteButton) {
-            const editbutton = getButton('delete-button', '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.deleteEntity() tooltip=\'Detay\'' +
-                'tooltip-placement="bottom"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
+            const editbutton = getButton('delete-button', '<a class="btn btn-default btn-xs" ' +
+                'ng-click="grid.appScope.vm.deleteEntity(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])" uib-tooltip=\'Sil\'' +
+                'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
             buttons.push(editbutton);
         }
         return buttons;
@@ -165,7 +164,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     protected getDefaultGridOptions(): IGridOptions {
         return {
             showEditButton: true,
-            showDeleteButton: false,
+            showDeleteButton: true,
             //Row selection
             enableRowSelection: false,
             enableSelectAll: true,
@@ -221,11 +220,11 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     }
     /**
      * Export grid
-     * @param rowType
-     * @param format
+     * @param {string} rowTypes which rows to export, valid values are uiGridExporterConstants.ALL,
+     * @param {string} colTypes which columns to export, valid values are uiGridExporterConstants.ALL,
      */
-    exportGrid(rowType: string, format: string): void {
-        this.gridApi.exporter[format](rowType, 'all');
+    exportGrid(rowType: string, colTypes: string): void {
+        this.gridApi.exporter[colTypes](rowType, 'all');
     }
     //#endregion
 
@@ -234,8 +233,8 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * Starts getting model and binding
     * @param pager Paging pager
     */
-    initSearchModel(pager?: IPager): void {
-        let filter = angular.extend({}, this.filter);
+    initSearchModel(pager?: IPager): ng.IPromise<IListModel<TModel>> | ng.IPromise<IPagingListModel<TModel>> {
+        let filter: IBaseListModelFilter = angular.extend({}, this.filter);
         if (this.listPageOptions.pagingEnabled) {
             filter = angular.extend(filter, pager ||
                 {
@@ -243,16 +242,25 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
                     pageSize: this.config.gridDefaultPageSize
                 });
         }
-        this.initModel(filter);
+        return this.initModel(filter);
     }
+    //#endregion
+
+    //#region Button Clicks
     /**
-     * Go detail state with id param provided
-     * @param id
-     */
+    * Go detail state with id param provided
+    * @param id
+    */
     goToDetailState(id: string) {
         return this.routing.go(this.listPageOptions.editState, id && { id: id });
     }
-
+    /**
+     * Delete entity 
+     * @param id Unique id
+     */
+    deleteEntity(id: string): void {
+        throw new Error("unimplemented method exception");
+    }
     //#endregion
 }
 //#endregion

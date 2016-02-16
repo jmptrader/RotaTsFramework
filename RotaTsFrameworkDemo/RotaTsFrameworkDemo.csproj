@@ -287,10 +287,13 @@
     <TypeScriptCompile Include="app\rota\directives\rtButton.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtForm.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtI18n.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtListButtons.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtPanel.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
+    <TypeScriptCompile Include="app\rota\filters\index.ts" />
+    <TypeScriptCompile Include="app\rota\filters\rtI18n.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />
     <TypeScriptCompile Include="app\rota\resources\resources.ts" />
     <TypeScriptCompile Include="app\rota\services\caching.interface.ts" />

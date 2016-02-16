@@ -9,7 +9,7 @@ interface ICommon extends IBaseService {
     promise<T>(p?: any): ng.IPromise<T>;
     rejectedPromise(reason?: any): ng.IPromise<any>;
     makePromise<T>(value: any): ng.IPromise<T>;
-    isPromise(value: any): boolean;
+    isPromise(value: any): value is ng.IPromise<any>;
     isHtml(value: string): boolean;
     extractFileName(path: string): string;
     addSlash(path: string): string;

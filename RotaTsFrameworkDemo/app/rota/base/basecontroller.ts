@@ -3,14 +3,14 @@ import {ILogger, IBaseLogger} from "../services/logger.interface";
 import {ICommon} from "../services/common.interface";
 import {IRotaRootScope} from "../services/common.interface";
 import {IDialogs} from '../services/dialogs.interface';
-import {IBaseController, IBundle} from './interfaces';
+import {IBundle} from './interfaces';
 import {IMainConfig} from '../config/config.interface';
 import {IRouting} from '../services/routing.interface';
 import {ILocalization} from '../services/localization.interface';
 //#endregion
 
 //#region BaseController
-class BaseController implements IBaseController {
+class BaseController {
     //#region Props
     //services
     protected $rootScope: IRotaRootScope;
@@ -64,10 +64,10 @@ class BaseController implements IBaseController {
     }
 
     destroy(): void {
-        this.registeredEvents.forEach(fn => {
-            fn();
-        });
-        this.registeredEvents = [];
+        //this.registeredEvents.forEach(fn => {
+        //    fn();
+        //});
+        //this.registeredEvents = [];
     }
 }
 //#endregion

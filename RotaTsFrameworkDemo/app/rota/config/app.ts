@@ -1,5 +1,4 @@
 ﻿//#region Imports
-import {IBaseController} from "../base/interfaces";
 import {IBaseApi, BaseApi} from "../base/baseapi";
 import {IRotaApp} from './app.interface';
 //deps
@@ -36,7 +35,7 @@ class RotaApp implements IRotaApp {
         //merge all deps
         const deps = new Array<any>().concat(RotaApp.defaultControllerSystemDependencies,
             RotaApp.defaultControllerDependencies, dependencies || []);
-        const controllerCtor: Function = (...args: any[]): IBaseController => {
+        const controllerCtor: Function = (...args: any[]): BaseController => {
             var bundle: { [s: string]: any; } = {
                 '$rootScope': args[0],
                 '$scope': args[1],
@@ -51,7 +50,7 @@ class RotaApp implements IRotaApp {
                 'config': args[10],
                 'localization': args[11]
             }
-            var instance: IBaseController = new controller(bundle, args[12]);
+            var instance: BaseController = new controller(bundle, args[12]);
             //Instance'i dondur
             return instance;
         }; //Fonksiyonu son obje olarak dizinin sonuna ekle

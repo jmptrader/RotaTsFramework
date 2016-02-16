@@ -40,7 +40,7 @@ class Common implements ICommon {
      * Check whether or not provided param is promise
      * @param value Arg
      */
-    isPromise(value: any): boolean {
+    isPromise(value: any): value is ng.IPromise<any> {
         return value && angular.isFunction(value.then);
     }
     //#endregion

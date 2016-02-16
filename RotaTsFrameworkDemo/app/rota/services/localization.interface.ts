@@ -30,6 +30,7 @@ interface ILocalization extends IBaseService {
      * Get localized value of key formatted with scope obj
      * @param key Key value to be localized
      * @param scope Object to define interpolation scope
+     * @example getLocal('rota.confirmdeleteitem',{message:'Acme Company'});rota.confirmdeleteitem = 'Are you sure to delete {{message}} ?'
      * @returns {string} Localized value
      */
     getLocal(key: string, scope: any): string;

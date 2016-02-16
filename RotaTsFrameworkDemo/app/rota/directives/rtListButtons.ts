@@ -1,6 +1,8 @@
 ﻿//#region Imports
-import * as spinner from "spinner";
+import {ILocalization} from '../services/localization.interface';
 import {IListPageOptions} from "../base/interfaces";
+//deps
+import "../filters/rtI18n";
 //#endregion
 
 //#region Interfaces
@@ -9,21 +11,22 @@ import {IListPageOptions} from "../base/interfaces";
  */
 interface IListButtonsScope extends ng.IScope {
     listPageOptions: IListPageOptions;
-    goEditState(state: string): void;
+    goToDetailState(state?: string): void;
 }
 //#endregion
 
 //#region Directive
-listButtonsDirective.$inject = ['hotkeys'];
-function listButtonsDirective(hotkeys: ng.hotkeys.HotkeysProvider) {
+listButtonsDirective.$inject = ['hotkeys', 'Localization'];
+function listButtonsDirective(hotkeys: ng.hotkeys.HotkeysProvider, localization: ILocalization) {
+    const newRecordText = localization.getLocal('rota.yenikayit');
     function link(scope: IListButtonsScope, element: ng.IAugmentedJQuery): void {
         if (scope.listPageOptions.editState) {
             hotkeys.bindTo(scope).add({
                 combo: 'ctrl+ins',
-                description: 'Yeni kayit',//localization.get('rota.yenikayit'),
+                description: newRecordText,
                 allowIn: ['INPUT', 'TEXTAREA', 'SELECT'],
                 callback: () => {
-                    scope.goEditState('new');
+                    scope.goToDetailState();
                 }
             });
         }
@@ -50,7 +53,7 @@ function listButtonsDirective(hotkeys: ng.hotkeys.HotkeysProvider) {
         '</ul></div>' +
         '&nbsp;<a class="btn btn-info" ' +
         'ng-click="vm.clearGrid();vm.filter={};"><i class="fa fa-refresh"></i>&nbsp;<span class="hidden-sm hidden-xs">{{::"rota.temizle" | i18n}}</span></a>&nbsp;' +
-        '<a class="btn btn-success" ng-if="vm.listPageOptions.editState" ng-click="vm.goEditState(\'new\')"><i class="fa fa-plus"></i>&nbsp;<span class="hidden-sm hidden-xs">{{::"rota.yenikayit" | i18n}}</span></a>' +
+        '<a href class="btn btn-success" ng-if="vm.listPageOptions.editState" ng-click="vm.goToDetailState()"><i class="fa fa-plus"></i>&nbsp;<span class="hidden-sm hidden-xs">{{::"rota.yenikayit" | i18n}}</span></a>' +
         '</div>',
         link: link
     };
