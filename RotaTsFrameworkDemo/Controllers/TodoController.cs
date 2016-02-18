@@ -17,17 +17,7 @@ namespace RotaTsFrameworkDemo.Controllers
             {7,new TodoItem(7,"Bootstrap alaternatif apiler araştirmaliyim",true)},
             {8,new TodoItem(8,"TypeScript\' kodlarken ozellikle olusan js kodu kontrol etmeliyim",false)},
             {9,new TodoItem(9,"ASP.NET5 MVC6 demolari incelenmeli",false)},
-            {10,new TodoItem(10,"Visual Studio Code ile TypeScript code geliştirmeliyim",true)},
-             {11,new TodoItem(1,"Bakkaldan 1 ekmek yarım kilo yoğurt",false)},
-            {12,new TodoItem(2,"Rota frameworkde int lar byte olmalı",false)},
-            {13,new TodoItem(3,"Bu SPA projesi bir harika dostum",true)},
-            {14,new TodoItem(4,"Pluralsight üyeliği yenilenmeli",false)},
-            {15,new TodoItem(5,"Angular + RequireJS ile uygulama geliştirmem lazim",true)},
-            {16,new TodoItem(6,"Bu todo uygulamasını iyice incelemeliyim",false)},
-            {17,new TodoItem(7,"Bootstrap alaternatif apiler araştirmaliyim",true)},
-            {18,new TodoItem(8,"TypeScript\' kodlarken ozellikle olusan js kodu kontrol etmeliyim",false)},
-            {19,new TodoItem(9,"ASP.NET5 MVC6 demolari incelenmeli",false)},
-            {20,new TodoItem(10,"Visual Studio Code ile TypeScript code geliştirmeliyim",true)}
+            {10,new TodoItem(10,"Visual Studio Code ile TypeScript code geliştirmeliyim",true)}
         };
 
         // GET api/<controller>

@@ -190,11 +190,13 @@
     <Content Include="app\rota\lib\hotkeys.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
+    <Content Include="app\rota\lib\pdfmake.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
     <Content Include="app\rota\lib\toastr.min.js" />
     <Content Include="app\rota\lib\ui-grid.min.js" />
     <Content Include="app\rota\lib\underscore.min.js" />
     <Content Include="app\rota\lib\underscore.string.min.js" />
+    <Content Include="app\rota\lib\vfs_fonts.js" />
     <Content Include="app\rota\resources\nls\en-US\resources.js" />
     <Content Include="app\rota\resources\nls\resources.js" />
     <Content Include="app\rota\resources\nls\tr-tr\resources.js" />

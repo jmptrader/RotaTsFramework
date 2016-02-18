@@ -1,8 +1,9 @@
 ﻿//#region Imports
 import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
-    IGridOptions, IListModel} from "./interfaces"
+    IGridOptions, IListModel, IBaseListController} from "./interfaces"
 //deps
 import {BaseModelController} from "./basemodelcontroller"
+import * as _ from 'underscore';
 //#endregion
 
 //#region BaseListController
@@ -10,13 +11,14 @@ import {BaseModelController} from "./basemodelcontroller"
 /**
  * Base List Controller
  */
-abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter> extends BaseModelController<TModel>  {
+abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
+    extends BaseModelController<TModel> implements IBaseListController {
     //#region Props
     private static newItemFieldName = 'id';
     /**
      * List controller options
      */
-    protected listPageOptions: IListPageOptions;
+    listPageOptions: IListPageOptions;
 
     private _gridApi: uiGrid.IGridApi;
     /**
@@ -111,11 +113,16 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * Initialize grid
     */
     private initGrid(): void {
+        //get default options
         const options = this.getDefaultGridOptions();
+        //merge user-defined cols
         this.gridOptions = angular.extend(options, { columnDefs: this.getGridColumns(options) });
-        //default buttons
+        //add default button cols
         const defaultButtons = this.getDefaultGridButtons();
         this.gridOptions.columnDefs = this.gridOptions.columnDefs.concat(defaultButtons);
+        //set pagination
+        this.gridOptions.enablePagination =
+            this.gridOptions.enablePaginationControls = this.listPageOptions.pagingEnabled;
         //load initially if enabled
         if (this.listPageOptions.initialLoad) {
             this.initSearchModel();
@@ -126,7 +133,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      */
     protected getDefaultGridButtons(): uiGrid.IColumnDef[] {
         const buttons: uiGrid.IColumnDef[] = [];
-        const getButton = (name: string, template: string): any => {
+        const getButtonColumn = (name: string, template: string): any => {
             return {
                 name: name,
                 cellClass: 'col-align-center',
@@ -138,15 +145,15 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         }
         //edit button
         if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
-            const editbutton = getButton('edit-button',
+            const editbutton = getButtonColumn('edit-button',
                 '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])"' +
                 ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="glyphicon glyphicon-edit"></i></a>');
             buttons.push(editbutton);
         }
         //delete button
         if (this.gridOptions.showDeleteButton) {
-            const editbutton = getButton('delete-button', '<a class="btn btn-default btn-xs" ' +
-                'ng-click="grid.appScope.vm.deleteEntity(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])" uib-tooltip=\'Sil\'' +
+            const editbutton = getButtonColumn('delete-button', '<a class="btn btn-default btn-xs" ' +
+                'ng-click="grid.appScope.vm.initDeleteModel(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])" uib-tooltip=\'Sil\'' +
                 'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
             buttons.push(editbutton);
         }
@@ -192,18 +199,15 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             exporterPdfOrientation: 'portrait',
             exporterPdfPageSize: 'A4',
             exporterPdfMaxGridWidth: 450,
-            //exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
-            //Register
             onRegisterApi: gridApi => {
                 this.gridApi = gridApi;
-                //Paging
-                gridApi.pagination.on.paginationChanged(this.$scope, (currentPage: number, pageSize: number) => {
-                    this.initSearchModel({ currentPage: currentPage, pageSize: pageSize });
-                });
+                //register paging event if enabled
+                if (this.listPageOptions.pagingEnabled) {
+                    gridApi.pagination.on.paginationChanged(this.$scope, (currentPage: number, pageSize: number) => {
+                        this.initSearchModel({ currentPage: currentPage, pageSize: pageSize });
+                    });
+                }
             }
-            //rowTemplate: '<div style="background-color: aquamarine" ng-click="grid.appScope.goEditState(row)" ' +
-            //'ng-repeat="col in colContainer.renderedColumns track by col.colDef.name" ' +
-            //'class="ui-grid-cell" ui-grid-cell></div>'
         };
     }
     /**
@@ -230,6 +234,27 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
     //#region List Model methods
     /**
+     * Get model by key
+     * @param key Unique key
+     */
+    getModelItemByKey(key: string): TModel {
+        const filter = {};
+        filter[this.listPageOptions.newItemFieldName] = key;
+        return _.findWhere(this.gridData, filter);
+    }
+    /**
+     * Remove model item from grid datasource
+     * @param key Unique key
+     */
+    removeModelItemByKey(key: string): void {
+        const model = this.getModelItemByKey(key);
+        if (model) {
+            const index = this.gridData.indexOf(model);
+            //grid watch data changes
+            this.gridData.splice(index, 1);
+        }
+    }
+    /**
     * Starts getting model and binding
     * @param pager Paging pager
     */
@@ -251,16 +276,39 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * Go detail state with id param provided
     * @param id
     */
-    goToDetailState(id: string) {
+    goToDetailState(id: string): ng.IPromise<any> {
         return this.routing.go(this.listPageOptions.editState, id && { id: id });
     }
     /**
-     * Delete entity 
+     * Init deletion model by unique key
      * @param id Unique id
      */
-    deleteEntity(id: string): void {
-        throw new Error("unimplemented method exception");
+    protected initDeleteModel(id: string): ng.IPromise<any> {
+        if (id === undefined || id === null || !id) return undefined;
+
+        const confirmText = this.localization.getLocal('rota.deleteconfirm');
+        const confirmTitleText = this.localization.getLocal('rota.deleteconfirmtitle');
+        return this.dialogs.showConfirm({ message: confirmText, title: confirmTitleText }).then(() => {
+            //call delete model
+            const deleteResult = this.deleteModel(id);
+            //removal of model depends on whether result is promise or void
+            if (this.common.isPromise(deleteResult)) {
+                return deleteResult.then(() => {
+                    this.removeModelItemByKey(id);
+                });
+            }
+            this.removeModelItemByKey(id);
+        });
     }
+    /**
+     * Delete Model
+     * @param id Unique key
+     * @description Remove item from grid datasource.Must be overrided to implament your deletion logic and call super.deleteModel();
+     */
+    deleteModel(id: string): ng.IPromise<any> | void {
+        return undefined;
+    }
+
     //#endregion
 }
 //#endregion

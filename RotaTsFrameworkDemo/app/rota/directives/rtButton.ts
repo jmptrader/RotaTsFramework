@@ -3,6 +3,7 @@ import {ICommon} from '../services/common.interface';
 //#region Interfaces
 interface IButtonAttributes extends ng.IAttributes {
     iconToRight: boolean;
+    shortcut: string;
 }
 
 interface IButtonScope extends ng.IScope {
@@ -10,21 +11,34 @@ interface IButtonScope extends ng.IScope {
     caption: string;
     spin: string;
     icon: string;
-    doclick(e: ng.IAngularEvent): void;
+    doclick(e?: ng.IAngularEvent): void;
     click(e: ng.IAngularEvent): ng.IPromise<any> | any;
 }
 //#endregion
 
 //#region Directive
-function buttonDirective(timeout: ng.ITimeoutService, localization: ILocalization, common: ICommon) {
+function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.HotkeysProvider, localization: ILocalization, common: ICommon) {
     const pendingText = localization.getLocal('rota.lutfenbekleyiniz');
-    function link(scope: IButtonScope, element: ng.IAugmentedJQuery): void {
+    function link(scope: IButtonScope, element: ng.IAugmentedJQuery, attrs: IButtonAttributes): void {
         //get original items
         let orjText = scope.text;
         const orjIcon = scope.icon;
         scope.$watchGroup(['textI18n', 'text'], (data: any[]) => {
             orjText = scope.caption = data[1] || (data[0] && localization.getLocal(data[0]));
         });
+        //shortcut
+        if (angular.isDefined(attrs.shortcut)) {
+            hotkeys.bindTo(scope).add({
+                combo: attrs.shortcut,
+                description: orjText,
+                allowIn: ['INPUT', 'TEXTAREA', 'SELECT'],
+                callback: () => {
+                    if (!element.attr('disabled')) {
+                        scope.doclick();
+                    }
+                }
+            });
+        }
         //methods
         const setButtonAttrs = (caption: string, icon: string, showSpin?: boolean) => {
             scope.caption = caption;
@@ -66,7 +80,7 @@ function buttonDirective(timeout: ng.ITimeoutService, localization: ILocalizatio
     };
     return directive;
 }
-buttonDirective.$inject = ['$timeout', 'Localization', 'Common'];
+buttonDirective.$inject = ['$timeout', 'hotkeys', 'Localization', 'Common'];
 //#endregion
 
 //#region Register
@@ -84,5 +98,6 @@ module.run([
             'tooltip-placement="bottom">' +
             '<i ng-if="icon" ng-class="[\'fa\', \'fa-\' + icon,spin]"></i><span class="hidden-sm hidden-xs">' +
             '{{caption}}</span></a>');
-    }])
+    }
+]);
 //#endregion

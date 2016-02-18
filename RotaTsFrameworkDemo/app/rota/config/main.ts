@@ -25,7 +25,9 @@
         core: './app/rota/core',
         lib: './app/rota/lib',
         'rota-resources': './app/rota/resources',
-        'app-resources': './app/resources'
+        'app-resources': './app/resources',
+        pdfMake: './app/rota/lib/pdfMake.min',
+        vfs_fonts: './app/rota/lib/vfs_fonts'
     },
 
     //Set the config for the i18n
@@ -61,8 +63,15 @@
         'angular-animate': {
             deps: ['angular']
         },
+        pdfMake: {
+            exports: 'pdfMake'
+        },
+        vfs_fonts: {
+            exports: 'vfs_fonts',
+            deps: ['pdfMake']
+        },
         grid: {
-            deps: ['angular']
+            deps: ['angular', 'vfs_fonts']
         },
         hotkeys: {
             deps: ['angular']
