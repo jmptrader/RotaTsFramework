@@ -38,7 +38,7 @@ class BaseController {
         this.registerEvents();
     }
 
-    initBundle(bundle: IBundle): void {
+    protected initBundle(bundle: IBundle): void {
         this.$rootScope = bundle['$rootScope'];
         this.$q = bundle['$q'];
         this.$scope = bundle['$scope'];

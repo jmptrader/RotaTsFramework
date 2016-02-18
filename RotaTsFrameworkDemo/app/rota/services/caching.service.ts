@@ -72,7 +72,7 @@ class Caching implements ICaching {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.misc.caching', []);
+var module: ng.IModule = angular.module('rota.services.caching', []);
 module.service('Caching', Caching);
 //#endregion
 

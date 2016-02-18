@@ -311,7 +311,7 @@ class Dialogs implements IDialogs {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.misc.dialog', ['ui.bootstrap']);
+var module: ng.IModule = angular.module('rota.services.dialog', ['ui.bootstrap']);
 module.service('Dialogs', Dialogs);
 //#endregion
 

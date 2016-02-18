@@ -336,7 +336,7 @@ class Logger implements ILogger {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.log.service', ['rota.log.config']);
+var module: ng.IModule = angular.module('rota.services.log', ['rota.services.log.config']);
 module.service('Logger', Logger);
 //Config 
 module.config([

@@ -1,6 +1,8 @@
 ﻿//#region Imports
 import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
     IGridOptions, IListModel, IBaseListController} from "./interfaces"
+import {BadgeTypes} from '../services/titlebadges.service';
+import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 import * as _ from 'underscore';
@@ -15,6 +17,12 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     extends BaseModelController<TModel> implements IBaseListController {
     //#region Props
     private static newItemFieldName = 'id';
+
+    //#region Bundle Services
+    titlebadges: ITitleBadges;
+    uigridconstants: uiGrid.IUiGridConstants;
+    //#endregion
+
     /**
      * List controller options
      */
@@ -53,8 +61,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      */
     get filter(): IBaseListModelFilter { return this._filter; }
     set filter(value: IBaseListModelFilter) { this._filter = value; }
+    /**
+     * Recourd count badge
+     * @returns {ITitleBadge}
+     */
+    get recordcountBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Recordcount]; }
     //#endregion
 
+    //#region Init
     constructor(bundle: IBundle, options?: IListPageOptions) {
         super(bundle);
 
@@ -63,9 +77,22 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             pagingEnabled: true,
             newItemFieldName: BaseListController.newItemFieldName
         }, options);
-
+        //reset badges
+        this.recordcountBadge.show = true;
+        //set grid features
         this.initGrid();
     }
+    /**
+     * Update bundle
+     * @param bundle IBundle
+     */
+    initBundle(bundle: IBundle): void {
+        super.initBundle(bundle);
+
+        this.titlebadges = bundle["titlebadges"];
+        this.uigridconstants = bundle["uigridconstants"];
+    }
+    //#endregion
 
     //#region BaseModelController methods
     /**
@@ -92,19 +119,18 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @param model Model
      */
     protected loadedModel(model: IListModel<TModel> | IPagingListModel<TModel>): void {
-        let noData = model === undefined || model === null;
-
-        if (!noData) {
+        let recCount = 0;
+        if (model) {
             if (this.listPageOptions.pagingEnabled) {
-                noData = (<IPagingListModel<TModel>>model).data.length === 0;
+                recCount = (<IPagingListModel<TModel>>model).total;
             } else {
-                noData = (<IListModel<TModel>>model).length === 0;
+                recCount = (<IListModel<TModel>>model).length;
             }
         }
-
-        if (noData) {
+        if (recCount === 0) {
             this.toastr.warn({ message: this.localization.getLocal("rota.kayitbulunamadi") });
         }
+        this.recordcountBadge.description = recCount.toString();
     }
     //#endregion
 
@@ -207,6 +233,10 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
                         this.initSearchModel({ currentPage: currentPage, pageSize: pageSize });
                     });
                 }
+                //register datachanges
+                gridApi.grid.registerDataChangeCallback((grid: uiGrid.IGridInstanceOf<any>) => {
+                    this.recordcountBadge.description = this.gridData.length.toString();
+                }, [this.uigridconstants.dataChange.ROW]);
             }
         };
     }

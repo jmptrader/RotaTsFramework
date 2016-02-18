@@ -4,34 +4,20 @@ import "./dialogs.service"
 import "./common.service"
 import "./caching.service"
 import "./localization.service"
-import "./interceptors"
+import "./interceptors.service"
+import "./titlebadges.service"
 
-//Register Logger
-angular.module('rota.services.log',
-    [
-        'rota.log.service'
-    ]);
-
-//Register Routing
-angular.module('rota.services.routing',
-    [
-        'rota.routing.service'
-    ]);
-//Register UI
-angular.module('rota.services.misc',
-    [
-        'rota.misc.common',
-        'rota.misc.dialog',
-        'rota.misc.httpRequestTracker',
-        'rota.misc.caching',
-        'rota.misc.localization'
-    ]);
-//Rota module index
+//service module index
 angular.module('rota.services',
     [
         'rota.services.log',
-        'rota.services.routing',
-        'rota.services.misc'
+        'rota.services.common',
+        'rota.services.dialog',
+        'rota.services.httpRequestTracker',
+        'rota.services.caching',
+        'rota.services.localization',
+        'rota.services.titlebadges',
+        'rota.services.routing'
     ]);
 
 

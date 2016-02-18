@@ -84,7 +84,7 @@ errorHttpInterceptorService.$inject = ['$q', 'Logger'];
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.misc.httpRequestTracker', []);
+var module: ng.IModule = angular.module('rota.services.httpRequestTracker', []);
 module.factory('httpAjaxInterceptor', httpRequestTrackerService)
     .factory('errorHttpInterceptor', errorHttpInterceptorService)
     .config(['$httpProvider', ($httpProvider: ng.IHttpProvider) => {

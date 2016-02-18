@@ -12,8 +12,8 @@ class RotaApp implements IRotaApp {
     private controllerProvider: angular.IControllerProvider;
     private provideService: angular.auto.IProvideService;
 
-    private static defaultControllerSystemDependencies = ['$rootScope', '$scope', '$q', '$http', '$window', '$stateParams'];
-    private static defaultControllerDependencies = ['Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization'];
+    private static defaultControllerSystemDependencies = ['$rootScope', '$scope', '$q', '$http', '$window', '$stateParams', 'uiGridConstants'];
+    private static defaultControllerDependencies = ['Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization', 'TitleBadges'];
     //#endregion
 
     constructor(moduleName: string) {
@@ -43,14 +43,16 @@ class RotaApp implements IRotaApp {
                 '$http': args[3],
                 '$window': args[4],
                 '$stateParams': args[5],
-                'logger': args[6],
-                'common': args[7],
-                'dialogs': args[8],
-                'routing': args[9],
-                'config': args[10],
-                'localization': args[11]
+                'uigridconstants': args[6],
+                'logger': args[7],
+                'common': args[8],
+                'dialogs': args[9],
+                'routing': args[10],
+                'config': args[11],
+                'localization': args[12],
+                'titlebadges': args[13]
             }
-            var instance: BaseController = new controller(bundle, args[12]);
+            var instance: BaseController = new controller(bundle, args[14]);
             //Instance'i dondur
             return instance;
         }; //Fonksiyonu son obje olarak dizinin sonuna ekle

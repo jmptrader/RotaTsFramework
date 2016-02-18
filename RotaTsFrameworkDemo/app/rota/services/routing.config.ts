@@ -26,7 +26,7 @@ class RouteConfig extends BaseConfig<IRouteConfig> {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.routing.config', []);
+var module: ng.IModule = angular.module('rota.services.routing.config', []);
 module.provider('RouteConfig', RouteConfig);
 //#endregion
 

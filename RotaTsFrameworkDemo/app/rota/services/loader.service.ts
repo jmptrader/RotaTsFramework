@@ -5,11 +5,12 @@ import {IRouteConfig} from "./routing.interface";
 import './loader.config';
 //#endregion
 
+//#region Loader Service
+
 /**
  * Controller File Loader Service
  */
 class Loader implements ILoader {
-    //#region Props
     serviceName: string = "Loader Service";
     //states
     static $inject = ['LoaderConfig', 'RouteConfig'];
@@ -47,8 +48,10 @@ class Loader implements ILoader {
         };
     }
 }
+//#endregion
+
 //#region Register
-var module: ng.IModule = angular.module('rota.loader.service', ['rota.loader.config']);
+var module: ng.IModule = angular.module('rota.services.loader', ['rota.services.loader.config']);
 module.service('Loader', Loader);
 //#endregion
 

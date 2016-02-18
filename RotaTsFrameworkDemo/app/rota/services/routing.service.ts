@@ -363,7 +363,7 @@ config.$inject = ['$provide', '$stateProvider', '$urlRouterProvider'];
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.routing.service', ['rota.routing.config', 'rota.loader.service', 'ui.router']);
+var module: ng.IModule = angular.module('rota.services.routing', ['rota.services.routing.config', 'rota.services.loader', 'ui.router']);
 
 module.service('Routing', Routing)
     .config(config);

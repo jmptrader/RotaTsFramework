@@ -3,8 +3,8 @@ import {ICommon, IRotaRootScope} from '../services/common.interface';
 import {IRouting, IBreadcrumb, IHierarchicalMenuItem} from '../services/routing.interface';
 import {IMainConfig} from '../config/config.interface';
 import {INotification, INotify, ILogger} from '../services/logger.interface';
-import {IBadge, BadgeType} from './shell.interface';
-//Dependencies
+import {ITitleBadges, ITitleBadge} from '../services/titlebadges.interface';
+//deps
 import "../services/routing.service";
 import "../config/config";
 import "../services/logger.service";
@@ -25,6 +25,14 @@ class ShellController {
      */
     private _notifications: INotify[];
     get notifications(): INotify[] { return this._notifications; }
+
+    /**
+     * Title Badges
+     */
+    private _badges: ITitleBadge[];
+    get badges(): ITitleBadge[] { return this._badges; }
+    set badges(value: ITitleBadge[]) { this._badges = value; }
+
     /**
      * Ajax spinner options
      */
@@ -40,24 +48,20 @@ class ShellController {
    */
     private _activeMenu: IHierarchicalMenuItem;
     get activeMenu(): IHierarchicalMenuItem { return this._activeMenu; }
-    /**
-     * Menu badges
-     */
-    private _badges: IBadge[];
-    get badges(): IBadge[] { return this._badges; }
 
-    static $inject = ['$rootScope', '$scope', 'Routing', 'Config', 'Logger'];
+    static $inject = ['$rootScope', '$scope', 'Routing', 'Config', 'Logger', 'TitleBadges'];
     constructor(private $rootScope: IRotaRootScope,
         private $scope: ng.IScope,
         private routing: IRouting,
         private config: IMainConfig,
-        private logger: ILogger) {
+        private logger: ILogger,
+        private titleBadges: ITitleBadges) {
         //init settings
         this.setSpinner();
         this.setNotificationListener();
         this.setBreadcrumbListener();
         this.setActiveMenuListener();
-        this.initBadgerItems();
+        this.setTitleBadgesListener();
         //forms availablty in modal
         $rootScope.forms = {};
         $rootScope.isCollapsed = true;
@@ -124,44 +128,17 @@ class ShellController {
             this.$rootScope.appTitle = menu ? (projectTitle + ' ' + menu.title) : projectTitle;
         });
     }
-    /**
-   * Init menu badge items
-   */
-    private initBadgerItems() {
-        this.$rootScope.$on(this.config.eventNames.badgeChanged, (event: ng.IAngularEvent, badge: BadgeType, show: boolean) => {
-            this._badges[badge].show = show;
-        });
-        this._badges = [
-            {
-                color: 'info',
-                icon: 'edit',
-                text: 'kayitduzeltme' //localization.get('rota.kayitduzeltme')
-            },
-            //Form New Item Mode
-            {
-                color: 'info',
-                icon: 'plus',
-                text: 'yenikayit' //localization.get('rota.yenikayit')
-            },
-            //Form Invalid
-            {
-                color: 'danger',
-                icon: 'exclamation',
-                tooltip: 'zorunlualanlarvar' //localization.get('rota.zorunlualanlarvar')
-            },
-            //Form Editing Started
-            {
-                color: 'success',
-                icon: 'pencil',
-                tooltip: 'duzeltiliyor' //localization.get('rota.duzeltiliyor')
-            },
-            //List record count
-            {
-                color: 'success',
-                icon: 'check',
-                tooltip: 'kayitsayisi' //localization.get('rota.kayitsayisi')
+
+    private setTitleBadgesListener() {
+        this.$scope.$watch(() => this.titleBadges.badges, (newValue: ITitleBadge[]) => {
+            if (newValue) {
+                this.badges = newValue;
             }
-        ];
+        }, true);
+
+        this.$rootScope.$on(this.config.eventNames.menuChanged, () => {
+            this.titleBadges.clearBadges();
+        });
     }
     /**
     * Refresh state

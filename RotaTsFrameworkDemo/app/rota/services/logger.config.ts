@@ -8,8 +8,7 @@ import * as toastr from "toastr";
 //#region RouteConfig
 class LoggerConfig extends BaseConfig<ILoggerConfig> {
     constructor() {
-        var config: ILoggerConfig = {}; 
-        //$Log service enabled
+        const config: ILoggerConfig = {}; //$Log service enabled
         config.debugEnabled = true;
         //toastr common settings
         toastr.options.timeOut = 2000;
@@ -31,8 +30,8 @@ class LoggerConfig extends BaseConfig<ILoggerConfig> {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.log.config', []);
+var module: ng.IModule = angular.module('rota.services.log.config', []);
 module.provider('LoggerConfig', LoggerConfig);
 //#endregion
 
-export {LoggerConfig, ILoggerConfig}
+export {LoggerConfig}

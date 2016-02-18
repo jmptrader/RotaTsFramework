@@ -304,8 +304,10 @@
     <TypeScriptCompile Include="app\rota\services\common.service.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.service.ts" />
+    <TypeScriptCompile Include="app\rota\services\titlebadges.interface.ts" />
+    <TypeScriptCompile Include="app\rota\services\titlebadges.service.ts" />
     <TypeScriptCompile Include="app\rota\services\index.ts" />
-    <TypeScriptCompile Include="app\rota\services\interceptors.ts" />
+    <TypeScriptCompile Include="app\rota\services\interceptors.service.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\loader.service.ts" />
     <TypeScriptCompile Include="app\rota\services\localization.interface.ts" />
@@ -319,7 +321,6 @@
     <TypeScriptCompile Include="app\rota\services\routing.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\service.interface.ts" />
     <TypeScriptCompile Include="app\rota\shell\shell.controller.ts" />
-    <TypeScriptCompile Include="app\rota\shell\shell.interface.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
     <TypeScriptCompile Include="app\todo\todo.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />

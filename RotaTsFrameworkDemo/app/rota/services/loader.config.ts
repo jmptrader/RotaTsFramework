@@ -18,7 +18,7 @@ class LoaderConfig extends BaseConfig<ILoaderConfig> {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.loader.config', []);
+var module: ng.IModule = angular.module('rota.services.loader.config', []);
 module.provider('LoaderConfig', LoaderConfig);
 //#endregion
 

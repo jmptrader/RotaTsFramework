@@ -103,7 +103,7 @@ class Common implements ICommon {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.misc.common', [])
+var module: ng.IModule = angular.module('rota.services.common', [])
     .service('Common', Common);
 //#endregion
 
