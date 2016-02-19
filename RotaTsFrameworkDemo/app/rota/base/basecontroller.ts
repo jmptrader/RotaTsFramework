@@ -12,10 +12,17 @@ import {ILocalization} from '../services/localization.interface';
 //#region BaseController
 class BaseController {
     //#region Props
-    //services
+    get notification(): IBaseLogger { return this.logger.notification; }
+    get toastr(): IBaseLogger { return this.logger.toastr; }
+    get console(): IBaseLogger { return this.logger.console; }
+    protected registeredEvents: Function[];
+    //#endregion
+
+    //#region Bundle Services
+    static injects = ['$rootScope', '$scope', '$window', '$stateParams',
+        'Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization'];
+
     protected $rootScope: IRotaRootScope;
-    protected $q: ng.IQService;
-    protected $http: ng.IHttpService;
     protected $scope: ng.IScope;
     protected $window: ng.IWindowService;
     protected $stateParams: ng.ui.IStateParamsService;
@@ -25,34 +32,32 @@ class BaseController {
     protected config: IMainConfig;
     protected routing: IRouting;
     protected localization: ILocalization;
-    //shortcuts for loggers
-    get notification(): IBaseLogger { return this.logger.notification; }
-    get toastr(): IBaseLogger { return this.logger.toastr; }
-    get console(): IBaseLogger { return this.logger.console; }
-    //registered events for off methods while scope destroying
-    protected registeredEvents: Function[];
     //#endregion
 
+    //#region Init
     constructor(bundle: IBundle, ...args: any[]) {
         this.initBundle(bundle);
         this.registerEvents();
     }
 
     protected initBundle(bundle: IBundle): void {
+        //system
         this.$rootScope = bundle['$rootScope'];
-        this.$q = bundle['$q'];
         this.$scope = bundle['$scope'];
-        this.$http = bundle['$http'];
+        this.$window = bundle["$window"];
+        this.$stateParams = bundle["$stateParams"];
+        //rota
         this.logger = bundle["logger"];
         this.common = bundle["common"];
         this.dialogs = bundle["dialogs"];
-        this.$stateParams = bundle["$stateParams"];
-        this.$window = bundle["$window"];
         this.config = bundle["config"];
         this.routing = bundle["routing"];
         this.localization = bundle["localization"];
     }
 
+    //#endregion
+
+    //#region BaseController Methods
     registerEvent(eventName: string, fn: () => void): void {
         const offFn = this.$scope.$on(eventName, fn);
         this.registeredEvents.push(offFn);
@@ -69,6 +74,9 @@ class BaseController {
         //});
         //this.registeredEvents = [];
     }
+
+    //#endregion
+
 }
 //#endregion
 

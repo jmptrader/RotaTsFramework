@@ -17,12 +17,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     extends BaseModelController<TModel> implements IBaseListController {
     //#region Props
     private static newItemFieldName = 'id';
-
-    //#region Bundle Services
-    titlebadges: ITitleBadges;
-    uigridconstants: uiGrid.IUiGridConstants;
-    //#endregion
-
     /**
      * List controller options
      */
@@ -68,6 +62,12 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     get recordcountBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Recordcount]; }
     //#endregion
 
+    //#region Bundle Services
+    static injects = BaseModelController.injects.concat(['TitleBadges', 'uiGridConstants']);
+    protected titlebadges: ITitleBadges;
+    protected uigridconstants: uiGrid.IUiGridConstants;
+    //#endregion
+
     //#region Init
     constructor(bundle: IBundle, options?: IListPageOptions) {
         super(bundle);
@@ -77,7 +77,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             pagingEnabled: true,
             newItemFieldName: BaseListController.newItemFieldName
         }, options);
-        //reset badges
+
         this.recordcountBadge.show = true;
         //set grid features
         this.initGrid();

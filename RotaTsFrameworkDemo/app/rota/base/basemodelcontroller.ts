@@ -16,9 +16,29 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     set model(value: TModel | IListModel<TModel> | IPagingListModel<TModel>) { this._model = value; }
     //#endregion
 
+    //#region Bundle Services
+    protected $q: ng.IQService;
+    protected $http: ng.IHttpService;
+    static injects = BaseController.injects.concat(['$q', '$http']);
+    //#endregion
+
+    //#region Init
     constructor(bundle: IBundle) {
         super(bundle);
     }
+    /**
+    * Update bundle
+    * @param bundle IBundle
+    */
+    initBundle(bundle: IBundle): void {
+        super.initBundle(bundle);
+
+        this.$q = bundle['$q'];
+        this.$http = bundle['$http'];
+    }
+    //#endregion
+
+    //#region BaseModelController Methods
     /**
      * @abstract Abstract get model method
      * @param args Optional params
@@ -71,6 +91,7 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
             this.errorModel(reason);
         });
     }
+    //#endregion
 }
 
 //#endregion

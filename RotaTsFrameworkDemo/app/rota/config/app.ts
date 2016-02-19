@@ -32,32 +32,21 @@ class RotaApp implements IRotaApp {
      * @param dependencies Dependencies 
      */
     addController(controllerName: string, controller: typeof BaseController, ...dependencies: string[]): void {
-        //merge all deps
-        const deps = new Array<any>().concat(RotaApp.defaultControllerSystemDependencies,
-            RotaApp.defaultControllerDependencies, dependencies || []);
+        const deps = new Array<any>().concat(controller.injects, dependencies || []);
         const controllerCtor: Function = (...args: any[]): BaseController => {
-            var bundle: { [s: string]: any; } = {
-                '$rootScope': args[0],
-                '$scope': args[1],
-                '$q': args[2],
-                '$http': args[3],
-                '$window': args[4],
-                '$stateParams': args[5],
-                'uigridconstants': args[6],
-                'logger': args[7],
-                'common': args[8],
-                'dialogs': args[9],
-                'routing': args[10],
-                'config': args[11],
-                'localization': args[12],
-                'titlebadges': args[13]
+            const bundle: { [s: string]: any; } = {}
+            //system deps into bundle
+            let i: number;
+            for (i = 0; i < controller.injects.length; i++) {
+                const serviceName = controller.injects[i];
+                bundle[serviceName.toLowerCase()] = args[i];
             }
-            var instance: BaseController = new controller(bundle, args[14]);
-            //Instance'i dondur
+            const instance = new controller(bundle, args[i], args[i + 1], args[i + 2], args[i + 3], args[i + 4]);
             return instance;
-        }; //Fonksiyonu son obje olarak dizinin sonuna ekle
+        };
+        //add ctor
         deps.push(controllerCtor);
-        //Register et
+        //register
         this.controllerProvider.register(controllerName, deps);
     }
 
