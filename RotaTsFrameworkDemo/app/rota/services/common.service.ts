@@ -1,4 +1,5 @@
 ﻿//#region Imports
+import {IBaseCrudModel, ModelStates, IBaseModel} from "../base/interfaces"
 import {ICommon} from './common.interface';
 import {IRouteConfig} from './routing.config'
 
@@ -12,7 +13,7 @@ class Common implements ICommon {
     static $inject = ['$q'];
     constructor(private $q: ng.IQService) { }
 
-    //#region Promise Stuff
+    //#region Promise Utils
     /**
      * Return promise with provided arg
      * @param p Arg
@@ -96,6 +97,51 @@ class Common implements ICommon {
             return path;
         else
             return '/' + path;
+    }
+    //#endregion
+
+    //#region Model Utils
+    /**
+     * Check whether model is valid baseModel
+     * @param model
+     */
+    isModel(model: any): model is IBaseModel {
+        return model.id !== undefined && model.id !== null;
+    }
+    /**
+     * Check whether model is valid crudModel
+     * @param model
+     */
+    isCrudModel(model: any): model is IBaseCrudModel {
+        return this.isModel(model) && model.modelState !== undefined && model.modelState !== null;
+    }
+
+    //Set model state
+    setModelState(model: IBaseCrudModel, state: ModelStates, includeChildArray: boolean = true): IBaseCrudModel {
+        if (!model) return undefined;
+
+        if (model.modelState === state ||
+            (state === ModelStates.Modified && model.modelState !== ModelStates.Unchanged)) {
+            return model;
+        }
+        model.modelState = state;
+
+        if (includeChildArray) {
+            for (let prop in model) {
+                if (model.hasOwnProperty(prop)) {
+                    const p = model[prop];
+                    if (angular.isArray(p)) {
+                        angular.forEach(p, (item: IBaseCrudModel) => {
+                            if (item.modelState !== state) {
+                                this.setModelState(item, state, includeChildArray);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        return model;
     }
     //#endregion
 }

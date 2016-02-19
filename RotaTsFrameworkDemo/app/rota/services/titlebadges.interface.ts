@@ -13,4 +13,4 @@ interface ITitleBadges extends IBaseService {
     clearBadges(): void;
 }
 
-export {ITitleBadge, ITitleBadges}
+export {ITitleBadge,ITitleBadges}

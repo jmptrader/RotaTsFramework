@@ -11,11 +11,9 @@ class RotaApp implements IRotaApp {
     rotaModule: angular.IModule;
     private controllerProvider: angular.IControllerProvider;
     private provideService: angular.auto.IProvideService;
-
-    private static defaultControllerSystemDependencies = ['$rootScope', '$scope', '$q', '$http', '$window', '$stateParams', 'uiGridConstants'];
-    private static defaultControllerDependencies = ['Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization', 'TitleBadges'];
     //#endregion
 
+    //#region Init
     constructor(moduleName: string) {
         this.rotaModule = angular.module(moduleName, ["rota"]);
 
@@ -25,6 +23,10 @@ class RotaApp implements IRotaApp {
             this.provideService = $provide;
         });
     }
+
+    //#endregion
+
+    //#region App Methods
     /**
      * Add controller with dependencies
      * @param controllerName Controller name
@@ -78,6 +80,8 @@ class RotaApp implements IRotaApp {
         this.rotaModule.run(fn);
         return this;
     }
+
+    //#endregion
 }
 //Instance of rota app
 var rotaApp: IRotaApp = new RotaApp("rota-app");

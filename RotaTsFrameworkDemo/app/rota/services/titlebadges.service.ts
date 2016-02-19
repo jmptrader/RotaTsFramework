@@ -1,6 +1,12 @@
-﻿import {ITitleBadge, ITitleBadges} from './titlebadges.interface';
+﻿//#region Imports
+import {ITitleBadge, ITitleBadges} from './titlebadges.interface';
 import {ILocalization} from './localization.interface';
+//#endregion
 
+//#region TitleBadge Service
+/**
+ * Badge Types
+ */
 export enum BadgeTypes {
     Editmode,
     Newmode,
@@ -9,16 +15,23 @@ export enum BadgeTypes {
     Recordcount,
     Selectedcount
 }
-
+/**
+ * TitleBadge Service
+ */
 class TitleBadges implements ITitleBadges {
+    //#region Props
     serviceName = "TitleBadges Service";
     badges: { [index: number]: ITitleBadge };
+    //#endregion
 
+    //#region Init
     static $inject = ['Localization'];
     constructor(private localization: ILocalization) {
         this.initBadges();
     }
-
+    /**
+     * Create all badges
+     */
     private initBadges(): void {
         this.badges = {};
 
@@ -52,13 +65,22 @@ class TitleBadges implements ITitleBadges {
             tooltip: this.localization.getLocal('rota.kayitsayisi')
         };
     }
+    //#endregion
 
+    //#region Methods
+    /**
+     * Hide all badges 
+     */
     clearBadges(): void {
         for (let i = BadgeTypes.Editmode; i < BadgeTypes.Selectedcount; i++) {
             this.badges[i].show = false;
         }
     }
+
+    //#endregion
 }
+
+//#endregion
 
 //#region Register
 var module: ng.IModule = angular.module('rota.services.titlebadges', []);

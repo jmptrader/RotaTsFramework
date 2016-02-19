@@ -16,7 +16,6 @@ import * as _ from 'underscore';
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
     extends BaseModelController<TModel> implements IBaseListController {
     //#region Props
-    private static newItemFieldName = 'id';
     /**
      * List controller options
      */
@@ -63,9 +62,10 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseModelController.injects.concat(['TitleBadges', 'uiGridConstants']);
+    static injects = BaseModelController.injects.concat(['TitleBadges', 'uiGridConstants', 'uiGridExporterConstants']);
     protected titlebadges: ITitleBadges;
     protected uigridconstants: uiGrid.IUiGridConstants;
+    protected uigridexporterconstants: uiGrid.exporter.IUiGridExporterConstants;
     //#endregion
 
     //#region Init
@@ -74,8 +74,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
         this.listPageOptions = angular.extend({
             initialLoad: true,
-            pagingEnabled: true,
-            newItemFieldName: BaseListController.newItemFieldName
+            pagingEnabled: true
         }, options);
 
         this.recordcountBadge.show = true;
@@ -91,6 +90,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
         this.titlebadges = bundle["titlebadges"];
         this.uigridconstants = bundle["uigridconstants"];
+        this.uigridexporterconstants = bundle["uigridexporterconstants"];
     }
     //#endregion
 
@@ -172,14 +172,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         //edit button
         if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
             const editbutton = getButtonColumn('edit-button',
-                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])"' +
+                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity["id"])"' +
                 ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="glyphicon glyphicon-edit"></i></a>');
             buttons.push(editbutton);
         }
         //delete button
         if (this.gridOptions.showDeleteButton) {
             const editbutton = getButtonColumn('delete-button', '<a class="btn btn-default btn-xs" ' +
-                'ng-click="grid.appScope.vm.initDeleteModel(row.entity[\'' + this.listPageOptions.newItemFieldName + '\'])" uib-tooltip=\'Sil\'' +
+                'ng-click="grid.appScope.vm.initDeleteModel(row.entity["id"])" uib-tooltip=\'Sil\'' +
                 'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
             buttons.push(editbutton);
         }
@@ -258,7 +258,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @param {string} colTypes which columns to export, valid values are uiGridExporterConstants.ALL,
      */
     exportGrid(rowType: string, colTypes: string): void {
-        this.gridApi.exporter[colTypes](rowType, 'all');
+        this.gridApi.exporter[colTypes](rowType, this.uigridexporterconstants.ALL);
     }
     //#endregion
 
@@ -268,9 +268,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @param key Unique key
      */
     getModelItemByKey(key: string): TModel {
-        const filter = {};
-        filter[this.listPageOptions.newItemFieldName] = key;
-        return _.findWhere(this.gridData, filter);
+        return _.findWhere(this.gridData, { id: key });
     }
     /**
      * Remove model item from grid datasource

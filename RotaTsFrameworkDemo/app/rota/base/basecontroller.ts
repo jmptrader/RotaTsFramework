@@ -12,10 +12,26 @@ import {ILocalization} from '../services/localization.interface';
 //#region BaseController
 class BaseController {
     //#region Props
+    rtForm: ng.IFormController;
+    /**
+     * Notification Service
+     * @returns {IBaseLogger}
+     */
     get notification(): IBaseLogger { return this.logger.notification; }
+    /**
+     * Toastr Service
+     * @returns {IBaseLogger}
+     */
     get toastr(): IBaseLogger { return this.logger.toastr; }
+    /**
+     * Console Service
+     * @returns {IBaseLogger}
+     */
     get console(): IBaseLogger { return this.logger.console; }
-    protected registeredEvents: Function[];
+    /**
+     * Registered events to store off-callbacks
+     */
+    protected events: Function[];
     //#endregion
 
     //#region Bundle Services
@@ -39,7 +55,10 @@ class BaseController {
         this.initBundle(bundle);
         this.registerEvents();
     }
-
+    /**
+     * Init bundle
+     * @param bundle
+     */
     protected initBundle(bundle: IBundle): void {
         //system
         this.$rootScope = bundle['$rootScope'];
@@ -58,23 +77,27 @@ class BaseController {
     //#endregion
 
     //#region BaseController Methods
+    /**
+     * Register the event
+     * @param eventName EventName
+     * @param fn Function
+     */
     registerEvent(eventName: string, fn: () => void): void {
         const offFn = this.$scope.$on(eventName, fn);
-        this.registeredEvents.push(offFn);
+        this.events.push(offFn);
     }
-
+    /**
+     * off the bindgins
+     */
     registerEvents(): void {
-        this.registeredEvents = [];
-        this.registerEvent("$destroy", this.destroy);
+        this.events = [];
+        this.registerEvent("$destroy", () => {
+            this.events.forEach(fn => {
+                fn();
+                this.events = [];
+            });
+        });
     }
-
-    destroy(): void {
-        //this.registeredEvents.forEach(fn => {
-        //    fn();
-        //});
-        //this.registeredEvents = [];
-    }
-
     //#endregion
 
 }

@@ -7,7 +7,6 @@ interface IBundle {
 
 //#endregion
 
-
 //#region Main Base Classes
 
 interface IBaseConfig {
@@ -36,7 +35,16 @@ interface IBaseModel {
     id: number;
 }
 
+enum ModelStates {
+    Detached = 1,
+    Unchanged = 2,
+    Added = 4,
+    Deleted = 8,
+    Modified = 16
+}
+
 interface IBaseCrudModel extends IBaseModel {
+    modelState?: ModelStates;
 }
 
 interface IListModel<TModel extends IBaseModel> extends Array<TModel> {
@@ -48,8 +56,15 @@ interface IPagingListModel<TModel extends IBaseModel> {
 }
 //#endregion
 
-//#region ListController Stuffs
-interface IBaseListController {
+//#region BaseController
+
+interface IBaseController {
+
+}
+//#endregion
+
+//#region BaseListController 
+interface IBaseListController extends IBaseController {
     listPageOptions: IListPageOptions;
     goToDetailState(id?: string): ng.IPromise<any>;
 }
@@ -76,11 +91,35 @@ interface IListPageOptions {
 }
 //#endregion
 
-interface IModelStateParams extends ng.ui.IStateParamsService {
-    id: number;
+//#region BaseCrudController
+
+interface IBaseCrudModelFilter extends IBaseModelFilter {
+    id: number | string;
 }
+
+interface IBaseCrudController extends IBaseController {
+
+}
+
+interface IModelStateParams extends ng.ui.IStateParamsService {
+    id: number | string;
+}
+
+interface ICrudPageFlags {
+    isSaving: boolean,
+    isDeleting: boolean,
+    isCloning: boolean;
+    isNew: boolean;
+}
+
+interface ICrudPageOptions {
+    newItemFieldName?: string;
+}
+
+//#endregion
+
 
 export {IBundle, IBaseModel, IBaseCrudModel, ICacheableModel,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
-IGridOptions, IListModel, IBaseListController}
+IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags, ModelStates, IBaseCrudModelFilter}

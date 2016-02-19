@@ -49,7 +49,7 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * Update model after fetching data
      * @param model Model
      */
-    protected updateModel(model: TModel | IListModel<TModel> | IPagingListModel<TModel>): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
+    updateModel(model: TModel | IListModel<TModel> | IPagingListModel<TModel>): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
         const updatedModel = this.setModel(model);
         return this.common.makePromise(updatedModel).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
             if (data) {
@@ -83,8 +83,9 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * Initiates getting data
      * @param args Optional params
      */
-    protected initModel(modelFilter: IBaseModelFilter): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
+    public initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
         const model = this.getModel(modelFilter);
+
         return this.common.makePromise(model).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
             return this.updateModel(data);
         }, (reason: any) => {
