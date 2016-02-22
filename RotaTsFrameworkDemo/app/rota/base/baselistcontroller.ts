@@ -59,6 +59,11 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @returns {ITitleBadge}
      */
     get recordcountBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Recordcount]; }
+    /**
+     * Selected Recourd count badge
+     * @returns {ITitleBadge}
+     */
+    get selectedcountBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Selectedcount]; }
     //#endregion
 
     //#region Bundle Services
@@ -172,14 +177,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         //edit button
         if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
             const editbutton = getButtonColumn('edit-button',
-                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity["id"])"' +
+                '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'id\'])"' +
                 ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="glyphicon glyphicon-edit"></i></a>');
             buttons.push(editbutton);
         }
         //delete button
         if (this.gridOptions.showDeleteButton) {
             const editbutton = getButtonColumn('delete-button', '<a class="btn btn-default btn-xs" ' +
-                'ng-click="grid.appScope.vm.initDeleteModel(row.entity["id"])" uib-tooltip=\'Sil\'' +
+                'ng-click="grid.appScope.vm.initDeleteModel(row.entity[\'id\'])" uib-tooltip=\'Sil\'' +
                 'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
             buttons.push(editbutton);
         }
@@ -237,6 +242,17 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
                 gridApi.grid.registerDataChangeCallback((grid: uiGrid.IGridInstanceOf<any>) => {
                     this.recordcountBadge.description = this.gridData.length.toString();
                 }, [this.uigridconstants.dataChange.ROW]);
+                //register selection changes
+                const selChangedFn = () => {
+                    this.selectedcountBadge.show = !!this.gridSeletedRows.length;
+                    this.selectedcountBadge.description = this.gridSeletedRows.length.toString();
+                }
+                gridApi.selection.on.rowSelectionChanged(this.$scope, row => {
+                    selChangedFn();
+                });
+                gridApi.selection.on.rowSelectionChangedBatch(this.$scope, rows => {
+                    selChangedFn();
+                });
             }
         };
     }

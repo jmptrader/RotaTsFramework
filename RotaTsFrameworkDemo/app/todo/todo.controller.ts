@@ -1,6 +1,6 @@
 ﻿import {App} from "app/rota/config/app";
 import {BaseCrudController} from "app/rota/base/basecrudcontroller";
-import {IBundle} from 'app/rota/base/interfaces';
+import {IBundle, IBaseCrudModelFilter} from 'app/rota/base/interfaces';
 
 import {ITodoModel} from "./todos.models";
 import {ITodoApi} from "./todos.service";
@@ -33,8 +33,8 @@ class TodoController extends BaseCrudController<ITodoModel> {
         });
     }
 
-    getModel(): ng.IPromise<ITodoModel> {
-        return this.todoApi.getTodoById(this.$stateParams.id);
+    getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<ITodoModel> {
+        return this.todoApi.getTodoById(modelFilter.id);
     }
 }
 

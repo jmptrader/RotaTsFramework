@@ -185,7 +185,7 @@ class Notification implements INotification {
      * Remove all registered notifications
      * @param includeSticky Include sticky flag
      */
-    removeAll(includeSticky: boolean): void {
+    removeAll(includeSticky?: boolean): void {
         this.notifications[NotifyType.RouteCurrent].length = 0;
         this.notifications[NotifyType.RouteNext].length = 0;
         //Include sticky norifications

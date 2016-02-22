@@ -54,8 +54,6 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         return this.common.makePromise(updatedModel).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
             if (data) {
                 this.model = data;
-                //fire model loaded event
-                this.loadedModel(data);
             }
             return data;
         });
@@ -79,15 +77,23 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      */
     protected loadedModel(model: TModel | IListModel<TModel> | IPagingListModel<TModel>): void {
     }
+
+
+    defineModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<IListModel<TModel>> |
+        IListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel> {
+        return this.getModel(modelFilter);
+    }
     /**
      * Initiates getting data
      * @param args Optional params
      */
-    public initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
-        const model = this.getModel(modelFilter);
-
+    protected initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
+        const model = this.defineModel(modelFilter);
         return this.common.makePromise(model).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
-            return this.updateModel(data);
+            return this.updateModel(data).then(() => {
+                this.loadedModel(data);
+                return data;
+            });
         }, (reason: any) => {
             this.errorModel(reason);
         });

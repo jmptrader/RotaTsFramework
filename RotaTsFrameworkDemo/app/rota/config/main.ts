@@ -30,13 +30,12 @@
         vfs_fonts: './app/rota/lib/vfs_fonts'
     },
 
-    //Set the config for the i18n
-    //module ID
-    //config: {
-    //    i18n: {
-    //        locale: 'tr-tr'
-    //    }
-    //},
+    //Set the config for the i18nmodule ID
+    config: {
+        i18n: {
+            locale: localStorage.getItem('active.language') || 'tr-tr'
+        }
+    },
 
     shim: {
         jquery: {

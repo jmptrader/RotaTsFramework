@@ -35,6 +35,11 @@ class Routing implements IRouting {
      */
     private _activeMenu: IHierarchicalMenuItem;
     get activeMenu(): IHierarchicalMenuItem { return this._activeMenu; }
+    /**
+     * Get current state
+     * @returns IRotaState{}
+     */
+    get current(): IRotaState { return this.$state.current; }
     //#endregion
 
     static $inject = ['$state', '$stateParams', '$rootScope', '$q', '$urlRouter', '$location',

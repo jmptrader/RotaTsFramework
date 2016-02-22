@@ -100,6 +100,13 @@ class Common implements ICommon {
     }
     //#endregion
 
+    //#region Utils
+    isAssigned(value: any): boolean {
+        return value !== undefined && value !== null;
+    }
+
+    //#endregion
+
     //#region Model Utils
     /**
      * Check whether model is valid baseModel

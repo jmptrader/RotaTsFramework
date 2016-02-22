@@ -40,25 +40,30 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
             });
         }
         //methods
-        const setButtonAttrs = (caption: string, icon: string, showSpin?: boolean) => {
-            scope.caption = caption;
-            scope.icon = icon;
-            scope.spin = showSpin && 'fa-spin';
+        const setButtonAttrs = (buttonAttrs: { caption: string, icon: string, showSpin?: boolean, disable: boolean }) => {
+            scope.caption = buttonAttrs.caption;
+            scope.icon = buttonAttrs.icon;
+            scope.spin = buttonAttrs.showSpin && 'fa-spin';
+
+            if (buttonAttrs.disable) {
+                element.attr('disabled', 'disabled');
+            } else {
+                element.removeAttr('disabled');
+            }
         }
         const startAjax = () => {
-            element.attr('disabled', 'disabled');
-            setButtonAttrs(pendingText, 'refresh', true);
+            setButtonAttrs({ caption: pendingText, icon: 'refresh', showSpin: true, disable: true });
         };
         const endAjax = () => {
-            element.removeAttr('disabled');
-            setButtonAttrs(orjText, orjIcon);
+            setButtonAttrs({ caption: orjText, icon: orjIcon, disable: false });
         };
         scope.doclick = e => {
             const result = scope.click(e);
             if (common.isPromise(result)) {
                 startAjax();
                 result.finally(() => {
-                    timeout(() => endAjax(), 0);
+                    //timeout(() => endAjax(), 0);
+                    endAjax();
                 });
             }
         };

@@ -4,7 +4,8 @@ import "./rtGrid"
 import "./rtPanel"
 import "./rtForm"
 import "./rtButton"
-import "./rtListbuttons"
+import "./rtListButtons"
+import "./rtCrudButtons"
 import "./rtI18n"
 
 angular.module('rota.directives',
@@ -15,5 +16,6 @@ angular.module('rota.directives',
         'rota.directives.rtbutton',
         'rota.directives.rtform',
         'rota.directives.rtlistbuttons',
-        'rota.directives.rtI18n'
+        'rota.directives.rtI18n',
+        'rota.directives.rtcrudbuttons'
     ]);

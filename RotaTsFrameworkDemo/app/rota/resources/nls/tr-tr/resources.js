@@ -9,6 +9,7 @@
         zorunlualanlarvar: 'Zorunlu alanları doldurunuz !',
         evet: 'Evet',
         hayir: 'Hayır',
+        kopyalaniyor: 'Kopyalanıyor',
         disariyaaktar: 'Dışarıya Aktar',
         aktarallcsv: 'Tüm data .csv',
         aktarekrandakicsv: 'Ekrandaki data .csv',

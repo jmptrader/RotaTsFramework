@@ -10,10 +10,11 @@ import {ILocalization} from './localization.interface';
 export enum BadgeTypes {
     Editmode,
     Newmode,
-    Invalid,
-    Dirty,
     Recordcount,
-    Selectedcount
+    Selectedcount,
+    Cloning,
+    Dirty,
+    Invalid,
 }
 /**
  * TitleBadge Service
@@ -46,7 +47,11 @@ class TitleBadges implements ITitleBadges {
             icon: 'plus',
             description: this.localization.getLocal('rota.yenikayit')
         };
-
+        this.badges[BadgeTypes.Cloning] = {
+            color: 'danger',
+            icon: 'copy',
+            description: this.localization.getLocal('rota.kopyalaniyor')
+        };
         this.badges[BadgeTypes.Invalid] = {
             color: 'danger',
             icon: 'exclamation',
@@ -61,8 +66,12 @@ class TitleBadges implements ITitleBadges {
 
         this.badges[BadgeTypes.Recordcount] = {
             color: 'success',
-            icon: 'check',
+            icon: 'reorder',
             tooltip: this.localization.getLocal('rota.kayitsayisi')
+        };
+        this.badges[BadgeTypes.Selectedcount] = {
+            color: 'danger',
+            icon: 'check'
         };
     }
     //#endregion
@@ -72,7 +81,7 @@ class TitleBadges implements ITitleBadges {
      * Hide all badges 
      */
     clearBadges(): void {
-        for (let i = BadgeTypes.Editmode; i < BadgeTypes.Selectedcount; i++) {
+        for (let i = BadgeTypes.Editmode; i < BadgeTypes.Cloning; i++) {
             this.badges[i].show = false;
         }
     }

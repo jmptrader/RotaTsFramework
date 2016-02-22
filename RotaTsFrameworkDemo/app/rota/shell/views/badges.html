@@ -1,4 +1,4 @@
-﻿<span ng-repeat="notifyItem in shellvm.badges" ng-class="['anim-fadeinleft','margin-right-2','badge', 'alert-' + notifyItem.color]" ng-if="notifyItem.show" tooltip-html="notifyItem.tooltip" tooltip-placement="bottom">
+﻿<span ng-repeat="(notifyType,notifyItem) in shellvm.badges" ng-class="['anim-fadeinleft','margin-right-2','badge', 'alert-' + notifyItem.color]" ng-if="notifyItem.show" tooltip-html="notifyItem.tooltip" tooltip-placement="bottom">
     <i ng-if="notifyItem.icon" ng-class="['fa','fa-' + notifyItem.icon]"></i>
     {{notifyItem.description}}
 </span>

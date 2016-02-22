@@ -3,7 +3,7 @@
         replace: true,
         restrict: 'EA',
         transclude: true,
-        template: '<form class="form-horizontal" name="rtForm" novalidate>' +
+        template: '<form class="form-horizontal" name="vm.rtForm" novalidate>' +
         '<ng-transclude></ng-transclude></form>'
     };
     return directive;

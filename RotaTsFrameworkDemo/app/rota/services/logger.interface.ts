@@ -34,7 +34,7 @@ interface IToastr extends IBaseLogger {
 interface INotification extends IBaseLogger {
     currentNotifications: INotify[];
     removeNotification(notify: INotify): void;
-    removeAll(includeSticky: boolean): void;
+    removeAll(includeSticky?: boolean): void;
 }
 
 interface IConsole extends IBaseLogger {

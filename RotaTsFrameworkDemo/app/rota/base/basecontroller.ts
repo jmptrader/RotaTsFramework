@@ -61,10 +61,10 @@ class BaseController {
      */
     protected initBundle(bundle: IBundle): void {
         //system
-        this.$rootScope = bundle['$rootScope'];
+        this.$rootScope = bundle['$rootscope'];
         this.$scope = bundle['$scope'];
         this.$window = bundle["$window"];
-        this.$stateParams = bundle["$stateParams"];
+        this.$stateParams = bundle["$stateparams"];
         //rota
         this.logger = bundle["logger"];
         this.common = bundle["common"];
@@ -100,6 +100,11 @@ class BaseController {
     }
     //#endregion
 
+    //#region Utility Functions
+    isAssigned(value: any): boolean {
+        return this.common.isAssigned(value);
+    }
+    //#endregion
 }
 //#endregion
 

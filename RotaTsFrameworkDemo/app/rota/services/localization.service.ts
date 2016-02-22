@@ -10,24 +10,27 @@ import * as appresource from 'i18n!app-resources/nls/resources';
 class Localization implements ILocalization {
     serviceName = "Localization Service";
     static activeLanguageCacheName = "active.language";
+
+    private _currentLanguage: string;
     /**
-    * Gets current language code
+    * Gets current language code,Default 'tr-tr'
     * @returns {string} 
     */
-    get currentLanguage(): string { return this.caching.restoreFromCache<string>(Localization.activeLanguageCacheName); }
+    get currentLanguage(): string { return this._currentLanguage || 'tr-tr'; }
     /**
      * Change current language and reload page
      * @param value Language to change
      */
     set currentLanguage(value: string) {
         if (value === this.currentLanguage) return;
-        this.caching.saveToCache(Localization.activeLanguageCacheName, value);
+        this.$window.localStorage.setItem(Localization.activeLanguageCacheName, value);
         this.$window.location.reload();
     }
 
-    static $inject = ['$interpolate', '$window', 'Caching', 'Resource'];
+    static $inject = ['$interpolate', '$window', 'Resource'];
     constructor(private $interpolate: ng.IInterpolateService, private $window: ng.IWindowService,
-        private caching: ICaching, private resources: IResource) {
+        private resources: IResource) {
+        this._currentLanguage = $window.localStorage.getItem(Localization.activeLanguageCacheName);
     }
 
     getLocal(key: string): string;

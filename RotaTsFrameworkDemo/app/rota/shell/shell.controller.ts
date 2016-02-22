@@ -4,6 +4,8 @@ import {IRouting, IBreadcrumb, IHierarchicalMenuItem} from '../services/routing.
 import {IMainConfig} from '../config/config.interface';
 import {INotification, INotify, ILogger} from '../services/logger.interface';
 import {ITitleBadges, ITitleBadge} from '../services/titlebadges.interface';
+import {IShellScope} from './shell.interface';
+import {ILocalization} from '../services/localization.interface';
 //deps
 import "../services/routing.service";
 import "../config/config";
@@ -15,6 +17,7 @@ import "../services/logger.service";
  * Shell controller 
  */
 class ShellController {
+    //#region Props
     /**
      * Indicate whether the spinner will be shown
      */
@@ -29,9 +32,9 @@ class ShellController {
     /**
      * Title Badges
      */
-    private _badges: ITitleBadge[];
-    get badges(): ITitleBadge[] { return this._badges; }
-    set badges(value: ITitleBadge[]) { this._badges = value; }
+    private _badges: { [index: number]: ITitleBadge };
+    get badges(): { [index: number]: ITitleBadge } { return this._badges; }
+    set badges(value: { [index: number]: ITitleBadge }) { this._badges = value; }
 
     /**
      * Ajax spinner options
@@ -49,13 +52,17 @@ class ShellController {
     private _activeMenu: IHierarchicalMenuItem;
     get activeMenu(): IHierarchicalMenuItem { return this._activeMenu; }
 
-    static $inject = ['$rootScope', '$scope', 'Routing', 'Config', 'Logger', 'TitleBadges'];
+    //#endregion
+
+    //#region Init
+    static $inject = ['$rootScope', '$scope', 'Routing', 'Config', 'Logger', 'TitleBadges', 'Localization'];
     constructor(private $rootScope: IRotaRootScope,
-        private $scope: ng.IScope,
+        private $scope: IShellScope,
         private routing: IRouting,
         private config: IMainConfig,
         private logger: ILogger,
-        private titleBadges: ITitleBadges) {
+        private titleBadges: ITitleBadges,
+        private localization: ILocalization) {
         //init settings
         this.setSpinner();
         this.setNotificationListener();
@@ -65,6 +72,7 @@ class ShellController {
         //forms availablty in modal
         $rootScope.forms = {};
         $rootScope.isCollapsed = true;
+        $scope.currentLanguage = localization.currentLanguage;
     }
     /**
      * Set spinner settings
@@ -128,9 +136,11 @@ class ShellController {
             this.$rootScope.appTitle = menu ? (projectTitle + ' ' + menu.title) : projectTitle;
         });
     }
-
+    /**
+     * Set title badges
+     */
     private setTitleBadgesListener() {
-        this.$scope.$watch(() => this.titleBadges.badges, (newValue: ITitleBadge[]) => {
+        this.$scope.$watch(() => this.titleBadges.badges, (newValue) => {
             if (newValue) {
                 this.badges = newValue;
             }
@@ -140,6 +150,10 @@ class ShellController {
             this.titleBadges.clearBadges();
         });
     }
+
+    //#endregion
+
+    //#region Shell Methods
     /**
     * Refresh state
     */
@@ -153,6 +167,17 @@ class ShellController {
     removeNotification(notification: INotify) {
         (<INotification>this.logger.notification).removeNotification(notification);
     }
+    /**
+     * Change current language
+     * @param $event Event
+     * @param lang Language to be changed to
+     */
+    changeLanguage($event: ng.IAngularEvent, lang: string) {
+        this.localization.currentLanguage = lang;
+        $event.preventDefault();
+    }
+
+    //#endregion
 }
 //#endregion
 

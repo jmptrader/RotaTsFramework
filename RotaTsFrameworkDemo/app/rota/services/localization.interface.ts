@@ -8,7 +8,7 @@ interface IResource {
  */
 interface ILocalization extends IBaseService {
     /**
-     * Cuurent language
+     * Current language
      */
     currentLanguage: string;
     /**

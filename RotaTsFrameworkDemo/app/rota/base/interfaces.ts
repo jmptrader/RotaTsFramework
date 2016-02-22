@@ -94,7 +94,7 @@ interface IListPageOptions {
 //#region BaseCrudController
 
 interface IBaseCrudModelFilter extends IBaseModelFilter {
-    id: number | string;
+    id: number;
 }
 
 interface IBaseCrudController extends IBaseController {
@@ -103,6 +103,7 @@ interface IBaseCrudController extends IBaseController {
 
 interface IModelStateParams extends ng.ui.IStateParamsService {
     id: number | string;
+    navItems: Array<number>;
 }
 
 interface ICrudPageFlags {
@@ -114,6 +115,11 @@ interface ICrudPageFlags {
 
 interface ICrudPageOptions {
     newItemFieldName?: string;
+}
+
+export enum NavigationDirection {
+    Next,
+    Prev
 }
 
 //#endregion

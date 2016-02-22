@@ -1,13 +1,16 @@
-﻿//#region Interfaces
+﻿import {ILocalization} from '../services/localization.interface';
+//#region Interfaces
 interface IPanelScope extends ng.IScope {
     title: string;
+    titleI18n: string;
+    caption: string;
 }
 //#endregion
 
 //#region Directive
-function panelDirective() {
+function panelDirective(localization: ILocalization) {
     function link(scope: IPanelScope, element: ng.IAugmentedJQuery): void {
-        scope.title = scope.title; //|| localization.get(scope.titleI18n || '');
+        scope.caption = scope.title || localization.getLocal(scope.titleI18n);
     }
 
     const directive = <ng.IDirective>{
@@ -23,8 +26,8 @@ function panelDirective() {
         },
         transclude: true,
         template: '<div ng-class="color" class="rt-panel"><ul class="nav nav-tabs">' +
-        '<li class="active" ng-if="title"><a class="title" href><b><i ng-class="[\'fa\', \'fa-\' + icon]">' +
-        '</i> {{title}}<span class="badge alert-danger" ' +
+        '<li class="active" ng-if="caption"><a class="title" href><b><i ng-class="[\'fa\', \'fa-\' + icon]">' +
+        '</i> {{caption}}<span class="badge alert-danger" ' +
         'ng-if="badge">{{badge}}</span></b></a></li>' +
         '<li ng-if="buttons.length" class="rightside">' +
         '<ul class="list-inline">' +
@@ -39,6 +42,8 @@ function panelDirective() {
     };
     return directive;
 }
+
+panelDirective.$inject = ['Localization'];
 //#endregion
 
 //#region Register

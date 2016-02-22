@@ -1,22 +1,18 @@
-﻿<div>
-    <h4>Todo Edit</h4>
-    <button ng-click="vm.save()">Save</button>
-    <button ng-click="vm.deleteById(vm.model.Id)">Delete</button>
-    <a class="pull-right" ui-sref="shell.content.todos">Back to Todos</a>
-
-    <form name="formTodo">
+﻿<rt-form>
+    <rt-crud-buttons></rt-crud-buttons>
+    <rt-panel title-i18n="todo.todo" icon="bookmark">
         <div class="form-group">
-            <label class="control-label col-md-1">Todo Text</label>
-            <div class="col-md-11">
-                <input type="text" class="form-control" ng-model="vm.model.Text" rt-focus/>
+            <label class="control-label col-md-3" i18n="todo.todo"></label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" ng-model="vm.model.text" rt-focus />
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-md-1">is Done ?</label>
+            <label class="control-label col-md-3" i18n="todo.done"></label>
             <div class="col-md-5">
-                <input type="checkbox" ng-model="vm.model.Done"/>
+                <input type="checkbox" ng-model="vm.model.done" />
             </div>
         </div>
-    </form>
-    <div class="clearfix"></div>
-</div>
+        <div class="clearfix"></div>
+    </rt-panel>
+</rt-form>

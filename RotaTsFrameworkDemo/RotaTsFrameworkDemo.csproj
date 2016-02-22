@@ -179,7 +179,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\TodoController.cs" />
     <Compile Include="Startup.cs" />
-    <Content Include="app\resources\nls\en-US\resources.js" />
+    <Content Include="app\resources\nls\en-us\resources.js" />
     <Content Include="app\resources\nls\resources.js" />
     <Content Include="app\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\core\angular-animate.js" />
@@ -197,7 +197,7 @@
     <Content Include="app\rota\lib\underscore.min.js" />
     <Content Include="app\rota\lib\underscore.string.min.js" />
     <Content Include="app\rota\lib\vfs_fonts.js" />
-    <Content Include="app\rota\resources\nls\en-US\resources.js" />
+    <Content Include="app\rota\resources\nls\en-us\resources.js" />
     <Content Include="app\rota\resources\nls\resources.js" />
     <Content Include="app\rota\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\shell\views\badges.html" />
@@ -287,6 +287,7 @@
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtButton.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtCrudButtons.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtForm.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtI18n.ts" />
@@ -321,6 +322,7 @@
     <TypeScriptCompile Include="app\rota\services\routing.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\service.interface.ts" />
     <TypeScriptCompile Include="app\rota\shell\shell.controller.ts" />
+    <TypeScriptCompile Include="app\rota\shell\shell.interface.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
     <TypeScriptCompile Include="app\todo\todo.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />

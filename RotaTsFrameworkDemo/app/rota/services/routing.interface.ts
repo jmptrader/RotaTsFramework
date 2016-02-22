@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import { IBaseModel,IBaseConfig} from "../base/interfaces";
+import { IBaseModel, IBaseConfig} from "../base/interfaces";
 import { IBaseService} from "./service.interface";
 //#endregion
 
@@ -23,6 +23,7 @@ interface IRouting extends IBaseService {
     menus: IHierarchicalMenuItem[];
     breadcrumbs: IBreadcrumb[];
     activeMenu: IHierarchicalMenuItem;
+    current: IRotaState;
     //methods
     addMenus(states: IMenuModel[]): IRouting;
     go(state: string, params?: any, options?: ng.ui.IStateOptions): ng.IPromise<any>;

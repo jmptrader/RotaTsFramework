@@ -2,7 +2,7 @@
 
 interface ITitleBadge {
     color: string;
-    icon: string;
+    icon?: string;
     tooltip?: string;
     description?: string;
     show?: boolean;

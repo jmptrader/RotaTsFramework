@@ -20,20 +20,20 @@
             <!--Şirket & Dil Secimi-->
             <ul class="nav navbar-nav navbar-right">
                 <!--Dil Secimi-->
-                <!--<li dropdown>
-                    <a href="#" dropdown-toggle>
-                        <img alt="" ng-src="/Content/img/{{selectedLanguage}}.png">
-                        <span>{{activeLanguageFriendlyName}}</span> <i class="fa fa-angle-down"></i>
+                <li uib-dropdown>
+                    <a href="#" uib-dropdown-toggle>
+                        <img alt="" ng-src="/Content/img/{{currentLanguage}}.png">
+                        <span>{{::currentLanguage=='en-us' ? 'English' : 'Türkçe'}}</span> <i class="fa fa-angle-down"></i>
                     </a>
                     <ul class="dropdown-menu pull-right">
-                        <li ng-class="{active: selectedLanguage=='en-us'}">
-                            <a href="" ng-click="changeLanguage($event,'en-us')"><img alt="" src="/Content/img/en-us.png"> English</a>
+                        <li ng-class="{active: currentLanguage=='en-us'}">
+                            <a href="" ng-click="shellvm.changeLanguage($event,'en-us')"><img alt="" src="/Content/img/en-us.png"> English</a>
                         </li>
-                        <li ng-class="{active: selectedLanguage=='tr-tr'}">
-                            <a href="" ng-click="changeLanguage($event,'tr-tr')"><img alt="" src="/Content/img/tr-tr.png"> Türkçe</a>
+                        <li ng-class="{active: currentLanguage=='tr-tr'}">
+                            <a href="" ng-click="shellvm.changeLanguage($event,'tr-tr')"><img alt="" src="/Content/img/tr-tr.png"> Türkçe</a>
                         </li>
                     </ul>
-                </li>-->
+                </li>
                 <!--Şirket Secimi-->
                 <!--<li dropdown ng-if="selectedCompany">
                     <a href dropdown-toggle>

@@ -18,6 +18,7 @@ class Caching implements ICaching {
      * @param data data to cache 
      */
     saveToCache(cacheKey: string, data: ICacheable): void {
+        debugger;
         const strData: string = JSON.stringify(data);
         this.$window.localStorage.setItem(cacheKey, strData);
     }
