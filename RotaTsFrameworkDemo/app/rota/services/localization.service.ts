@@ -1,9 +1,11 @@
 ﻿//#region Imports
-import {ILocalization, IResource} from "./localization.interface";
+import {ILocalization, IResource, ILanguage} from "./localization.interface";
 import {ICaching} from "./caching.interface";
+import {IMainConfig} from '../config/config.interface';
 //deps - resource files
 import * as rotaresource from 'i18n!rota-resources/nls/resources';
 import * as appresource from 'i18n!app-resources/nls/resources';
+import * as _ from 'underscore';
 //#endregion
 
 //#region Localization Service
@@ -11,26 +13,30 @@ class Localization implements ILocalization {
     serviceName = "Localization Service";
     static activeLanguageCacheName = "active.language";
 
-    private _currentLanguage: string;
+    private _currentLanguage: ILanguage;
     /**
     * Gets current language code,Default 'tr-tr'
     * @returns {string} 
     */
-    get currentLanguage(): string { return this._currentLanguage || 'tr-tr'; }
+    get currentLanguage(): ILanguage { return this._currentLanguage }
     /**
      * Change current language and reload page
      * @param value Language to change
      */
-    set currentLanguage(value: string) {
+    set currentLanguage(value: ILanguage) {
         if (value === this.currentLanguage) return;
-        this.$window.localStorage.setItem(Localization.activeLanguageCacheName, value);
+        this.$window.localStorage.setItem(Localization.activeLanguageCacheName, value.code);
         this.$window.location.reload();
     }
 
-    static $inject = ['$interpolate', '$window', 'Resource'];
+    static $inject = ['$interpolate', '$window', 'Resource', 'Config'];
     constructor(private $interpolate: ng.IInterpolateService, private $window: ng.IWindowService,
-        private resources: IResource) {
-        this._currentLanguage = $window.localStorage.getItem(Localization.activeLanguageCacheName);
+        private resources: IResource, private config: IMainConfig) {
+        const currentLangCode = $window.localStorage.getItem(Localization.activeLanguageCacheName);
+        debugger;
+        if (currentLangCode) {
+            this._currentLanguage = _.findWhere(this.config.supportedLanguages, { code: currentLangCode }) || { code: 'tr-tr' };
+        }
     }
 
     getLocal(key: string): string;

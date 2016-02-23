@@ -5,7 +5,7 @@ import {IMainConfig} from '../config/config.interface';
 import {INotification, INotify, ILogger} from '../services/logger.interface';
 import {ITitleBadges, ITitleBadge} from '../services/titlebadges.interface';
 import {IShellScope} from './shell.interface';
-import {ILocalization} from '../services/localization.interface';
+import {ILocalization, ILanguage} from '../services/localization.interface';
 //deps
 import "../services/routing.service";
 import "../config/config";
@@ -72,6 +72,7 @@ class ShellController {
         //forms availablty in modal
         $rootScope.forms = {};
         $rootScope.isCollapsed = true;
+        $scope.supportedLanguages = this.config.supportedLanguages;
         $scope.currentLanguage = localization.currentLanguage;
     }
     /**
@@ -172,7 +173,7 @@ class ShellController {
      * @param $event Event
      * @param lang Language to be changed to
      */
-    changeLanguage($event: ng.IAngularEvent, lang: string) {
+    changeLanguage($event: ng.IAngularEvent, lang: ILanguage) {
         this.localization.currentLanguage = lang;
         $event.preventDefault();
     }

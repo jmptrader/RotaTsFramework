@@ -104,6 +104,9 @@ class Common implements ICommon {
     isAssigned(value: any): boolean {
         return value !== undefined && value !== null;
     }
+    isArray<T>(value: any): value is Array<T> {
+        return angular.isArray(value);
+    }
 
     //#endregion
 

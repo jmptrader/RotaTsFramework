@@ -20,6 +20,7 @@ interface ICommon extends IBaseService {
     isCrudModel(model: any): model is IBaseCrudModel;
     setModelState(model: IBaseCrudModel, state: ModelStates, includeChildArray?: boolean): IBaseCrudModel;
     isAssigned(value: any): boolean;
+    isArray<T>(value: any): value is Array<T>;
 }
 
 export {ICommon, IRotaRootScope}

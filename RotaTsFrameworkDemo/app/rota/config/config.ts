@@ -12,7 +12,7 @@ class Config extends BaseConfig<IMainConfig> {
             appVersion: '1.0.0',
             appTitle: 'Bimar App',
             debugMode: true,
-            defaultApiUrl:'/api/',
+            defaultApiUrl: '/api/',
             eventNames: {
                 userLoginChanged: 'userLoginChanged',
                 ajaxFinished: 'ajaxFinished',
@@ -22,7 +22,8 @@ class Config extends BaseConfig<IMainConfig> {
                 badgeChanged: 'badgeChanged'
             },
             gridDefaultPageSize: 25,
-            gridDefaultOptionsName: 'vm.gridOptions'
+            gridDefaultOptionsName: 'vm.gridOptions',
+            supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }]
         };
         this.config = config;
         super();
@@ -32,7 +33,7 @@ class Config extends BaseConfig<IMainConfig> {
 
 //#region Register
 var module: ng.IModule = angular.module('rota.config', []);
-    module.provider('Config', Config);
+module.provider('Config', Config);
 //#endregion
 
 export {Config}

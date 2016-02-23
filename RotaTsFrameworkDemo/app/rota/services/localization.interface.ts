@@ -3,6 +3,12 @@
 interface IResource {
     [s: string]: any;
 }
+
+interface ILanguage {
+    code: string;
+    fullname?: string;
+}
+
 /**
  * Localization service
  */
@@ -10,7 +16,7 @@ interface ILocalization extends IBaseService {
     /**
      * Current language
      */
-    currentLanguage: string;
+    currentLanguage: ILanguage;
     /**
      * Get localized value of key 
      * @param key Key value to be localized
@@ -36,4 +42,4 @@ interface ILocalization extends IBaseService {
     getLocal(key: string, scope: any): string;
 }
 
-export {ILocalization, IResource}
+export {ILocalization, IResource, ILanguage}
