@@ -1,20 +1,24 @@
 ﻿import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
-    IBaseCrudModelFilter, NavigationDirection} from "./interfaces"
+    IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
+    IValidationItem, ISavePipelineMethod, IPipeline, IBasePipelineMethod} from "./interfaces"
 import {INotification} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
 import {BaseModelController} from './basemodelcontroller';
-
+import * as _ from 'underscore';
 
 abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
-
     //#region Props
     /**
      * New item id param value name
      */
     private static newItemParamName = 'new';
+    /**
+     * Localized values for crud page
+     */
+    private static localizedValues: ICrudPageLocalization;
 
     protected $stateParams: IModelStateParams;
     private crudPageOptions: ICrudPageOptions;
@@ -66,6 +70,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     get cloningBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Cloning]; }
 
     //#endregion
+
     //#endregion
 
     //#region Bundle Services
@@ -77,7 +82,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     constructor(bundle: IBundle, options?: ICrudPageOptions) {
         super(bundle);
         //set default options
-        this.crudPageOptions = angular.extend({}, options);
+        const defaultPipeline: IPipeline = {
+            savePipelines: [this.applyValidatiton, this.checkAuthority, this.beforeSaveModel]
+        };
+        this.crudPageOptions = angular.extend({ pipeline: defaultPipeline }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
         this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
         //set form watchers
@@ -92,7 +100,28 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.$scope.$watch(() => this.rtForm.$invalid, (newValue) => {
             this.invalidBadge.show = newValue;
         });
-
+        //register 'catch changes while exiting'
+        this.registerEvent('$stateChangeStart',
+            (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
+                if (toState.hierarchicalMenu &&
+                    toState.name !== fromState.name &&
+                    this.rtForm.$dirty && this.rtForm.$valid) {
+                    //Stop transition
+                    event.preventDefault();
+                    //Confirm
+                    this.dialogs.showConfirm({ message: BaseCrudController.localizedValues.crudonay }).then(() => {
+                        //Modeli kaydet
+                        //self.initSaveModel().then(function () {
+                        //    //Burdaki resetFrom fazlami ?
+                        //    self.resetForm();
+                        //    self.go(toState.name, toParams);
+                        //});
+                    }).catch(() => {
+                        this.resetForm();
+                        this.routing.go(toState.name, toParams);
+                    });
+                }
+            });
         //initialize getting model
         this.initModel();
     }
@@ -102,9 +131,22 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     */
     initBundle(bundle: IBundle): void {
         super.initBundle(bundle);
-        this.titlebadges = bundle["titlebadges"];
+        this.titlebadges = bundle.systemBundles["titlebadges"];
     }
+    /**
+     * Store localized value for performance issues (called in basecontroller)
+     */
+    protected storeLocalization(): void {
+        if (BaseCrudController.localizedValues) return;
 
+        BaseCrudController.localizedValues = {
+            crudonay: this.localization.getLocal('rota.crudonay'),
+            kayitkopyalandi: this.localization.getLocal('rota.kayitkopyalandı'),
+            modelbulunamadi: this.localization.getLocal('rota.modelbulunamadi'),
+            succesfullyprocessed: this.localization.getLocal('rota.succesfullyprocessed'),
+            validationhatasi: this.localization.getLocal('rota.validationhatasi')
+        };
+    }
     //#endregion
 
     //#region ModelState Methods
@@ -138,7 +180,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     }
     //#endregion
 
-    //#region BaseCrudController Methods
+    //#region Model Methods
     /**
      * Chnage url depending on new/edit modes
      * @param id "New" or id 
@@ -152,25 +194,36 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param cloning Cloning flag
      */
     initNewModel(cloning?: boolean): ng.IPromise<TModel> {
-        //Id new olarak tekrar yukle
-        this.changeUrl(BaseCrudController.newItemParamName);
-        //Yeni kayit
-        this.isNew = true;
-        //Clear notf
-        (<INotification>this.notification).removeAll();
-        //Eger kopyalama yapılıyorsa tum degişiklikleri iptal et
-        if (cloning) {
-            this.revertBack();
+        //chnage url
+        const changeUrlPromise = this.changeUrl(BaseCrudController.newItemParamName);
+        return changeUrlPromise.then(() => {
+            this.isNew = true;
+            (<INotification>this.notification).removeAll();
+
+            if (cloning) {
+                this.revertBack();
+            }
+            //init model
+            return this.initModel(cloning);
+        });
+    }
+    /**
+     * New model event
+     * @param clonedModel Model to be cloned
+     */
+    newModel(clonedModel?: TModel): ng.IPromise<TModel> | TModel {
+        if (clonedModel) {
+            clonedModel.id = 0;
+            return clonedModel;
         }
-        //Init
-        return this.initModel(cloning);
+        return <TModel>{ id: 0 };
     }
     /**
      * Reset form
      * @description Set modelState param and form to pristine state
      * @param model Model
      */
-    private resetForm(model: TModel): void {
+    private resetForm(model?: TModel): void {
         this.isNew ? this.setModelAdded() : this.setModelUnChanged();
         this.rtForm.$setPristine();
 
@@ -185,17 +238,98 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.model = angular.extend(this.model, this.orjModel);
         this.resetForm(<TModel>this.model);
     }
-    /**
-     * New model event
-     * @param clonedModel Model to be cloned
-     */
-    newModel(clonedModel?: TModel): ng.IPromise<TModel> | TModel {
-        if (clonedModel) {
-            clonedModel.id = 0;
-            return clonedModel;
+    //#endregion
+
+    //#region Save Methods
+
+    initPipeline(pipeline: Array<IBasePipelineMethod | ISavePipelineMethod>, ...params: any[]): ng.IPromise<any> {
+        let result = this.common.promise();
+        //iterate pipeline methods
+        for (let i = 0; i < pipeline.length; i++) {
+            result = ((r: ng.IPromise<any>, method: IBasePipelineMethod) => {
+                return r.then(() => method.apply(this, params), (reason: string) => {
+                    this.errorModel(reason);
+                    return this.common.rejectedPromise(reason);
+                });
+            })(result, <IBasePipelineMethod>pipeline[i]);
         }
-        return <TModel>{ id: 0 };
+        return result;
     }
+
+    initSaveModel(options?: ISaveOptions): ng.IPromise<TModel> {
+        //init saving
+        options = angular.extend({ isNew: this.isNew, goon: false, showMessage: true, model: this.model }, options);
+        this.crudPageFlags.isSaving = true;
+        (<INotification>this.notification).removeAll();
+
+        const defer = this.$q.defer();
+        //iterate save pipeline
+        const result = this.initPipeline(this.crudPageOptions.pipeline.savePipelines, options);
+
+        result.then(() => {
+            defer.resolve();
+            debugger;
+        }, () => {
+            defer.reject();
+            debugger;
+        });
+
+        return defer.promise;
+    }
+
+
+
+
+    beforeSaveModel(options: ISaveOptions): ng.IPromise<any> {
+        this.console.log({ message: 'beforeSaveModel works' });
+        return this.common.rejectedPromise('fdfqwe');
+    }
+
+    afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
+        this.console.log({ message: 'afterSaveModel works' });
+        return this.common.promise();
+    }
+    //abstract saveModel(model: TModel): ng.IPromise<TModel>;
+    //#endregion
+
+    //#region Validation
+    private applyValidatiton(options: ISaveOptions): ng.IPromise<any> {
+        const errors: IValidationItem[] = [];
+        let message = '<ul>';
+        const defered = this.$q.defer();
+
+        if (this.crudPageFlags.isDeleting) {
+            defered.resolve(errors);
+            return defered.promise;
+        }
+        const validationPromise = this.common.makePromise<IValidationItem[]>(this.validateModel(errors, options));
+        validationPromise.then((e: IValidationItem[]) => {
+            if (e.length) {
+                e.forEach(err => {
+                    message += '<li>' + err.message + '</li>';
+                });
+                message += '</ul>';
+
+                defered.reject(message);
+            } else {
+                defered.resolve();
+            }
+        }, () => {
+            defered.reject();
+        });
+        return defered.promise;
+    }
+
+    validateModel(errors: IValidationItem[], options: ISaveOptions): ng.IPromise<IValidationItem[]> {
+        return this.common.promise(errors);
+    }
+    //#endregion
+
+    //#region Authorization
+    checkAuthority(options?: ISaveOptions): ng.IPromise<any> {
+        return this.common.promise();
+    }
+
     //#endregion
 
     //#region BaseModelController Methods
@@ -226,7 +360,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     loadedModel(model: TModel): void {
         if (!this.isNew && !this.isAssigned(model)) {
             //Hata ver
-            this.notification.error({ message: this.localization.getLocal("rota.modelbulunamadi") });
+            this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
             //Yeni moda gec
             this.initNewModel();
             return;
@@ -240,7 +374,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         }
         //set cloning warning & notify
         if (this.crudPageFlags.isCloning) {
-            this.toastr.info({ message: this.localization.getLocal('rota.kayitkopyalandı') });
+            this.toastr.info({ message: BaseCrudController.localizedValues.kayitkopyalandi });
             this.cloningBadge.show = true;
         }
     }
@@ -289,7 +423,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
 
 
 
-    //abstract save(model: TModel): ng.IPromise<TModel>;
+
     //abstract deleteById(id: number): ng.IPromise<any>;
 }
 //Export

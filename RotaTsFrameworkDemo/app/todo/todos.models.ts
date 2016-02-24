@@ -7,7 +7,7 @@ interface ITodoModel extends IBaseModel {
 }
 
 interface ITodoFilter extends IBaseListModelFilter {
-
+    Text: string;
 }
 
 export {ITodoModel, ITodoFilter}

@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
-    IGridOptions, IListModel, IBaseListController} from "./interfaces"
+    IGridOptions, IListModel, IBaseListController, IListPageLocalization} from "./interfaces"
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 //deps
@@ -16,6 +16,10 @@ import * as _ from 'underscore';
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
     extends BaseModelController<TModel> implements IBaseListController {
     //#region Props
+    /**
+     * Localized values for crud page
+     */
+    private static localizedValues: IListPageLocalization;
     /**
      * List controller options
      */
@@ -47,13 +51,13 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      */
     get gridSeletedRows(): any[] { return this.gridApi.selection.getSelectedRows(); }
 
-    private _filter: any;
+    private _filter: TModelFilter;
     /**
      * Filter object,includes all filter criteria to send getModel method as param
      * @returns {IBaseListModelFilter}
      */
-    get filter(): IBaseListModelFilter { return this._filter; }
-    set filter(value: IBaseListModelFilter) { this._filter = value; }
+    get filter(): TModelFilter { return this._filter; }
+    set filter(value: TModelFilter) { this._filter = value; }
     /**
      * Recourd count badge
      * @returns {ITitleBadge}
@@ -93,9 +97,21 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     initBundle(bundle: IBundle): void {
         super.initBundle(bundle);
 
-        this.titlebadges = bundle["titlebadges"];
-        this.uigridconstants = bundle["uigridconstants"];
-        this.uigridexporterconstants = bundle["uigridexporterconstants"];
+        this.titlebadges = bundle.systemBundles["titlebadges"];
+        this.uigridconstants = bundle.systemBundles["uigridconstants"];
+        this.uigridexporterconstants = bundle.systemBundles["uigridexporterconstants"];
+    }
+    /**
+     * Store localized value for performance issues (called in basecontroller)
+     */
+    protected storeLocalization(): void {
+        if (BaseListController.localizedValues) return;
+
+        BaseListController.localizedValues = {
+            kayitbulunamadi: this.localization.getLocal('rota.kayitbulunamadi'),
+            deleteconfirm: this.localization.getLocal('rota.deleteconfirm'),
+            deleteconfirmtitle: this.localization.getLocal('rota.deleteconfirmtitle')
+        };
     }
     //#endregion
 
@@ -133,7 +149,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             }
         }
         if (recCount === 0) {
-            this.toastr.warn({ message: this.localization.getLocal("rota.kayitbulunamadi") });
+            this.toastr.warn({ message: BaseListController.localizedValues.kayitbulunamadi });
         }
         this.recordcountBadge.description = recCount.toString();
     }
@@ -330,8 +346,8 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     protected initDeleteModel(id: string): ng.IPromise<any> {
         if (id === undefined || id === null || !id) return undefined;
 
-        const confirmText = this.localization.getLocal('rota.deleteconfirm');
-        const confirmTitleText = this.localization.getLocal('rota.deleteconfirmtitle');
+        const confirmText = BaseListController.localizedValues.deleteconfirm;
+        const confirmTitleText = BaseListController.localizedValues.deleteconfirmtitle;
         return this.dialogs.showConfirm({ message: confirmText, title: confirmTitleText }).then(() => {
             //call delete model
             const deleteResult = this.deleteModel(id);

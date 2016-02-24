@@ -7,12 +7,12 @@ import { BaseConfig } from "../base/baseconfig";
 //#region RouteConfig
 class LoaderConfig extends BaseConfig<ILoaderConfig> {
     constructor() {
+        super();
         //set default values
         var config: ILoaderConfig = {};
         config.useBaseUrl =
             config.useTemplateUrlPath = true;
         this.config = config;
-        super();
     }
 }
 //#endregion

@@ -7,6 +7,7 @@ import { BaseConfig } from "../base/baseconfig";
 //#region RouteConfig
 class RouteConfig extends BaseConfig<IRouteConfig> {
     constructor() {
+        super();
         //TODO:require config baseUrl
         /**
          *  var globalConfigs = requirejs.s.contexts._.config;
@@ -20,7 +21,6 @@ class RouteConfig extends BaseConfig<IRouteConfig> {
         config.error500StateUrl = config.shellPath + 'error500.html';
         config.inactiveStateUrl = '/';
         this.config = config;
-        super();
     }
 }
 //#endregion

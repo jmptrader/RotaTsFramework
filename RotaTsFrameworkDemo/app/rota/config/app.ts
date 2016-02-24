@@ -3,6 +3,7 @@ import {IBaseApi, BaseApi} from "../base/baseapi";
 import {IRotaApp} from './app.interface';
 //deps
 import {BaseController} from '../base/basecontroller';
+import {IBundle} from '../base/interfaces';
 import "./infrastructure.index"
 //#endregion
 
@@ -36,14 +37,23 @@ class RotaApp implements IRotaApp {
     addController(controllerName: string, controller: typeof BaseController, ...dependencies: string[]): void {
         const deps = new Array<any>().concat(controller.injects, dependencies || []);
         const controllerCtor: Function = (...args: any[]): BaseController => {
-            const bundle: { [s: string]: any; } = {}
-            //system deps into bundle
-            let i: number;
-            for (i = 0; i < controller.injects.length; i++) {
-                const serviceName = controller.injects[i];
-                bundle[serviceName.toLowerCase()] = args[i];
+            const bundle: IBundle = {
+                customBundles: {},
+                systemBundles: {}
             }
-            const instance = new controller(bundle, args[i], args[i + 1], args[i + 2], args[i + 3], args[i + 4]);
+            const systemServices = args.slice(0, args.length - dependencies.length);
+            const customServices = args.slice(systemServices.length, args.length);
+
+            systemServices.forEach((service: any, index: number) => {
+                const serviceName = controller.injects[index];
+                bundle.systemBundles[serviceName.toLowerCase()] = service;
+            });
+            customServices.forEach((service: any, index: number) => {
+                const serviceName = dependencies[index];
+                bundle.customBundles[serviceName] = service;
+            });
+
+            const instance = new controller(bundle);
             return instance;
         };
         //add ctor

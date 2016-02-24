@@ -8,6 +8,7 @@ import * as angular from "angular";
 //#region Config
 class Config extends BaseConfig<IMainConfig> {
     constructor() {
+        super();
         const config: IMainConfig = {
             appVersion: '1.0.0',
             appTitle: 'Bimar App',
@@ -26,7 +27,6 @@ class Config extends BaseConfig<IMainConfig> {
             supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }]
         };
         this.config = config;
-        super();
     }
 }
 //#endregion

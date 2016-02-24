@@ -8,6 +8,7 @@ import * as toastr from "toastr";
 //#region RouteConfig
 class LoggerConfig extends BaseConfig<ILoggerConfig> {
     constructor() {
+        super();
         const config: ILoggerConfig = {}; //$Log service enabled
         config.debugEnabled = true;
         //toastr common settings
@@ -20,11 +21,8 @@ class LoggerConfig extends BaseConfig<ILoggerConfig> {
         config.timeOuts[LogType.Info] = 3000;
         config.timeOuts[LogType.Success] = 3000;
         config.timeOuts[LogType.Debug] = 6000;
-
         config.defaultTitles = {};
-
         this.config = config;
-        super();
     }
 }
 //#endregion

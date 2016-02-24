@@ -10,8 +10,10 @@ import * as _ from 'underscore';
 
 //#region Localization Service
 class Localization implements ILocalization {
+    //#region Props
     serviceName = "Localization Service";
-    static activeLanguageCacheName = "active.language";
+    private static activeLanguageCacheName = "active.language";
+    private static defaultLanguageCode = "tr-tr";
 
     private _currentLanguage: ILanguage;
     /**
@@ -29,16 +31,19 @@ class Localization implements ILocalization {
         this.$window.location.reload();
     }
 
+    //#endregion
+
+    //#region Init
     static $inject = ['$interpolate', '$window', 'Resource', 'Config'];
     constructor(private $interpolate: ng.IInterpolateService, private $window: ng.IWindowService,
         private resources: IResource, private config: IMainConfig) {
-        const currentLangCode = $window.localStorage.getItem(Localization.activeLanguageCacheName);
-        debugger;
-        if (currentLangCode) {
-            this._currentLanguage = _.findWhere(this.config.supportedLanguages, { code: currentLangCode }) || { code: 'tr-tr' };
-        }
+        const currentLangCode = $window.localStorage.getItem(Localization.activeLanguageCacheName) || Localization.defaultLanguageCode;
+        this._currentLanguage = _.findWhere<ILanguage, ILanguage>(this.config.supportedLanguages, { code: currentLangCode });
     }
 
+    //#endregion
+
+    //#region Localization Methods
     getLocal(key: string): string;
     getLocal(key: string, ...params: string[]): string;
     getLocal(key: string, scope: any): string;
@@ -87,6 +92,8 @@ class Localization implements ILocalization {
         };
         return extractValue(this.resources);
     }
+
+    //#endregion
 }
 
 //#endregion

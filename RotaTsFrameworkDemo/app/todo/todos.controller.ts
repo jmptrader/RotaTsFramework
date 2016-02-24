@@ -7,10 +7,10 @@ import {BaseListController} from "app/rota/base/baselistcontroller";
 import "./todos.service";
 
 class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
+
     todoApi: ITodoApi;
 
-    constructor(bundle: IBundle, todoApi: ITodoApi) {
-        this.todoApi = todoApi;
+    constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
     }
 

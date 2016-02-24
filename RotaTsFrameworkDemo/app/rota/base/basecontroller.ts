@@ -7,6 +7,8 @@ import {IBundle} from './interfaces';
 import {IMainConfig} from '../config/config.interface';
 import {IRouting} from '../services/routing.interface';
 import {ILocalization} from '../services/localization.interface';
+//deps
+import * as _ from 'underscore';
 //#endregion
 
 //#region BaseController
@@ -51,9 +53,24 @@ class BaseController {
     //#endregion
 
     //#region Init
-    constructor(bundle: IBundle, ...args: any[]) {
+    constructor(bundle: IBundle) {
         this.initBundle(bundle);
-        this.registerEvents();
+        //init 
+        this.events = [];
+        this.registerEvent("$destroy", () => {
+            this.events.forEach(fn => {
+                fn();
+                this.events = [];
+            });
+        });
+        //save localization
+        this.storeLocalization();
+    }
+    /**
+     * Store localized value for performance issues
+     * @description Must be overriden overrided classes
+     */
+    protected storeLocalization(): void {
     }
     /**
      * Init bundle
@@ -61,17 +78,27 @@ class BaseController {
      */
     protected initBundle(bundle: IBundle): void {
         //system
-        this.$rootScope = bundle['$rootscope'];
-        this.$scope = bundle['$scope'];
-        this.$window = bundle["$window"];
-        this.$stateParams = bundle["$stateparams"];
+        this.$rootScope = bundle.systemBundles['$rootscope'];
+        this.$scope = bundle.systemBundles['$scope'];
+        this.$window = bundle.systemBundles["$window"];
+        this.$stateParams = bundle.systemBundles["$stateparams"];
         //rota
-        this.logger = bundle["logger"];
-        this.common = bundle["common"];
-        this.dialogs = bundle["dialogs"];
-        this.config = bundle["config"];
-        this.routing = bundle["routing"];
-        this.localization = bundle["localization"];
+        this.logger = bundle.systemBundles["logger"];
+        this.common = bundle.systemBundles["common"];
+        this.dialogs = bundle.systemBundles["dialogs"];
+        this.config = bundle.systemBundles["config"];
+        this.routing = bundle.systemBundles["routing"];
+        this.localization = bundle.systemBundles["localization"];
+        //custom
+        for (let customBundle in bundle.customBundles) {
+            ((bundleName: string) => {
+                Object.defineProperty(this, bundleName, {
+                    get: () => {
+                        return bundle.customBundles[bundleName];
+                    }
+                });
+            })(customBundle);
+        }
     }
 
     //#endregion
@@ -82,22 +109,28 @@ class BaseController {
      * @param eventName EventName
      * @param fn Function
      */
-    registerEvent(eventName: string, fn: () => void): void {
+    registerEvent(eventName: string, fn: (...args: any[]) => void): void {
         const offFn = this.$scope.$on(eventName, fn);
         this.events.push(offFn);
     }
-    /**
-     * off the bindgins
-     */
-    registerEvents(): void {
-        this.events = [];
-        this.registerEvent("$destroy", () => {
-            this.events.forEach(fn => {
-                fn();
-                this.events = [];
-            });
-        });
-    }
+
+    //storeLocalization(key: string, object: any): void;
+    //storeLocalization(keys: string[], object: any): void;
+    //storeLocalization(key: any, object: any): void {
+    //    const setValue = (key: string) => {
+    //        if (!object.hasOwnProperty(key)) {
+    //            object[key] = this.localization.getLocal(key);
+    //        }
+    //    }
+
+    //    if (this.common.isArray<string>(key)) {
+    //        key.forEach((item: string) => {
+    //            setValue(item);
+    //        });
+    //    } else {
+    //        setValue(key);
+    //    }
+    //}
     //#endregion
 
     //#region Utility Functions

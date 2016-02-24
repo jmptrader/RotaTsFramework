@@ -10,8 +10,7 @@ import "./todos.service";
 class TodoController extends BaseCrudController<ITodoModel> {
     todoApi: ITodoApi;
 
-    constructor(bundle: IBundle, todoApi: ITodoApi) {
-        this.todoApi = todoApi;
+    constructor(bundle: IBundle) {
         super(bundle);
     }
 

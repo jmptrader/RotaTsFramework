@@ -33,8 +33,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     initBundle(bundle: IBundle): void {
         super.initBundle(bundle);
 
-        this.$q = bundle['$q'];
-        this.$http = bundle['$http'];
+        this.$q = bundle.systemBundles['$q'];
+        this.$http = bundle.systemBundles['$http'];
     }
     //#endregion
 

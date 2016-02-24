@@ -2,7 +2,8 @@
 
 //#region Misc
 interface IBundle {
-    [s: string]: any;
+    systemBundles: { [s: string]: any };
+    customBundles: { [s: string]: any };
 }
 
 //#endregion
@@ -89,6 +90,13 @@ interface IListPageOptions {
     pagingEnabled?: boolean;
     newItemFieldName?: string;
 }
+
+interface IListPageLocalization {
+    kayitbulunamadi: string;
+    deleteconfirm: string;
+    deleteconfirmtitle: string;
+}
+
 //#endregion
 
 //#region BaseCrudController
@@ -115,6 +123,7 @@ interface ICrudPageFlags {
 
 interface ICrudPageOptions {
     newItemFieldName?: string;
+    pipeline?: IPipeline;
 }
 
 export enum NavigationDirection {
@@ -122,10 +131,45 @@ export enum NavigationDirection {
     Prev
 }
 
+interface ICrudPageLocalization {
+    crudonay: string;
+    modelbulunamadi: string;
+    kayitkopyalandi: string;
+    succesfullyprocessed: string;
+    validationhatasi: string;
+}
+
+interface ISaveOptions {
+    isNew?: boolean;
+    goon?: boolean;
+    showMessage?: boolean;
+    model?: IBaseCrudModel;
+}
+
+interface IValidationItem {
+    code?: string;
+    message?: string;
+}
+
+interface ISavePipelineMethod  {
+    (options: ISaveOptions): ng.IPromise<any>;
+}
+
+
 //#endregion
 
+//#region Common
+interface IBasePipelineMethod {
+    (): ng.IPromise<any>;
+}
+
+interface IPipeline {
+    savePipelines: Array<ISavePipelineMethod>;
+}
+//#endregion
 
 export {IBundle, IBaseModel, IBaseCrudModel, ICacheableModel,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
-IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags, ModelStates, IBaseCrudModelFilter}
+IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags,
+ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IListPageLocalization, ISavePipelineMethod, IPipeline, IBasePipelineMethod}
