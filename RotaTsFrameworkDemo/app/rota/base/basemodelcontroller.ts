@@ -1,5 +1,6 @@
 ﻿//#region Imports
-import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter, IListModel} from "./interfaces"
+import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
+    IListModel, IPipelineMethod, IException} from "./interfaces"
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -62,7 +63,10 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * Fired if there is an error while model loading
      * @param reason Error reason
      */
-    protected errorModel(reason: any): void {
+    protected errorModel(reason: IException): void {
+        const exceptionMessages = new Array<string>().concat(reason.errorMessages);
+        reason.exceptionMessage && exceptionMessages.push(reason.exceptionMessage);
+        this.notification.error({ message: exceptionMessages.join('<br/>') });
     }
     /**
      * Set model for some optional modifications
@@ -98,6 +102,36 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
             this.errorModel(reason);
         });
     }
+    /**
+     * Process chainable thenable functions
+     * @param pipeline Thenable functions
+     * @param params Optional parameters
+     */
+    protected initPipeline(pipeline: Array<IPipelineMethod>, ...params: any[]): ng.IPromise<any> {
+        let result = this.common.promise();
+        //iterate pipeline methods
+        for (let i = 0; i < pipeline.length; i++) {
+            result = ((promise: ng.IPromise<any>, method: IPipelineMethod) => {
+                return promise.then((response: any) => {
+                    response && params.push(response);
+                    if (method) {
+                        return method.apply(this, params);
+                    }
+                    return params;
+                });
+            })(result, pipeline[i]);
+        }
+
+        result.catch<IException>((reason: IException) => {
+            this.errorModel(reason);
+            return this.common.rejectedPromise(reason);
+        });
+
+        return result;
+    }
+
+
+
     //#endregion
 }
 

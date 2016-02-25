@@ -8,7 +8,7 @@ interface IRotaRootScope extends ng.IRootScopeService {
 
 interface ICommon extends IBaseService {
     promise<T>(p?: any): ng.IPromise<T>;
-    rejectedPromise(reason?: any): ng.IPromise<any>;
+    rejectedPromise<T>(reason?: T): ng.IPromise<T>;
     makePromise<T>(value: any): ng.IPromise<T>;
     isPromise(value: any): value is ng.IPromise<any>;
     isHtml(value: string): boolean;

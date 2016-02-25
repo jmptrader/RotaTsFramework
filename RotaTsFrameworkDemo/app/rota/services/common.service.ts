@@ -25,8 +25,8 @@ class Common implements ICommon {
      * Return rejected promise with reason
      * @param reason Arg
      */
-    rejectedPromise(reason?: any): ng.IPromise<any> {
-        var d = this.$q.defer();
+    rejectedPromise<T>(reason?: T): ng.IPromise<T> {
+        const d = this.$q.defer<T>();
         d.reject(reason);
         return d.promise;
     }

@@ -123,7 +123,7 @@ interface ICrudPageFlags {
 
 interface ICrudPageOptions {
     newItemFieldName?: string;
-    pipeline?: IPipeline;
+    parsers?: IPipeline;
 }
 
 export enum NavigationDirection {
@@ -151,20 +151,31 @@ interface IValidationItem {
     message?: string;
 }
 
-interface ISavePipelineMethod  {
-    (options: ISaveOptions): ng.IPromise<any>;
-}
 
 
 //#endregion
 
 //#region Common
-interface IBasePipelineMethod {
-    (): ng.IPromise<any>;
+interface IException {
+    exceptionMessage: string;
+    exception?: string;
+    stackTrace?: string;
+    errorMessages:Array<string>;
+}
+
+interface IPipelineMethod {
+    (...args: any[]): ng.IPromise<any>;
 }
 
 interface IPipeline {
-    savePipelines: Array<ISavePipelineMethod>;
+    saveParsers: Array<IPipelineMethod>;
+}
+
+interface IServerResponse {
+    entity?: IBaseCrudModel,
+    warningMessages?: Array<string>;
+    successMessages?: Array<string>;
+    infoMessages?: Array<string>;
 }
 //#endregion
 
@@ -172,4 +183,5 @@ export {IBundle, IBaseModel, IBaseCrudModel, ICacheableModel,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags,
-ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IListPageLocalization, ISavePipelineMethod, IPipeline, IBasePipelineMethod}
+ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem,
+IListPageLocalization, IPipeline, IPipelineMethod, IServerResponse, IException}

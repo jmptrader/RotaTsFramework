@@ -2,7 +2,7 @@
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
-    IValidationItem, ISavePipelineMethod, IPipeline, IBasePipelineMethod} from "./interfaces"
+    IValidationItem, IPipeline, IServerResponse, IException} from "./interfaces"
 import {INotification} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
@@ -82,10 +82,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     constructor(bundle: IBundle, options?: ICrudPageOptions) {
         super(bundle);
         //set default options
-        const defaultPipeline: IPipeline = {
-            savePipelines: [this.applyValidatiton, this.checkAuthority, this.beforeSaveModel]
+        const parsers: IPipeline = {
+            saveParsers: [this.beforeSaveModel]
         };
-        this.crudPageOptions = angular.extend({ pipeline: defaultPipeline }, options);
+        this.crudPageOptions = angular.extend({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
         this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
         //set form watchers
@@ -111,12 +111,12 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                     //Confirm
                     this.dialogs.showConfirm({ message: BaseCrudController.localizedValues.crudonay }).then(() => {
                         //Modeli kaydet
-                        //self.initSaveModel().then(function () {
-                        //    //Burdaki resetFrom fazlami ?
-                        //    self.resetForm();
-                        //    self.go(toState.name, toParams);
-                        //});
-                    }).catch(() => {
+                        this.initSaveModel().then(() => {
+                            //Burdaki resetFrom fazlami ?
+                            debugger;
+                            this.routing.go(toState.name, toParams);
+                        });
+                    }).catch((e) => {
                         this.resetForm();
                         this.routing.go(toState.name, toParams);
                     });
@@ -224,6 +224,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param model Model
      */
     private resetForm(model?: TModel): void {
+        debugger;
         this.isNew ? this.setModelAdded() : this.setModelUnChanged();
         this.rtForm.$setPristine();
 
@@ -241,62 +242,106 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     //#endregion
 
     //#region Save Methods
-
-    initPipeline(pipeline: Array<IBasePipelineMethod | ISavePipelineMethod>, ...params: any[]): ng.IPromise<any> {
-        let result = this.common.promise();
-        //iterate pipeline methods
-        for (let i = 0; i < pipeline.length; i++) {
-            result = ((r: ng.IPromise<any>, method: IBasePipelineMethod) => {
-                return r.then(() => method.apply(this, params), (reason: string) => {
-                    this.errorModel(reason);
-                    return this.common.rejectedPromise(reason);
-                });
-            })(result, <IBasePipelineMethod>pipeline[i]);
-        }
-        return result;
-    }
-
     initSaveModel(options?: ISaveOptions): ng.IPromise<TModel> {
         //init saving
-        options = angular.extend({ isNew: this.isNew, goon: false, showMessage: true, model: this.model }, options);
+        options = angular.extend({
+            isNew: this.isNew, goon: false,
+            showMessage: true, model: this.model
+        }, options);
         this.crudPageFlags.isSaving = true;
         (<INotification>this.notification).removeAll();
-
-        const defer = this.$q.defer();
-        //iterate save pipeline
-        const result = this.initPipeline(this.crudPageOptions.pipeline.savePipelines, options);
-
-        result.then(() => {
-            defer.resolve();
-            debugger;
-        }, () => {
-            defer.reject();
-            debugger;
+        //save pipeline
+        const defer = this.$q.defer<TModel>();
+        //validate and save model if valid
+        const result = this.parseAndSaveModel(options);
+        result.then((model: TModel) => {
+            //call aftersave method
+            const afterSaveModelResult = this.afterSaveModel(options);
+            this.common.makePromise(afterSaveModelResult).then(() =>
+                //change url if new --> edit
+                this.changeUrl(model.id).then(() => {
+                    defer.resolve(model);
+                })
+                , () => {
+                    defer.reject();
+                });
         });
-
+        result.finally(() => this.crudPageFlags.isSaving = false);
+        //return
         return defer.promise;
     }
-
-
-
-
-    beforeSaveModel(options: ISaveOptions): ng.IPromise<any> {
-        this.console.log({ message: 'beforeSaveModel works' });
-        return this.common.rejectedPromise('fdfqwe');
+    /**
+     * Validate parsers methods and call save method
+     * @param options Save options
+     */
+    private parseAndSaveModel(options: ISaveOptions): ng.IPromise<TModel> {
+        const defer = this.$q.defer<TModel>();
+        //iterate save pipeline
+        const parseResult = this.initPipeline(this.crudPageOptions.parsers.saveParsers, options);
+        //save if validation parsers resolved
+        parseResult.then(() => {
+            //call user savemodel method
+            const saveResult = this.saveModel(options);
+            //success
+            saveResult.then((response: IServerResponse) => {
+                //show messages
+                if (options.showMessage) {
+                    this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
+                    if (response.infoMessages)
+                        this.toastr.info({ message: response.infoMessages.join('</br>') });
+                    if (response.warningMessages)
+                        this.toastr.warn({ message: response.warningMessages.join('</br>') });
+                }
+                //set entity
+                if (!options.goon) {
+                    this.isNew = false;
+                    this.updateModel(<TModel>response.entity).then((model: TModel) => {
+                        defer.resolve(model);
+                    }, () => {
+                        defer.reject(response);
+                    });
+                } else {
+                    defer.resolve(<TModel>response.entity);
+                }
+            });
+            //fail save
+            saveResult.catch((response: IException) => {
+                this.errorModel(response);
+                defer.reject(response);
+            });
+        });
+        //fail parsers
+        parseResult.catch((response: IException) => {
+            defer.reject(response);
+        });
+        return defer.promise;
     }
-
-    afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
-        this.console.log({ message: 'afterSaveModel works' });
+    /**
+     * Before save event
+     * @param options Save options
+     */
+    beforeSaveModel(options: ISaveOptions): ng.IPromise<any> {
         return this.common.promise();
     }
-    //abstract saveModel(model: TModel): ng.IPromise<TModel>;
+    /**
+     * After save event
+     * @param options Save options
+     */
+    afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
+        return this.common.promise();
+    }
+    /**
+     * Save model
+     * @param options Save options
+     */
+    abstract saveModel(options: ISaveOptions): ng.IPromise<IServerResponse>;
     //#endregion
 
     //#region Validation
     private applyValidatiton(options: ISaveOptions): ng.IPromise<any> {
         const errors: IValidationItem[] = [];
         let message = '<ul>';
-        const defered = this.$q.defer();
+        const defered = this.$q.defer<IValidationItem[]>();
 
         if (this.crudPageFlags.isDeleting) {
             defered.resolve(errors);
@@ -310,7 +355,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                 });
                 message += '</ul>';
 
-                defered.reject(message);
+                defered.reject({ reason: message });
             } else {
                 defered.resolve();
             }
@@ -354,19 +399,26 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
     }
     /**
+     * Update model after fetching data
+     * @param model Model
+     */
+    updateModel(model: TModel): ng.IPromise<TModel> {
+        return super.updateModel(model).then((model: TModel) => {
+            this.resetForm(model);
+            return model;
+        });
+    }
+    /**
      * Do some stuff after model loaded
      * @param model Model
      */
     loadedModel(model: TModel): void {
+        //model not found in edit mode
         if (!this.isNew && !this.isAssigned(model)) {
-            //Hata ver
             this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
-            //Yeni moda gec
             this.initNewModel();
             return;
         }
-        //Model yuklendikten sonra modeli resetleyip yedekle revert icin
-        this.resetForm(model);
         //set navbuttons enable
         this.navButtonsEnabled = {
             next: !!this.getNavModel(NavigationDirection.Next),
@@ -379,9 +431,9 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         }
     }
     /**
-   * @abstract Get model
-   * @param args Model
-   */
+    * @abstract Get model
+    * @param args Model
+    */
     abstract getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel;
     //#endregion
 
