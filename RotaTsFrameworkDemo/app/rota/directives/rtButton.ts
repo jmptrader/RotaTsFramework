@@ -4,6 +4,7 @@ import {ICommon} from '../services/common.interface';
 interface IButtonAttributes extends ng.IAttributes {
     iconToRight: boolean;
     shortcut: string;
+    ngDisabled: string;
 }
 
 interface IButtonScope extends ng.IScope {
@@ -48,7 +49,8 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
             if (buttonAttrs.disable) {
                 element.attr('disabled', 'disabled');
             } else {
-                element.removeAttr('disabled');
+                if (!attrs.ngDisabled)
+                    element.removeAttr('disabled');
             }
         }
         const startAjax = () => {
@@ -64,6 +66,7 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
                 result.finally(() => {
                     //timeout(() => endAjax(), 0);
                     endAjax();
+                    //
                 });
             }
         };

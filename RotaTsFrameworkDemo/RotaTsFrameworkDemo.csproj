@@ -186,6 +186,7 @@
     <Content Include="app\rota\core\angular-sanitize.js" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
+    <Content Include="app\rota\lib\angular-scroll.min.js" />
     <Content Include="app\rota\lib\bootstrap.min.js" />
     <Content Include="app\rota\lib\hotkeys.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
@@ -288,6 +289,7 @@
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtButton.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtCrudButtons.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtFocus.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtForm.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtGrid.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtI18n.ts" />

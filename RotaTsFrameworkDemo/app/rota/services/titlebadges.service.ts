@@ -81,7 +81,7 @@ class TitleBadges implements ITitleBadges {
      * Hide all badges 
      */
     clearBadges(): void {
-        for (let i = BadgeTypes.Editmode; i < BadgeTypes.Cloning; i++) {
+        for (let i = BadgeTypes.Editmode; i <= BadgeTypes.Invalid; i++) {
             this.badges[i].show = false;
         }
     }

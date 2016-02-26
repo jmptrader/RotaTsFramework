@@ -1,8 +1,7 @@
 ﻿//#region Imports
-import {IBaseCrudModel, ModelStates, IBaseModel} from "../base/interfaces"
+import {IBaseCrudModel, ModelStates, IBaseModel, IServerResponse} from "../base/interfaces"
 import {ICommon} from './common.interface';
 import {IRouteConfig} from './routing.config'
-
 //#endregion
 
 //#region Common Service
@@ -107,7 +106,6 @@ class Common implements ICommon {
     isArray<T>(value: any): value is Array<T> {
         return angular.isArray(value);
     }
-
     //#endregion
 
     //#region Model Utils

@@ -7,6 +7,7 @@ import "./rtButton"
 import "./rtListButtons"
 import "./rtCrudButtons"
 import "./rtI18n"
+import "./rtFocus"
 
 angular.module('rota.directives',
     ['rota.directives.rtmenu',
@@ -17,5 +18,6 @@ angular.module('rota.directives',
         'rota.directives.rtform',
         'rota.directives.rtlistbuttons',
         'rota.directives.rtI18n',
-        'rota.directives.rtcrudbuttons'
+        'rota.directives.rtcrudbuttons',
+        'rota.directives.rtfocus'
     ]);

@@ -49,4 +49,26 @@ interface ILogger extends IBaseService {
     toastr: IBaseLogger;
 }
 
+//#region Enums
+export enum LogType {
+    Info,
+    Error,
+    Warn,
+    Success,
+    Debug
+}
+
+export enum LogServices {
+    Console = 1,
+    Toastr = 2,
+    Notification = 4
+}
+
+export enum NotifyType {
+    Sticky,
+    RouteCurrent,
+    RouteNext
+}
+//#endregion
+
 export {IToastr, IBaseLogger, INotification, INotify, ILog, ILoggerConfig, ILogger, IConsole}

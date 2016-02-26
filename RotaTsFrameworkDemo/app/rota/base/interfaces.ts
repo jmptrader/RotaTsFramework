@@ -1,4 +1,5 @@
 ﻿import {ICacheable} from '../services/caching.interface';
+import {LogType} from '../services/logger.interface';
 
 //#region Misc
 interface IBundle {
@@ -127,8 +128,8 @@ interface ICrudPageOptions {
 }
 
 export enum NavigationDirection {
-    Next,
-    Prev
+    Prev,
+    Next
 }
 
 interface ICrudPageLocalization {
@@ -160,7 +161,12 @@ interface IException {
     exceptionMessage: string;
     exception?: string;
     stackTrace?: string;
-    errorMessages:Array<string>;
+    errorMessages: Array<string>;
+}
+
+interface IPipelineException extends IException {
+    title?: string;
+    logType?: LogType;
 }
 
 interface IPipelineMethod {
@@ -184,4 +190,4 @@ IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags,
 ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem,
-IListPageLocalization, IPipeline, IPipelineMethod, IServerResponse, IException}
+IListPageLocalization, IPipeline, IPipelineMethod, IServerResponse, IException, IPipelineException}

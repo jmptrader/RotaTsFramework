@@ -9,7 +9,6 @@ import * as _ from 'underscore';
 //#endregion
 
 //#region BaseListController
-
 /**
  * Base List Controller
  */
@@ -337,7 +336,9 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * @param id
     */
     goToDetailState(id: string): ng.IPromise<any> {
-        return this.routing.go(this.listPageOptions.editState, id && { id: id });
+        //for list navigation
+        const idList = _.pluck(this.gridData, 'id');
+        return this.routing.go(this.listPageOptions.editState, id && { id: id, navItems: idList });
     }
     /**
      * Init deletion model by unique key

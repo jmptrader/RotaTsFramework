@@ -1,6 +1,5 @@
 ﻿//#region Import
-import { ILoggerConfig } from "./logger.interface";
-import {LogType} from './logger.service';
+import { ILoggerConfig, LogType} from "./logger.interface";
 import { BaseConfig } from "../base/baseconfig";
 import * as toastr from "toastr";
 //#endregion

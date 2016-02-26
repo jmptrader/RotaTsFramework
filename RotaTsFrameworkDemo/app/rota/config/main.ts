@@ -27,7 +27,8 @@
         'rota-resources': './app/rota/resources',
         'app-resources': './app/resources',
         pdfMake: './app/rota/lib/pdfMake.min',
-        vfs_fonts: './app/rota/lib/vfs_fonts'
+        vfs_fonts: './app/rota/lib/vfs_fonts',
+        scroll: './app/rota/lib/angular-scroll.min'
     },
 
     //Set the config for the i18nmodule ID
@@ -74,6 +75,9 @@
         },
         hotkeys: {
             deps: ['angular']
+        },
+        scroll: {
+            deps: ['angular', 'jquery']
         }
     }
 });

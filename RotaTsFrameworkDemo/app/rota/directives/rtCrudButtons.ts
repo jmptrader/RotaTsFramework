@@ -15,16 +15,16 @@ function crudButtonsDirective() {
         '<li><a href i18n="rota.yenikopyala" ng-click="vm.initNewModel(true)"></a></li>' +
         '</ul></div>' +
         '</div>&nbsp;' +
-        '<div class="btn-group" ng-if="!vm.isNew && (vm.navEnabled.prev || vm.navEnabled.next)">' +
-        '<rt-button ng-disabled="!vm.navEnabled.prev" text-i18n="rota.oncekikayit" icon="arrow-circle-left " color="info" click="vm.initModelNav(0)" shortcut="shift+ctrl+left" ' +
+        '<div class="btn-group" ng-if="!vm.isNew && (vm.navButtonsEnabled.prev || vm.navButtonsEnabled.next)">' +
+        '<rt-button ng-disabled="!vm.navButtonsEnabled.prev" text-i18n="rota.oncekikayit" icon="arrow-circle-left " color="info" click="vm.initModelNav(0)" shortcut="shift+ctrl+left" ' +
         '></rt-button>' +
-        '<rt-button ng-disabled="!vm.navEnabled.next" text-i18n="rota.sonrakikayit" icon="arrow-circle-right" color="info" click="vm.initModelNav(1)" shortcut="shift+ctrl+right" ' +
+        '<rt-button ng-disabled="!vm.navButtonsEnabled.next" text-i18n="rota.sonrakikayit" icon="arrow-circle-right" color="info" click="vm.initModelNav(1)" shortcut="shift+ctrl+right" ' +
         ' icon-to-right></rt-button>' +
         '&nbsp;</div>' +
         '<div class="btn-group">' +
-        '<rt-button text-i18n="rota.kaydet" icon="floppy-o" color="success" click="vm.initSaveModel()" disable-clickonce shortcut="ctrl+enter" ' +
+        '<rt-button text-i18n="rota.kaydet" icon="floppy-o" color="success" click="vm.initSaveModel()" shortcut="ctrl+enter" ' +
         'ng-disabled="vm.rtForm.$invalid || vm.rtForm.$pending || vm.rtForm.$pristine"></rt-button>' +
-        '<rt-button text-i18n="rota.kaydetdevam" icon="play" color="success" click="vm.initSaveContinue()" disable-clickonce shortcut="ctrl+shift+ins" ' +
+        '<rt-button text-i18n="rota.kaydetdevam" icon="play" color="success" click="vm.initSaveAndContinue()" shortcut="ctrl+shift+ins" ' +
         'ng-disabled="vm.rtForm.$invalid || vm.rtForm.$pending || vm.rtForm.$pristine"></rt-button>&nbsp;' +
         '</div>' +
         '<div class="btn-group">' +

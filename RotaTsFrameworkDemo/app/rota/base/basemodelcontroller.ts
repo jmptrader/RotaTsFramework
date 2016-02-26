@@ -1,6 +1,7 @@
 ﻿//#region Imports
 import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
-    IListModel, IPipelineMethod, IException} from "./interfaces"
+    IListModel, IPipelineMethod, IException, IPipelineException} from "./interfaces"
+import {LogType} from '../services/logger.interface';
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -8,7 +9,7 @@ import {BaseController} from "./basecontroller"
 //#region BaseModelController
 abstract class BaseModelController<TModel extends IBaseModel> extends BaseController {
     //#region Props
-    private _model: TModel | IListModel<TModel> | IPagingListModel<TModel>;
+    protected _model: TModel | IListModel<TModel> | IPagingListModel<TModel>;
     /**
      * Model object
      * @returns {IModelType<TModel>}
@@ -60,13 +61,30 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         });
     }
     /**
-     * Fired if there is an error while model loading
+     * Fired if there is an error while model processing
      * @param reason Error reason
      */
-    protected errorModel(reason: IException): void {
-        const exceptionMessages = new Array<string>().concat(reason.errorMessages);
-        reason.exceptionMessage && exceptionMessages.push(reason.exceptionMessage);
-        this.notification.error({ message: exceptionMessages.join('<br/>') });
+    protected errorModel(exception: IPipelineException): void {
+        const exceptionMessages = new Array<string>();
+        if (exception.errorMessages && exception.errorMessages.length) {
+            exceptionMessages.concat(exception.errorMessages);
+        }
+        exception.exceptionMessage && exceptionMessages.push(exception.exceptionMessage);
+
+        if (exceptionMessages.length) return;
+
+        const message = exceptionMessages.join('<br/>');
+        switch (exception.logType) {
+            case LogType.Error:
+                this.notification.error({ title: exception.title, message: message });
+                break;
+            case LogType.Warn:
+                this.notification.warn({ title: exception.title, message: message });
+                break;
+            default:
+                this.notification.error({ title: exception.title, message: message });
+                break;
+        }
     }
     /**
      * Set model for some optional modifications
@@ -92,14 +110,15 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * @param args Optional params
      */
     protected initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IListModel<TModel> | IPagingListModel<TModel>> {
-        const model = this.defineModel(modelFilter);
-        return this.common.makePromise(model).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
+        const defineModelResult = this.defineModel(modelFilter);
+        return this.common.makePromise(defineModelResult).then((data: TModel | IListModel<TModel> | IPagingListModel<TModel>) => {
             return this.updateModel(data).then(() => {
                 this.loadedModel(data);
                 return data;
             });
         }, (reason: any) => {
-            this.errorModel(reason);
+            //TODO: can be changed depending on server excepion response
+            this.errorModel(reason.data || reason);
         });
     }
     /**
@@ -122,7 +141,7 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
             })(result, pipeline[i]);
         }
 
-        result.catch<IException>((reason: IException) => {
+        result.catch<IPipelineException>((reason: IPipelineException) => {
             this.errorModel(reason);
             return this.common.rejectedPromise(reason);
         });

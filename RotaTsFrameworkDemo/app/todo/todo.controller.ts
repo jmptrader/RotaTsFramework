@@ -1,6 +1,6 @@
 ﻿import {App} from "app/rota/config/app";
 import {BaseCrudController} from "app/rota/base/basecrudcontroller";
-import {IBundle, IBaseCrudModelFilter, ISaveOptions, IServerResponse} from 'app/rota/base/interfaces';
+import {IBundle, IBaseCrudModelFilter, ISaveOptions, IServerResponse, IValidationItem} from 'app/rota/base/interfaces';
 
 import {ITodoModel} from "./todos.models";
 import {ITodoApi} from "./todos.service";
@@ -15,16 +15,21 @@ class TodoController extends BaseCrudController<ITodoModel> {
     }
 
     saveModel(options: ISaveOptions): ng.IPromise<IServerResponse> {
-       
+
         return this.todoApi.save(<ITodoModel>options.model);
     }
-    afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
-        this.routing.go('shell.content.todos');
-        return null;
+
+    //afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
+    //    if (!options.goon)
+    //        this.routing.go('shell.content.todos');
+    //    return null;
+    //}
+
+
+    validateModel(errors: IValidationItem[], options: ISaveOptions): ng.IPromise<IValidationItem[]> | IValidationItem[] {
+        this.model.text.length < 3 && errors.push('must be higher than 3 chars');
+        return errors;
     }
-
-
-
 
     //beforeSaveModel(options: ISaveOptions): ng.IPromise<any> {
     //    return this.common.rejectedPromise<IPipelineError>({ exception: { message: 'hatattata' } });
