@@ -29,8 +29,8 @@ class TodoController extends BaseCrudController<ITodoModel> {
     }
 
     checkDay(): ng.IPromise<any> {
-        debugger;
-        return this.common.rejectedPromise({ message: 'checkDay failed' });
+        return this.common.rejectedPromise<IValidationResult>(
+            { messageI18N: 'todo.state' });
     }
 
 

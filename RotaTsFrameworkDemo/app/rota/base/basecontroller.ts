@@ -11,7 +11,6 @@ import {ILocalization} from '../services/localization.interface';
 import * as _ from 'underscore';
 //#endregion
 
-//#region BaseController
 class BaseController {
     //#region Props
     rtForm: ng.IFormController;
@@ -194,7 +193,6 @@ class BaseController {
     }
     //#endregion
 }
-//#endregion
 
 export {BaseController}
 

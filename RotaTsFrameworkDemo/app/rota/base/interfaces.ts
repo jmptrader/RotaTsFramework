@@ -176,7 +176,8 @@ interface IPipeline {
 }
 
 interface IValidationResult {
-    message: string;
+    message?: string;
+    messageI18N?: string;
 }
 
 interface IValidationItem {

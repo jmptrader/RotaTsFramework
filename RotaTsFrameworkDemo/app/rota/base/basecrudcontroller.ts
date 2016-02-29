@@ -1,4 +1,5 @@
-﻿import {BadgeTypes} from '../services/titlebadges.service';
+﻿//#region Imports
+import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
@@ -9,6 +10,8 @@ import {IRotaState} from '../services/routing.interface';
 //deps
 import {BaseModelController} from './basemodelcontroller';
 import * as _ from 'underscore';
+
+//#endregion
 
 abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
     //#region Props
@@ -375,10 +378,14 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         const validationResult = super.applyValidations(validatorsFilteredByCrudFlag);
         //convert pipiline exception
         validationResult.then(() => { resultDefer.resolve(); }, (reason: IValidationResult) => {
+            let msg = BaseCrudController.localizedValues.bilinmeyenhata;
+            if (reason) {
+                msg = reason.message || (reason.messageI18N && this.localization.getLocal(reason.messageI18N));
+            }
             resultDefer.reject({
                 title: BaseCrudController.localizedValues.validationhatasi,
                 logType: LogType.Warn,
-                exceptionMessage: (reason && reason.message) || BaseCrudController.localizedValues.bilinmeyenhata
+                exceptionMessage: msg
             });
         });
         return resultDefer.promise;
