@@ -4,6 +4,7 @@ import {IToastr, INotification, INotify, ILog, IBaseLogger, ILoggerConfig,
 import {IMainConfig} from '../config/config.interface';
 import {IBaseConfigProvider} from "../base/interfaces";
 import {ILocalization} from './localization.interface';
+import {IRotaState} from './routing.interface';
 //deps
 import {Localization} from './localization.service';
 import "./logger.config";
@@ -172,6 +173,14 @@ class Notification implements INotification {
             this.notifications[NotifyType.Sticky].length = 0;
         }
     }
+    /**
+     * Reset notifications for menu changes
+     */
+    resetNotifications(): void {
+        this.notifications[NotifyType.RouteCurrent].length = 0;
+        this.notifications[NotifyType.RouteCurrent] = angular.copy(this.notifications[NotifyType.RouteNext]);
+        this.notifications[NotifyType.RouteNext].length = 0;
+    }
 }
 /**
  * Console logger for either debugging and exceptions
@@ -297,18 +306,22 @@ class Logger implements ILogger {
      */
     get toastr(): IBaseLogger { return this.logServices[LogServices.Toastr]; }
     //#endregion
-    static $inject = ['$log', 'Config', 'LoggerConfig', 'Localization'];
-    constructor($log: ng.ILogService, config: IMainConfig, loggerconfig: ILoggerConfig, localization: ILocalization) {
+    static $inject = ['$rootScope', '$log', 'Config', 'LoggerConfig', 'Localization'];
+    constructor($rootScope: ng.IRootScopeService, $log: ng.ILogService, config: IMainConfig, loggerconfig: ILoggerConfig, localization: ILocalization) {
         loggerconfig.defaultTitles[LogType.Info] = localization.getLocal('rota.titleinfo');
         loggerconfig.defaultTitles[LogType.Warn] = localization.getLocal('rota.titlewarn');
         loggerconfig.defaultTitles[LogType.Success] = localization.getLocal('rota.titlesuccess');
         loggerconfig.defaultTitles[LogType.Error] = localization.getLocal('rota.titleerror');
         loggerconfig.defaultTitles[LogType.Debug] = localization.getLocal('rota.titledebug');
-        //Register services
+        //register services
         this.logServices = {};
         this.logServices[LogServices.Console] = new Console($log, config);
         this.logServices[LogServices.Notification] = new Notification(loggerconfig);
         this.logServices[LogServices.Toastr] = new Toastr(loggerconfig);
+        //reset notification when menu changes
+        $rootScope.$on(config.eventNames.menuChanged, () => {
+            (<INotification>this.logServices[LogServices.Notification]).resetNotifications();
+        });
     }
 }
 

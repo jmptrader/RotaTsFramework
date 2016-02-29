@@ -2,7 +2,8 @@
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
-    IValidationItem, IPipeline, IServerResponse, IException, IPipelineException} from "./interfaces"
+    IValidationItem, IValidationResult, IPipeline, IPipelineException, CrudType} from "./interfaces"
+import {IServerResponse, IException} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
@@ -29,7 +30,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     protected $stateParams: IModelStateParams;
     private crudPageOptions: ICrudPageOptions;
     private crudPageFlags: ICrudPageFlags;
-    navButtonsEnabled: { [index: number]: boolean };
+    private navButtonsEnabled: { [index: number]: boolean };
 
     /**
      * Stored model to be restored when reverting
@@ -89,7 +90,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         super(bundle);
         //set default options
         const parsers: IPipeline = {
-            saveParsers: [this.checkAuthority, this.applyValidatiton, this.beforeSaveModel]
+            saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel]
         };
         this.crudPageOptions = angular.extend({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
@@ -146,7 +147,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             kayitkopyalandi: this.localization.getLocal('rota.kayitkopyalandı'),
             modelbulunamadi: this.localization.getLocal('rota.modelbulunamadi'),
             succesfullyprocessed: this.localization.getLocal('rota.succesfullyprocessed'),
-            validationhatasi: this.localization.getLocal('rota.validationhatasi')
+            validationhatasi: this.localization.getLocal('rota.validationhatasi'),
+            bilinmeyenhata: this.localization.getLocal('rota.bilinmeyenhataolustu')
         };
     }
     //#endregion
@@ -227,6 +229,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     private resetForm(model?: TModel): void {
         this.isNew ? this.setModelAdded() : this.setModelUnChanged();
+        //TODO:rtForm is undefined somtimes,diagnose
         this.rtForm.$setPristine();
 
         if (!this.isNew && this.isAssigned(model)) {
@@ -265,7 +268,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.crudPageFlags.isSaving = true;
         (<INotification>this.notification).removeAll();
         //save process
-        const defer = this.$q.defer<TModel>();
+        const deferSave = this.$q.defer<TModel>();
         //validate and save model if valid
         const saveModelResult = this.parseAndSaveModel(options);
         saveModelResult.then((model: TModel) => {
@@ -273,11 +276,14 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             const afterSaveModelResult = this.afterSaveModel(options);
             this.common.makePromise(afterSaveModelResult).then(() => {
                 //change url new --> edit
-                this.changeUrl(model.id).then(() => { defer.resolve(model); });
-            }, () => {
+                this.changeUrl(model.id).then(() => { deferSave.resolve(model); });
+            }, (reason) => {
                 //if afterSaveModel failed
-                defer.reject();
+                deferSave.reject(reason);
             });
+        }, (reason) => {
+            //save or validation failed
+            deferSave.reject(reason);
         });
         saveModelResult.finally(() => {
             if (this.crudPageFlags.isCloning)
@@ -286,7 +292,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                 this.crudPageFlags.isSaving = false;
         });
         //return
-        return defer.promise;
+        return deferSave.promise;
     }
     /**
      * Validate parsers methods and call save method
@@ -352,37 +358,30 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     //#endregion
 
     //#region Validation
-    private applyValidatiton(options: ISaveOptions): ng.IPromise<any> {
-        const defered = this.$q.defer<IValidationItem[]>();
-
-        if (this.crudPageFlags.isDeleting) {
-            defered.resolve();
-            return defered.promise;
-        }
-        const validationResult = this.common.makePromise<IValidationItem[]>(this.validateModel([], options));
-        validationResult.then((e: IValidationItem[]) => {
-            if (e.length) {
-                let message = '<ul>';
-                e.forEach(err => {
-                    message += '<li>' + err.message + '</li>';
-                });
-                message += '</ul>';
-
-                defered.reject({
-                    title: BaseCrudController.localizedValues.validationhatasi,
-                    exceptionMessage: message, logType: LogType.Warn
-                });
-            } else {
-                defered.resolve();
+    private applyValidatitons(options: ISaveOptions): ng.IPromise<any> {
+        const resultDefer = this.$q.defer();
+        //filter by crud flag
+        const validatorsFilteredByCrudFlag = _.filter(this.validators, (item: IValidationItem) => {
+            if (!item.crudFlag)
+                return true;
+            if ((options.isNew && item.crudFlag & CrudType.Create) ||
+                (!options.isNew && item.crudFlag & CrudType.Update) ||
+                (this.crudPageFlags.isDeleting && item.crudFlag & CrudType.Delete)) {
+                return true;
             }
-        }, () => {
-            defered.reject();
+            return false;
         });
-        return defered.promise;
-    }
-
-    validateModel(errors: IValidationItem[], options: ISaveOptions): ng.IPromise<IValidationItem[]> | IValidationItem[] {
-        return this.common.promise(errors);
+        //apply validations
+        const validationResult = super.applyValidations(validatorsFilteredByCrudFlag);
+        //convert pipiline exception
+        validationResult.then(() => { resultDefer.resolve(); }, (reason: IValidationResult) => {
+            resultDefer.reject({
+                title: BaseCrudController.localizedValues.validationhatasi,
+                logType: LogType.Warn,
+                exceptionMessage: (reason && reason.message) || BaseCrudController.localizedValues.bilinmeyenhata
+            });
+        });
+        return resultDefer.promise;
     }
     //#endregion
 

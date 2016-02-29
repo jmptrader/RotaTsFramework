@@ -3,6 +3,7 @@ import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseLi
     IGridOptions, IListModel, IBaseListController, IListPageLocalization} from "./interfaces"
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
+import {IException} from '../services/common.interface';
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 import * as _ from 'underscore';
@@ -109,7 +110,8 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         BaseListController.localizedValues = {
             kayitbulunamadi: this.localization.getLocal('rota.kayitbulunamadi'),
             deleteconfirm: this.localization.getLocal('rota.deleteconfirm'),
-            deleteconfirmtitle: this.localization.getLocal('rota.deleteconfirmtitle')
+            deleteconfirmtitle: this.localization.getLocal('rota.deleteconfirmtitle'),
+            deleteselected: this.localization.getLocal('rota.onaysecilikayitlarisil')
         };
     }
     //#endregion
@@ -298,14 +300,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * Get model by key
      * @param key Unique key
      */
-    getModelItemByKey(key: string): TModel {
+    getModelItemByKey(key: number): TModel {
         return _.findWhere(this.gridData, { id: key });
     }
     /**
      * Remove model item from grid datasource
      * @param key Unique key
      */
-    removeModelItemByKey(key: string): void {
+    removeModelItemByKey(key: number): void {
         const model = this.getModelItemByKey(key);
         if (model) {
             const index = this.gridData.indexOf(model);
@@ -344,7 +346,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * Init deletion model by unique key
      * @param id Unique id
      */
-    protected initDeleteModel(id: string): ng.IPromise<any> {
+    protected initDeleteModel(id: number): ng.IPromise<any> {
         if (id === undefined || id === null || !id) return undefined;
 
         const confirmText = BaseListController.localizedValues.deleteconfirm;
@@ -356,9 +358,12 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             if (this.common.isPromise(deleteResult)) {
                 return deleteResult.then(() => {
                     this.removeModelItemByKey(id);
+                }, (reason: IException) => {
+                    this.errorModel(reason);
                 });
             }
             this.removeModelItemByKey(id);
+            return undefined;
         });
     }
     /**
@@ -366,8 +371,36 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @param id Unique key
      * @description Remove item from grid datasource.Must be overrided to implament your deletion logic and call super.deleteModel();
      */
-    deleteModel(id: string): ng.IPromise<any> | void {
+    deleteModel(id: number | number[]): ng.IPromise<any> | void {
         return undefined;
+    }
+    /**
+     * Init deletetion of selected rows
+     */
+    initDeleteSelectedModels(): ng.IPromise<any> {
+        if (!this.gridSeletedRows.length) return undefined;
+
+        const confirmText = BaseListController.localizedValues.deleteselected;
+        const confirmTitleText = BaseListController.localizedValues.deleteconfirmtitle;
+        return this.dialogs.showConfirm({ message: confirmText, title: confirmTitleText }).then(() => {
+            const keyArray: number[] = _.pluck(this.gridSeletedRows, 'id');
+            //call delete model
+            const deleteResult = this.deleteModel(keyArray);
+            //removal of model depends on whether result is promise or void
+            if (this.common.isPromise(deleteResult)) {
+                return deleteResult.then(() => {
+                    keyArray.forEach((key) => {
+                        this.removeModelItemByKey(key);
+                    });
+                }, (reason: IException) => {
+                    this.errorModel(reason);
+                });
+            }
+            keyArray.forEach((key) => {
+                this.removeModelItemByKey(key);
+            });
+            return undefined;
+        });
     }
 
     //#endregion

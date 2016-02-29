@@ -64,9 +64,7 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
             if (common.isPromise(result)) {
                 startAjax();
                 result.finally(() => {
-                    //timeout(() => endAjax(), 0);
                     endAjax();
-                    //
                 });
             }
         };

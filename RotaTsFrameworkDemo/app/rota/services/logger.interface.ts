@@ -35,6 +35,7 @@ interface INotification extends IBaseLogger {
     currentNotifications: INotify[];
     removeNotification(notify: INotify): void;
     removeAll(includeSticky?: boolean): void;
+    resetNotifications():void;
 }
 
 interface IConsole extends IBaseLogger {

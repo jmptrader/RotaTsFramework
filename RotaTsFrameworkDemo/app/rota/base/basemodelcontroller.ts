@@ -1,7 +1,8 @@
 ﻿//#region Imports
 import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
-    IListModel, IPipelineMethod, IException, IPipelineException} from "./interfaces"
+    IListModel, IPipelineMethod, IPipelineException} from "./interfaces"
 import {LogType} from '../services/logger.interface';
+import {IException} from '../services/common.interface';
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -71,7 +72,7 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         }
         exception.exceptionMessage && exceptionMessages.push(exception.exceptionMessage);
 
-        if (exceptionMessages.length) return;
+        if (!exceptionMessages.length) return;
 
         const message = exceptionMessages.join('<br/>');
         switch (exception.logType) {
@@ -140,17 +141,12 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
                 });
             })(result, pipeline[i]);
         }
-
         result.catch<IPipelineException>((reason: IPipelineException) => {
             this.errorModel(reason);
             return this.common.rejectedPromise(reason);
         });
-
         return result;
     }
-
-
-
     //#endregion
 }
 

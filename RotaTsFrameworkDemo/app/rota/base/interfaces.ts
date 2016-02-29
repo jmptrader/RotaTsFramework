@@ -1,5 +1,10 @@
-﻿import {ICacheable} from '../services/caching.interface';
+﻿//#region Imports
+import {ICacheable} from '../services/caching.interface';
 import {LogType} from '../services/logger.interface';
+import {IException, IChainableMethod} from '../services/common.interface';
+
+//#endregion
+
 
 //#region Misc
 interface IBundle {
@@ -96,6 +101,7 @@ interface IListPageLocalization {
     kayitbulunamadi: string;
     deleteconfirm: string;
     deleteconfirmtitle: string;
+    deleteselected: string;
 }
 
 //#endregion
@@ -138,6 +144,7 @@ interface ICrudPageLocalization {
     kayitkopyalandi: string;
     succesfullyprocessed: string;
     validationhatasi: string;
+    bilinmeyenhata: string;
 }
 
 interface ISaveOptions {
@@ -146,22 +153,13 @@ interface ISaveOptions {
     showMessage?: boolean;
     model?: IBaseCrudModel;
 }
-
-interface IValidationItem {
-    code?: string;
-    message?: string;
-}
-
-
-
 //#endregion
 
 //#region Common
-interface IException {
-    exceptionMessage: string;
-    exception?: string;
-    stackTrace?: string;
-    errorMessages: Array<string>;
+export enum CrudType {
+    Create = 1,
+    Update = 2,
+    Delete = 4
 }
 
 interface IPipelineException extends IException {
@@ -177,11 +175,16 @@ interface IPipeline {
     saveParsers: Array<IPipelineMethod>;
 }
 
-interface IServerResponse {
-    entity?: IBaseCrudModel,
-    warningMessages?: Array<string>;
-    successMessages?: Array<string>;
-    infoMessages?: Array<string>;
+interface IValidationResult {
+    message: string;
+}
+
+interface IValidationItem {
+    func: IChainableMethod<any>;
+    name?: string;
+    enabled?: boolean;
+    order?: number;
+    crudFlag?: CrudType;
 }
 //#endregion
 
@@ -189,5 +192,5 @@ export {IBundle, IBaseModel, IBaseCrudModel, ICacheableModel,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags,
-ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem,
-IListPageLocalization, IPipeline, IPipelineMethod, IServerResponse, IException, IPipelineException}
+ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
+IListPageLocalization, IPipeline, IPipelineMethod, IPipelineException}

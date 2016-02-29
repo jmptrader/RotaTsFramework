@@ -27,8 +27,15 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         ];
     }
 
-    deleteModel(id: string): ng.IPromise<any> {
-        return this.todoApi.deleteById(Number(id));
+    deleteModel(id: number | number[]): ng.IPromise<any> {
+        if (this.common.isArray(id)) {
+            const qAll: ng.IPromise<any>[] = [];
+            id.forEach((key) => {
+                qAll.push(this.todoApi.deleteById(key));
+            });
+            return this.$q.all(qAll);
+        }
+        return this.todoApi.deleteById(<number>id);
     }
 }
 

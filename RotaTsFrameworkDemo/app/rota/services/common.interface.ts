@@ -1,9 +1,28 @@
 ﻿import {IBaseCrudModel, ModelStates, IBaseModel} from "../base/interfaces"
 import { IBaseService} from "./service.interface";
+
 interface IRotaRootScope extends ng.IRootScopeService {
     appTitle: string;
     forms: any;
     isCollapsed: boolean;
+}
+
+interface IChainableMethod<T> {
+    (...args: any[]): ng.IPromise<T>;
+}
+
+interface IException {
+    exceptionMessage: string;
+    exception?: string;
+    stackTrace?: string;
+    errorMessages?: Array<string>;
+}
+
+interface IServerResponse {
+    entity?: IBaseCrudModel,
+    warningMessages?: Array<string>;
+    successMessages?: Array<string>;
+    infoMessages?: Array<string>;
 }
 
 interface ICommon extends IBaseService {
@@ -23,4 +42,4 @@ interface ICommon extends IBaseService {
     isArray<T>(value: any): value is Array<T>;
 }
 
-export {ICommon, IRotaRootScope}
+export {ICommon, IRotaRootScope, IChainableMethod, IException, IServerResponse}

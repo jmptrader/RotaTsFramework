@@ -22,6 +22,8 @@ function listButtonsDirective() {
         '&nbsp;' +
         '<rt-button text-i18n="rota.temizle" icon="refresh" color="info" click="vm.clearGrid();vm.filter={};"></rt-button>&nbsp;' +
         '<rt-button text-i18n="rota.yenikayit" icon="plus" color="success" click="vm.goToDetailState()" shortcut="ctrl+ins"></rt-button>&nbsp;' +
+        '<rt-button text-i18n="rota.secilikayitlarisil" icon="remove" color="danger" click="vm.initDeleteSelectedModels()" shortcut="ctrl+shift+del" ' +
+        'ng-if="vm.gridSeletedRows.length"></rt-button>' +
         '</div>'
     };
     return directive;
