@@ -145,6 +145,8 @@ interface ICrudPageLocalization {
     succesfullyprocessed: string;
     validationhatasi: string;
     bilinmeyenhata: string;
+    silmeonay: string;
+    silmeonaybaslik: string;
 }
 
 interface ISaveOptions {
@@ -152,6 +154,13 @@ interface ISaveOptions {
     goon?: boolean;
     showMessage?: boolean;
     model?: IBaseCrudModel;
+}
+
+interface IDeleteOptions {
+    showMessage?: boolean;
+    model?: IBaseCrudModel;
+    key: number;
+    confirm?: boolean;
 }
 //#endregion
 
@@ -167,12 +176,9 @@ interface IPipelineException extends IException {
     logType?: LogType;
 }
 
-interface IPipelineMethod {
-    (...args: any[]): ng.IPromise<any>;
-}
-
 interface IPipeline {
-    saveParsers: Array<IPipelineMethod>;
+    saveParsers: Array<IChainableMethod<any>>;
+    deleteParsers: Array<IChainableMethod<any>>;
 }
 
 interface IValidationResult {
@@ -194,4 +200,4 @@ IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, IModelStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IListModel, IBaseListController, ICrudPageOptions, ICrudPageFlags,
 ModelStates, IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
-IListPageLocalization, IPipeline, IPipelineMethod, IPipelineException}
+IListPageLocalization, IPipeline, IPipelineException, IDeleteOptions}

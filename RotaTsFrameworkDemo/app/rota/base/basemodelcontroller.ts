@@ -1,8 +1,8 @@
 ﻿//#region Imports
 import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
-    IListModel, IPipelineMethod, IPipelineException} from "./interfaces"
+    IListModel, IPipelineException} from "./interfaces"
 import {LogType} from '../services/logger.interface';
-import {IException} from '../services/common.interface';
+import {IException, IChainableMethod} from '../services/common.interface';
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion
@@ -127,11 +127,11 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * @param pipeline Thenable functions
      * @param params Optional parameters
      */
-    protected initPipeline(pipeline: Array<IPipelineMethod>, ...params: any[]): ng.IPromise<any> {
+    protected initPipeline<T>(pipeline: Array<IChainableMethod<T>>, ...params: any[]): ng.IPromise<T> {
         let result = this.common.promise();
         //iterate pipeline methods
         for (let i = 0; i < pipeline.length; i++) {
-            result = ((promise: ng.IPromise<any>, method: IPipelineMethod) => {
+            result = ((promise: ng.IPromise<any>, method: IChainableMethod<T>) => {
                 return promise.then((response: any) => {
                     response && params.push(response);
                     if (method) {

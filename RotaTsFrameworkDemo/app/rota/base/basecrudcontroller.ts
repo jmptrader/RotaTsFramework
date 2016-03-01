@@ -3,7 +3,7 @@ import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
-    IValidationItem, IValidationResult, IPipeline, IPipelineException, CrudType} from "./interfaces"
+    IValidationItem, IValidationResult, IPipeline, IPipelineException, CrudType, IDeleteOptions} from "./interfaces"
 import {IServerResponse, IException} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
@@ -12,7 +12,11 @@ import {BaseModelController} from './basemodelcontroller';
 import * as _ from 'underscore';
 
 //#endregion
-
+/**
+ * Base CRUD page implementing save,update,delete processes
+ * @description This base class should be inherited for all controllers using restful services
+ * @param {TModel} is your custom model view.
+ */
 abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
     //#region Props
     /**
@@ -93,7 +97,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         super(bundle);
         //set default options
         const parsers: IPipeline = {
-            saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel]
+            saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
+            deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
         this.crudPageOptions = angular.extend({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
@@ -151,7 +156,9 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             modelbulunamadi: this.localization.getLocal('rota.modelbulunamadi'),
             succesfullyprocessed: this.localization.getLocal('rota.succesfullyprocessed'),
             validationhatasi: this.localization.getLocal('rota.validationhatasi'),
-            bilinmeyenhata: this.localization.getLocal('rota.bilinmeyenhataolustu')
+            bilinmeyenhata: this.localization.getLocal('rota.bilinmeyenhataolustu'),
+            silmeonay: this.localization.getLocal('rota.deleteconfirm'),
+            silmeonaybaslik: this.localization.getLocal('rota.deleteconfirmtitle')
         };
     }
     //#endregion
@@ -280,9 +287,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             this.common.makePromise(afterSaveModelResult).then(() => {
                 //change url new --> edit
                 this.changeUrl(model.id).then(() => { deferSave.resolve(model); });
-            }, (reason) => {
+            }, (response: IException) => {
                 //if afterSaveModel failed
-                deferSave.reject(reason);
+                this.errorModel(response);
+                deferSave.reject(response);
             });
         }, (reason) => {
             //save or validation failed
@@ -304,7 +312,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     private parseAndSaveModel(options: ISaveOptions): ng.IPromise<TModel> {
         const defer = this.$q.defer<TModel>();
         //iterate save pipeline
-        const parseResult = this.initPipeline(this.crudPageOptions.parsers.saveParsers, options);
+        const parseResult = this.initPipeline<any>(this.crudPageOptions.parsers.saveParsers, options);
         //save if validation parsers resolved
         parseResult.then(() => {
             //call user savemodel method
@@ -343,16 +351,12 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * Before save event
      * @param options Save options
      */
-    beforeSaveModel(options: ISaveOptions): ng.IPromise<any> {
-        return this.common.promise();
-    }
+    beforeSaveModel(options: ISaveOptions): ng.IPromise<any> { return this.common.promise(); }
     /**
      * After save event
      * @param options Save options
      */
-    afterSaveModel(options: ISaveOptions): ng.IPromise<any> {
-        return this.common.promise();
-    }
+    afterSaveModel(options: ISaveOptions): ng.IPromise<any> { return this.common.promise(); }
     /**
      * Save model
      * @param options Save options
@@ -367,8 +371,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         const validatorsFilteredByCrudFlag = _.filter(this.validators, (item: IValidationItem) => {
             if (!item.crudFlag)
                 return true;
-            if ((options.isNew && item.crudFlag & CrudType.Create) ||
-                (!options.isNew && item.crudFlag & CrudType.Update) ||
+            if ((this.crudPageFlags.isSaving && options.isNew && item.crudFlag & CrudType.Create) ||
+                (this.crudPageFlags.isSaving && !options.isNew && item.crudFlag & CrudType.Update) ||
                 (this.crudPageFlags.isDeleting && item.crudFlag & CrudType.Delete)) {
                 return true;
             }
@@ -396,7 +400,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     checkAuthority(options?: ISaveOptions): ng.IPromise<any> {
         return this.common.promise();
     }
-
     //#endregion
 
     //#region BaseModelController Methods
@@ -496,11 +499,81 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     }
     //#endregion
 
-
-
-
-
-    //abstract deleteById(id: number): ng.IPromise<any>;
+    //#region Delete Model
+    /**
+     * Init deletion of model
+     * @param options Delete options
+     */
+    initDeleteModel(options: IDeleteOptions): ng.IPromise<any> {
+        //init deleting
+        options = angular.extend({
+            key: this.model.id, confirm: true,
+            showMessage: true, model: this.model
+        }, options);
+        //save process
+        const deferDelete = this.$q.defer<TModel>();
+        //confirm
+        const confirmResult = options.confirm ? this.dialogs.showConfirm({
+            message: BaseCrudController.localizedValues.silmeonay,
+            title: BaseCrudController.localizedValues.silmeonaybaslik
+        }) : this.common.promise();
+        //confirm result
+        confirmResult.then(() => {
+            this.crudPageFlags.isDeleting = true;
+            //validate and delete model if valid
+            const parseResult = this.initPipeline<any>(this.crudPageOptions.parsers.deleteParsers, options);
+            parseResult.then(() => {
+                //set modelstate as deleted
+                this.setModelDeleted();
+                //call delete method
+                const deleteResult = this.deleteModel(options);
+                //success
+                deleteResult.then(() => {
+                    //call aftersave method
+                    const afterDeleteModelResult = this.afterDeleteModel(options);
+                    this.common.makePromise(afterDeleteModelResult).then(() => {
+                        deferDelete.resolve();
+                    }, (response: IException) => {
+                        //if afterDeleteModel failed
+                        this.errorModel(response);
+                        deferDelete.reject(response);
+                    });
+                });
+                //fail delete
+                deleteResult.catch((response: IException) => {
+                    this.errorModel(response);
+                    deferDelete.reject(response);
+                });
+            });
+            //finally 
+            parseResult.finally(() => {
+                this.resetForm();
+            });
+        }, () => {
+            //cancel confirm
+            deferDelete.reject('user cancelled');
+        });
+        //set deleted flag
+        confirmResult.finally(() => {
+            this.crudPageFlags.isDeleting = false;
+        });
+        return deferDelete.promise;
+    }
+    /**
+     * Before delete event
+     */
+    beforeDeleteModel(): ng.IPromise<any> { return this.common.promise(); }
+    /**
+     * After delete event
+     * @param options
+     */
+    afterDeleteModel(options: IDeleteOptions): ng.IPromise<any> { return this.common.promise(); }
+    /**
+     * User delete method
+     * @param options Delete options
+     */
+    abstract deleteModel(options: IDeleteOptions): ng.IPromise<any>;
+    //#endregion
 }
 //Export
 export {BaseCrudController}
