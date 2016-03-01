@@ -1,9 +1,9 @@
 ﻿//#region Imports
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
-import {IBaseCrudModel, IBundle, IModelStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
+import {IBaseCrudModel, IBundle, ICrudPageStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
-    IValidationItem, IValidationResult, IPipeline, IPipelineException, CrudType, IDeleteOptions} from "./interfaces"
+    IValidationItem, IValidationResult, ICrudParsers, IParserException, CrudType, IDeleteOptions} from "./interfaces"
 import {IServerResponse, IException} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
@@ -34,7 +34,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     private static localizedValues: ICrudPageLocalization;
 
-    protected $stateParams: IModelStateParams;
+    protected $stateParams: ICrudPageStateParams;
     private crudPageOptions: ICrudPageOptions;
     private crudPageFlags: ICrudPageFlags;
     private navButtonsEnabled: { [index: number]: boolean };
@@ -96,7 +96,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     constructor(bundle: IBundle, options?: ICrudPageOptions) {
         super(bundle);
         //set default options
-        const parsers: IPipeline = {
+        const parsers: ICrudParsers = {
             saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
             deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
@@ -312,7 +312,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     private parseAndSaveModel(options: ISaveOptions): ng.IPromise<TModel> {
         const defer = this.$q.defer<TModel>();
         //iterate save pipeline
-        const parseResult = this.initPipeline<any>(this.crudPageOptions.parsers.saveParsers, options);
+        const parseResult = this.initParsers<any>(this.crudPageOptions.parsers.saveParsers, options);
         //save if validation parsers resolved
         parseResult.then(() => {
             //call user savemodel method
@@ -521,7 +521,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         confirmResult.then(() => {
             this.crudPageFlags.isDeleting = true;
             //validate and delete model if valid
-            const parseResult = this.initPipeline<any>(this.crudPageOptions.parsers.deleteParsers, options);
+            const parseResult = this.initParsers<any>(this.crudPageOptions.parsers.deleteParsers, options);
             parseResult.then(() => {
                 //set modelstate as deleted
                 this.setModelDeleted();
@@ -538,6 +538,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                         this.errorModel(response);
                         deferDelete.reject(response);
                     });
+                    //message
+                    if (options.showMessage) {
+                        this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
+                    }
                 });
                 //fail delete
                 deleteResult.catch((response: IException) => {

@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
-    IGridOptions, IListModel, IBaseListController, IListPageLocalization} from "./interfaces"
+    IGridOptions, IBaseListModel,  IListPageLocalization} from "./interfaces"
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IException} from '../services/common.interface';
@@ -14,7 +14,7 @@ import * as _ from 'underscore';
  * Base List Controller
  */
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
-    extends BaseModelController<TModel> implements IBaseListController {
+    extends BaseModelController<TModel> {
     //#region Props
     /**
      * Localized values for crud page
@@ -42,9 +42,9 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     set gridOptions(value: IGridOptions) { this._gridOptions = value; }
     /**
      * Grid data
-     * @returns {IListModel<TModel>}
+     * @returns {IBaseListModel<TModel>}
      */
-    get gridData(): IListModel<TModel> { return <IListModel<TModel>>this.gridOptions.data; }
+    get gridData(): IBaseListModel<TModel> { return <IBaseListModel<TModel>>this.gridOptions.data; }
     /**
      * Selected rows
      * @returns {} 
@@ -121,18 +121,18 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * @abstract Get model
     * @param args Model
     */
-    abstract getModel(modelFilter?: IBaseListModelFilter): ng.IPromise<IListModel<TModel>> |
-        IListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
+    abstract getModel(modelFilter?: IBaseListModelFilter): ng.IPromise<IBaseListModel<TModel>> |
+        IBaseListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
      * Set model after data fetched
      * @param model Model
      */
-    protected setModel(model: IListModel<TModel> | IPagingListModel<TModel>): IListModel<TModel> | IPagingListModel<TModel> {
+    protected setModel(model: IBaseListModel<TModel> | IPagingListModel<TModel>): IBaseListModel<TModel> | IPagingListModel<TModel> {
         if (this.listPageOptions.pagingEnabled) {
             this.gridOptions.totalItems = (<IPagingListModel<TModel>>model).total || 0;
             this.gridOptions.data = (<IPagingListModel<TModel>>model).data;
         } else {
-            this.gridOptions.data = <IListModel<TModel>>model;
+            this.gridOptions.data = <IBaseListModel<TModel>>model;
         }
         return model;
     }
@@ -140,13 +140,13 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * Override loadedMethod to show notfound message
      * @param model Model
      */
-    protected loadedModel(model: IListModel<TModel> | IPagingListModel<TModel>): void {
+    protected loadedModel(model: IBaseListModel<TModel> | IPagingListModel<TModel>): void {
         let recCount = 0;
         if (model) {
             if (this.listPageOptions.pagingEnabled) {
                 recCount = (<IPagingListModel<TModel>>model).total;
             } else {
-                recCount = (<IListModel<TModel>>model).length;
+                recCount = (<IBaseListModel<TModel>>model).length;
             }
         }
         if (recCount === 0) {
@@ -319,7 +319,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     * Starts getting model and binding
     * @param pager Paging pager
     */
-    initSearchModel(pager?: IPager): ng.IPromise<IListModel<TModel>> | ng.IPromise<IPagingListModel<TModel>> {
+    initSearchModel(pager?: IPager): ng.IPromise<IBaseListModel<TModel>> | ng.IPromise<IPagingListModel<TModel>> {
         let filter: IBaseListModelFilter = angular.extend({}, this.filter);
         if (this.listPageOptions.pagingEnabled) {
             filter = angular.extend(filter, pager ||

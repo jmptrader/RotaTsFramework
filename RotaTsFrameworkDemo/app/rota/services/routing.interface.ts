@@ -54,6 +54,7 @@ interface IRotaState extends ng.ui.IState {
 }
 
 interface IMenuModel extends IRotaState, IMenuItem, IBaseModel {
+    id: number;
 }
 
 interface IBreadcrumb {
