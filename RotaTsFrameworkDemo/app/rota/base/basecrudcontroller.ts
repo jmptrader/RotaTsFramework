@@ -33,10 +33,21 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * Localized values for crud page
      */
     private static localizedValues: ICrudPageLocalization;
-
+    /**
+     * Crud page state params
+     */
     protected $stateParams: ICrudPageStateParams;
+    /**
+     * Crud page options
+     */
     private crudPageOptions: ICrudPageOptions;
+    /**
+     * Crud page flags
+     */
     private crudPageFlags: ICrudPageFlags;
+    /**
+     * Navigation buttons enabled flags
+     */
     private navButtonsEnabled: { [index: number]: boolean };
 
     /**

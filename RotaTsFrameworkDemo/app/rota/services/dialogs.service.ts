@@ -1,4 +1,5 @@
 ﻿//#region Imports
+//interfaces
 import {IRotaRootScope} from './common.interface';
 import {IRouting} from './routing.interface';
 import {IMainConfig} from '../config/config.interface';
@@ -9,31 +10,32 @@ import {IDialogOptions, IDialogScope, IConfirmOptions, IConfirmScope,
     IProgressOptions, IProgressScope, IProgressModalInstance, IPromptOptions,
     IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs} from './dialogs.interface';
 import {ILocalization} from './localization.interface';
-//static
-import "angular"
+import {IBaseModel} from '../base/interfaces';
+//deps
+import {App} from "../config/app";
+import {IRotaApp} from "../config/app.interface";
+import {BaseModalController} from '../base/basemodalcontroller';
+
 //#endregion
 
 //#region Dialog Service
-
 /**
  * Dialog service
  */
 class Dialogs implements IDialogs {
     serviceName = 'Dialog Service';
+    static defaultModalControllerName: string = 'defaultModalController';
 
-    static $inject = ['$rootScope', '$q', '$uibModal', '$templateCache', 'Routing', 'Config', 'RouteConfig', 'Common', 'Loader', 'Localization'];
+    static $inject = ['$rootScope', '$q', '$uibModal', 'Routing', 'Config', 'RouteConfig', 'Common', 'Loader', 'Localization'];
     constructor(private $rootScope: IRotaRootScope,
         private $q: ng.IQService,
         private $modal: ng.ui.bootstrap.IModalService,
-        private $templateCache: ng.ITemplateCacheService,
         private routing: IRouting,
         private config: IMainConfig,
         private routeconfig: IRouteConfig,
         private common: ICommon,
         private loader: ILoader,
         private localization: ILocalization) {
-        //init
-        this.initTemplates();
     }
 
     //#region Dialogs
@@ -45,12 +47,12 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalSimpleDialog.tpl.html',
             controller: ['$scope', '$uibModalInstance', 'options',
-            ($scope: IDialogScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IDialogOptions) => {
-                $scope.title = options.title || this.localization.getLocal('rota.onay');
-                $scope.message = options.message || '';
-                $scope.okText = options.okText || this.localization.getLocal('rota.ok');
-                $scope.ok = () => { $modalInstance.close('ok'); };
-            }],
+                ($scope: IDialogScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IDialogOptions) => {
+                    $scope.title = options.title || this.localization.getLocal('rota.onay');
+                    $scope.message = options.message || '';
+                    $scope.okText = options.okText || this.localization.getLocal('rota.ok');
+                    $scope.ok = () => { $modalInstance.close('ok'); };
+                }],
             keyboard: true,
             windowClass: options.windowClass,
             resolve: {
@@ -73,14 +75,14 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalDialog.tpl.html',
             controller: ['$scope', '$uibModalInstance', 'options',
-            ($scope: IConfirmScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IConfirmOptions) => {
-                $scope.title = options.title || this.localization.getLocal('rota.onay');
-                $scope.message = options.message || '';
-                $scope.okText = options.okText || this.localization.getLocal('rota.ok');
-                $scope.cancelText = options.cancelText || this.localization.getLocal('rota.iptal');
-                $scope.ok = () => { $modalInstance.close('ok'); };
-                $scope.cancel = () => { $modalInstance.dismiss('cancel'); };
-            }],
+                ($scope: IConfirmScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IConfirmOptions) => {
+                    $scope.title = options.title || this.localization.getLocal('rota.onay');
+                    $scope.message = options.message || '';
+                    $scope.okText = options.okText || this.localization.getLocal('rota.ok');
+                    $scope.cancelText = options.cancelText || this.localization.getLocal('rota.iptal');
+                    $scope.ok = () => { $modalInstance.close('ok'); };
+                    $scope.cancel = () => { $modalInstance.dismiss('cancel'); };
+                }],
             keyboard: true,
             windowClass: options.windowClass,
             resolve: {
@@ -104,20 +106,20 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalProgress.tpl.html',
             controller: ['$scope', '$timeout', '$uibModalInstance', 'options',
-            ($scope: IProgressScope, $timeout: ng.ITimeoutService,
-                $modalInstance: IProgressModalInstance, options: IProgressOptions) => {
-                $modalInstance.percent =
-                    $scope.percent = options.percent || 0;
-                $scope.$watch(() => $modalInstance.percent, value => {
-                    $scope.percent = value;
-                    if (value >= 100) {
-                        $timeout(() => {
-                            $modalInstance.dismiss();
-                        }, 500);
-                    }
-                });
-                $scope.title = options.title || this.localization.getLocal('rota.lutfenbekleyiniz');
-            }],
+                ($scope: IProgressScope, $timeout: ng.ITimeoutService,
+                    $modalInstance: IProgressModalInstance, options: IProgressOptions) => {
+                    $modalInstance.percent =
+                        $scope.percent = options.percent || 0;
+                    $scope.$watch(() => $modalInstance.percent, value => {
+                        $scope.percent = value;
+                        if (value >= 100) {
+                            $timeout(() => {
+                                $modalInstance.dismiss();
+                            }, 500);
+                        }
+                    });
+                    $scope.title = options.title || this.localization.getLocal('rota.lutfenbekleyiniz');
+                }],
             keyboard: false,
             windowClass: "modal fade in",
             backdrop: 'static',
@@ -140,15 +142,15 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalPromptDialog.tpl.html',
             controller: ['$scope', '$uibModalInstance', 'options',
-            ($scope: IPromptScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IPromptOptions) => {
-                $scope.title = options.title || '';
-                $scope.subTitle = options.subTitle || '';
-                $scope.value = { val: options.initValue || '' };
-                $scope.okText = options.okText || this.localization.getLocal('rota.ok');
-                $scope.cancelText = options.cancelText || this.localization.getLocal('rota.cancel');
-                $scope.ok = () => { $modalInstance.close($scope.value.val); };
-                $scope.cancel = () => { $modalInstance.dismiss('cancel'); };
-            }],
+                ($scope: IPromptScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IPromptOptions) => {
+                    $scope.title = options.title || '';
+                    $scope.subTitle = options.subTitle || '';
+                    $scope.value = { val: options.initValue || '' };
+                    $scope.okText = options.okText || this.localization.getLocal('rota.ok');
+                    $scope.cancelText = options.cancelText || this.localization.getLocal('rota.cancel');
+                    $scope.ok = () => { $modalInstance.close($scope.value.val); };
+                    $scope.cancel = () => { $modalInstance.dismiss('cancel'); };
+                }],
             keyboard: false,
             windowClass: "modal fade in",
             backdrop: 'static',
@@ -174,17 +176,17 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = {
             templateUrl: 'modalFileUpload.tpl.html',
             controller: ['$scope', '$uibModalInstance', 'options',
-            ($scope: IFileUploadScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IFileUploadOptions) => {
-                $scope.model = {};
-                $scope.allowedExtensions = options.allowedExtensions;
-                $scope.sendText = options.sendText || this.localization.getLocal('rota.gonder');
-                $scope.sendFile = () => {
-                    $modalInstance.close($scope.model.file);
-                };
-                $scope.dismiss = () => {
-                    $modalInstance.dismiss();
-                };
-            }],
+                ($scope: IFileUploadScope, $modalInstance: ng.ui.bootstrap.IModalServiceInstance, options: IFileUploadOptions) => {
+                    $scope.model = {};
+                    $scope.allowedExtensions = options.allowedExtensions;
+                    $scope.sendText = options.sendText || this.localization.getLocal('rota.gonder');
+                    $scope.sendFile = () => {
+                        $modalInstance.close($scope.model.file);
+                    };
+                    $scope.dismiss = () => {
+                        $modalInstance.dismiss();
+                    };
+                }],
             keyboard: true,
             resolve: {
                 options: () => {
@@ -201,7 +203,7 @@ class Dialogs implements IDialogs {
      * Show modal 
      * @param options Modal options
      */
-    showModal(options: IModalOptions): ng.IPromise<any> {
+    showModal<TModel extends IBaseModel, TResult extends {}>(options: IModalOptions<TModel>): ng.IPromise<TResult> {
         const templateFilePath = (this.common.isHtml(<string>options.templateUrl) ?
             this.routeconfig.basePath : '') + options.templateUrl;
         //default options
@@ -216,21 +218,30 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = angular.extend(defaultModalOptions, options);
         //resolve data
         modalOptions.resolve = {
-            modalParams: () => options.param
+            modalParams: () => options.model
         }
         //load controller file
         if (angular.isString(modalOptions.controller)) {
-            const cntResolve = this.loader.resolve({ controllerUrl: options.controllerUrl, templateUrl: templateFilePath });
+            const cntResolve = this.loader.resolve({ controllerUrl: options.controllerUrl, templateUrl: options.templateUrl });
             modalOptions.resolve = angular.extend(modalOptions.resolve, cntResolve);
+        } else {
+            if (!modalOptions.controller) {
+                modalOptions.controller = Dialogs.defaultModalControllerName;
+            }
         }
         return this.$modal.open(modalOptions).result;
     }
-    /**
-     * Init modal templates into templatecache
-     */
-    initTemplates() {
-        //Template olarak cache'de sakla
-        this.$templateCache.put('modalSimpleDialog.tpl.html',
+}
+
+//#endregion
+
+//#region Register
+var module: ng.IModule = angular.module('rota.services.dialog', ['ui.bootstrap']);
+module.service('Dialogs', Dialogs);
+module.run([
+    '$templateCache', ($templateCache: ng.ITemplateCacheService) => {
+        //#region Add templates to cache
+        $templateCache.put('modalSimpleDialog.tpl.html',
             '<div class="rota-modal">' +
             '    <div class="modal-header">' +
             '        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-ng-click="cancel()">&times;</button>' +
@@ -244,7 +255,7 @@ class Dialogs implements IDialogs {
             '    </div>' +
             '</div>');
         //Template olarak cache'de sakla
-        this.$templateCache.put('modalDialog.tpl.html',
+        $templateCache.put('modalDialog.tpl.html',
             '<div class="rota-modal">' +
             '    <div class="modal-header">' +
             '        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-ng-click="cancel()">&times;</button>' +
@@ -259,7 +270,7 @@ class Dialogs implements IDialogs {
             '    </div>' +
             '</div>');
         //Template olarak cache'de sakla
-        this.$templateCache.put('modalPromptDialog.tpl.html',
+        $templateCache.put('modalPromptDialog.tpl.html',
             '<div class="rota-modal">' +
             '    <div class="modal-header">' +
             '        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" data-ng-click="cancel()">&times;</button>' +
@@ -281,7 +292,7 @@ class Dialogs implements IDialogs {
             '    </div>' +
             '</div>');
         //Please wait template'i cacheDe sakla
-        this.$templateCache.put('modalProgress.tpl.html',
+        $templateCache.put('modalProgress.tpl.html',
             '<div>' +
             '<div class="modal-body">' +
             '<h1>{{title}}</h1>' +
@@ -292,7 +303,7 @@ class Dialogs implements IDialogs {
             '</div>'
         );
         //
-        this.$templateCache.put('modalFileUpload.tpl.html',
+        $templateCache.put('modalFileUpload.tpl.html',
             '<form class="form-horizontal" name="formUpload" ng-submit="sendFile()" novalidate>' +
             '<div class="modal-header">' +
             '       <h4><i class="fa fa-file"></i>&nbsp;{{::"bizwatch.yenidosya" | i18n}}</h4>' +
@@ -305,14 +316,11 @@ class Dialogs implements IDialogs {
             '       </button><button type="submit" class="btn btn-success" ng-disabled="formUpload.$invalid">{{sendText}}</button>' +
             '   </div>' +
             '</form>');
+        //#endregion
     }
-}
+]);
 
-//#endregion
 
-//#region Register
-var module: ng.IModule = angular.module('rota.services.dialog', ['ui.bootstrap']);
-module.service('Dialogs', Dialogs);
 //#endregion
 
 export {Dialogs}

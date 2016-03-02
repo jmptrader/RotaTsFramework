@@ -1,10 +1,12 @@
 ﻿//#region Imports
 import {IBaseApi, BaseApi} from "../base/baseapi";
 import {IRotaApp} from './app.interface';
+import {IBundle} from '../base/interfaces';
 //deps
 import {BaseController} from '../base/basecontroller';
-import {IBundle} from '../base/interfaces';
+import {BaseModalController} from '../base/basemodalcontroller';
 import "./infrastructure.index"
+import {Dialogs} from '../services/dialogs.service';
 //#endregion
 
 class RotaApp implements IRotaApp {
@@ -18,11 +20,14 @@ class RotaApp implements IRotaApp {
     constructor(moduleName: string) {
         this.rotaModule = angular.module(moduleName, ["rota"]);
 
-        //TODO:annotation injection
-        this.configure(($controllerProvider: ng.IControllerProvider, $provide: angular.auto.IProvideService) => {
-            this.controllerProvider = $controllerProvider;
-            this.provideService = $provide;
-        });
+        this.configure(['$controllerProvider', '$provide',
+            ($controllerProvider: ng.IControllerProvider, $provide: angular.auto.IProvideService) => {
+                this.controllerProvider = $controllerProvider;
+                this.provideService = $provide;
+            }]);
+        //add base modal controller if not defined controller
+        this.rotaModule.controller(Dialogs.defaultModalControllerName,
+            this.createControllerAnnotation(BaseModalController));
     }
 
     //#endregion
@@ -35,7 +40,17 @@ class RotaApp implements IRotaApp {
      * @param dependencies Dependencies 
      */
     addController(controllerName: string, controller: typeof BaseController, ...dependencies: string[]): void {
-        const deps = new Array<any>().concat(controller.injects, dependencies || []);
+        const controllerAnnotation = this.createControllerAnnotation(controller, dependencies);
+        //register
+        this.controllerProvider.register(controllerName, controllerAnnotation);
+    }
+    /**
+     * Create controller annotation style of contructor function
+     * @param controller Controller type to register
+     * @param dependencies Optional services depended
+     */
+    private createControllerAnnotation(controller: typeof BaseController, dependencies: string[] = []): any[] {
+        const deps = new Array<any>().concat(controller.injects, dependencies);
         const controllerCtor: Function = (...args: any[]): BaseController => {
             const bundle: IBundle = {
                 customBundles: {},
@@ -58,8 +73,7 @@ class RotaApp implements IRotaApp {
         };
         //add ctor
         deps.push(controllerCtor);
-        //register
-        this.controllerProvider.register(controllerName, deps);
+        return deps;
     }
 
     addApi(apiName: string, api: typeof BaseApi, dependencies?: string[]): void {
@@ -96,4 +110,4 @@ class RotaApp implements IRotaApp {
 //Instance of rota app
 var rotaApp: IRotaApp = new RotaApp("rota-app");
 //Export
-export {IRotaApp, rotaApp as App}
+export {rotaApp as App}

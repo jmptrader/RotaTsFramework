@@ -1,4 +1,5 @@
 ﻿//#region Imports
+//interfaces
 import {ILogger, IBaseLogger} from "../services/logger.interface";
 import {ICommon, IChainableMethod} from "../services/common.interface";
 import {IRotaRootScope} from "../services/common.interface";
@@ -33,22 +34,44 @@ class BaseController {
      * Registered events to store off-callbacks
      */
     protected events: Function[];
+    /**
+     * Csutom Validators
+     */
     protected validators: IValidationItem[];
     //#endregion
 
     //#region Bundle Services
     static injects = ['$rootScope', '$scope', '$window', '$stateParams',
         'Logger', 'Common', 'Dialogs', 'Routing', 'Config', 'Localization'];
-
+    //system services
     protected $rootScope: IRotaRootScope;
     protected $scope: ng.IScope;
     protected $window: ng.IWindowService;
     protected $stateParams: ng.ui.IStateParamsService;
+    //Rota services
+    /**
+     * Logger service
+     */
     protected logger: ILogger;
+    /**
+     * Common service
+     */
     protected common: ICommon;
+    /**
+     * Dialogs services
+     */
     protected dialogs: IDialogs;
+    /**
+     * Main config 
+     */
     protected config: IMainConfig;
+    /**
+     * Routing service
+     */
     protected routing: IRouting;
+    /**
+     * Localization service
+     */
     protected localization: ILocalization;
     //#endregion
 
@@ -91,7 +114,7 @@ class BaseController {
         this.config = bundle.systemBundles["config"];
         this.routing = bundle.systemBundles["routing"];
         this.localization = bundle.systemBundles["localization"];
-        //custom
+        //custom bundles
         for (let customBundle in bundle.customBundles) {
             ((bundleName: string) => {
                 Object.defineProperty(this, bundleName, {
@@ -117,7 +140,7 @@ class BaseController {
     }
     //#endregion
 
-    //#region Utility Functions
+    //#region Utility Shortcut Functions
     isAssigned(value: any): boolean {
         return this.common.isAssigned(value);
     }

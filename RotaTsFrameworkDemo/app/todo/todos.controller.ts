@@ -37,6 +37,20 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         }
         return this.todoApi.deleteById(<number>id);
     }
+
+    openModal(): ng.IPromise<any> {
+        const modalResult = this.dialogs.showModal({
+            templateUrl: 'app/todo/todo.modal.html'
+        });
+
+        modalResult.then((model: ITodoModel) => {
+            debugger;
+        }, (reason: string) => {
+            debugger;
+        });
+
+        return modalResult;
+    }
 }
 
 App.addController("todosController", TodosController, "todoApi");

@@ -1,6 +1,7 @@
 ﻿//#region Imports
+//interfaces
 import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseListModelFilter,
-    IGridOptions, IBaseListModel,  IListPageLocalization} from "./interfaces"
+    IGridOptions, IBaseListModel, IListPageLocalization} from "./interfaces"
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IException} from '../services/common.interface';
@@ -12,6 +13,8 @@ import * as _ from 'underscore';
 //#region BaseListController
 /**
  * Base List Controller
+ * @description This base class should be inherited for all controllers using restful services
+ * @param {TModel} is your custom model view.
  */
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
     extends BaseModelController<TModel> {

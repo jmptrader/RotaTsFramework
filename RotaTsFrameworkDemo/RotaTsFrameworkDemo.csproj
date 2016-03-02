@@ -211,6 +211,7 @@
     <Content Include="app\rota\shell\views\modal-crud.html" />
     <Content Include="app\rota\shell\views\notification.html" />
     <Content Include="app\rota\shell\views\shell.html" />
+    <Content Include="app\todo\todo.modal.html" />
     <Content Include="App_Code\HtmlHelper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -275,6 +276,7 @@
     <TypeScriptCompile Include="app\rota\base\basecontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basecrudcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\baselistcontroller.ts" />
+    <TypeScriptCompile Include="app\rota\base\basemodalcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodelcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\index.ts" />
     <TypeScriptCompile Include="app\rota\base\interfaces.ts" />
@@ -327,6 +329,7 @@
     <TypeScriptCompile Include="app\rota\shell\shell.interface.ts" />
     <TypeScriptCompile Include="app\startup.ts" />
     <TypeScriptCompile Include="app\todo\todo.controller.ts" />
+    <TypeScriptCompile Include="app\todo\todo.modal.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.controller.ts" />
     <TypeScriptCompile Include="app\todo\todos.models.ts" />
     <TypeScriptCompile Include="app\todo\todos.service.ts" />

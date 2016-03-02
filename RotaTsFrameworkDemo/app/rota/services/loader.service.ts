@@ -20,7 +20,7 @@ class Loader implements ILoader {
      * Generate file path depending on provided settings and general settings
      * @param settings Settings
      */
-    generatePath(settings: ILoaderSettings): string {
+    getPath(settings: ILoaderSettings): string {
         let relativePath = settings.controllerUrl;
         if (!relativePath && (settings.useTemplateUrlPath || this.loaderconfig.useTemplateUrlPath)) {
             relativePath = settings.templateUrl.replace('.html', '.controller.js');
@@ -33,7 +33,7 @@ class Loader implements ILoader {
      * @param settings Settings
      */
     resolve(settings: ILoaderSettings): { [index: string]: any[] } {
-        var fileFullPath = this.generatePath(settings);
+        var fileFullPath = this.getPath(settings);
         //file resolve
         return {
             //lazy loading promise
