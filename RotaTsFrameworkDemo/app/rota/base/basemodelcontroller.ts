@@ -2,7 +2,7 @@
 import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
     IBaseListModel, IParserException} from "./interfaces"
 import {LogType} from '../services/logger.interface';
-import {IException, IChainableMethod} from '../services/common.interface';
+import {IServerFailedResponse, IChainableMethod} from '../services/common.interface';
 //deps
 import {BaseController} from "./basecontroller"
 //#endregion

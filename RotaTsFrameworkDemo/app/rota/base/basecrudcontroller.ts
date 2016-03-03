@@ -4,7 +4,7 @@ import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, ICrudPageStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
     IValidationItem, IValidationResult, ICrudParsers, IParserException, CrudType, IDeleteOptions} from "./interfaces"
-import {IServerResponse, IException} from '../services/common.interface';
+import {IServerResponse, IServerFailedResponse} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
@@ -180,28 +180,28 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param model Model
      */
     setModelModified(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || <TModel>this.model, ModelStates.Modified, false);
+        return this.common.setModelState(model || this.model, ModelStates.Modified, false);
     }
     /**
      * Set model state to Deleted
      * @param model Model
      */
     setModelDeleted(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || <TModel>this.model, ModelStates.Deleted);
+        return this.common.setModelState(model || this.model, ModelStates.Deleted);
     }
     /**
      * Set model state to Added
      * @param model Model
      */
     setModelAdded(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || <TModel>this.model, ModelStates.Added);
+        return this.common.setModelState(model || this.model, ModelStates.Added);
     }
     /**
      * Set model state to Changed
      * @param model Model
      */
     setModelUnChanged(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || <TModel>this.model, ModelStates.Unchanged);
+        return this.common.setModelState(model || this.model, ModelStates.Unchanged);
     }
     //#endregion
 
@@ -298,7 +298,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             this.common.makePromise(afterSaveModelResult).then(() => {
                 //change url new --> edit
                 this.changeUrl(model.id).then(() => { deferSave.resolve(model); });
-            }, (response: IException) => {
+            }, (response: IServerFailedResponse) => {
                 //if afterSaveModel failed
                 this.errorModel(response);
                 deferSave.reject(response);
@@ -340,20 +340,20 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                 }
                 //set entity from result of saving
                 this.isNew = false;
-                this.updateModel(<TModel>response.entity).then((model: TModel) => {
+                this.updateModel(<TModel>response.model).then((model: TModel) => {
                     defer.resolve(model);
                 }, () => {
                     defer.reject(response);
                 });
             });
             //fail save
-            saveResult.catch((response: IException) => {
+            saveResult.catch((response: IServerFailedResponse) => {
                 this.errorModel(response);
                 defer.reject(response);
             });
         });
         //fail parsers
-        parseResult.catch((response: IException) => {
+        parseResult.catch((response: IServerFailedResponse) => {
             defer.reject(response);
         });
         return defer.promise;
@@ -544,7 +544,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                     const afterDeleteModelResult = this.afterDeleteModel(options);
                     this.common.makePromise(afterDeleteModelResult).then(() => {
                         deferDelete.resolve();
-                    }, (response: IException) => {
+                    }, (response: IServerFailedResponse) => {
                         //if afterDeleteModel failed
                         this.errorModel(response);
                         deferDelete.reject(response);
@@ -555,7 +555,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                     }
                 });
                 //fail delete
-                deleteResult.catch((response: IException) => {
+                deleteResult.catch((response: IServerFailedResponse) => {
                     this.errorModel(response);
                     deferDelete.reject(response);
                 });

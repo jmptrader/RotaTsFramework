@@ -2,6 +2,7 @@
 import {IBaseCrudModel, ModelStates, IBaseModel} from "../base/interfaces"
 import {ICommon, IChainableMethod, IServerResponse} from './common.interface';
 import {IRouteConfig} from './routing.config'
+import {IMainConfig} from '../config/config.interface';
 //#endregion
 
 //#region Common Service
@@ -9,8 +10,8 @@ import {IRouteConfig} from './routing.config'
 class Common implements ICommon {
     serviceName: string = "Common Service";
     //states
-    static $inject = ['$q'];
-    constructor(private $q: ng.IQService) { }
+    static $inject = ['$q', 'Config'];
+    constructor(private $q: ng.IQService, private config: IMainConfig) { }
 
     //#region Promise Utils
     /**
@@ -100,9 +101,17 @@ class Common implements ICommon {
     //#endregion
 
     //#region Utils
+    /**
+     * Return true if value nor null and undefined
+     * @param value Any object
+     */
     isAssigned(value: any): boolean {
         return value !== undefined && value !== null;
     }
+    /**
+     * Guard method checks for array objects
+     * @param value Any object
+     */
     isArray<T>(value: any): value is Array<T> {
         return angular.isArray(value);
     }
@@ -110,30 +119,27 @@ class Common implements ICommon {
 
     //#region Model Utils
     /**
-     * Check whether model is valid baseModel
-     * @param model
-     */
-    isModel(model: any): model is IBaseModel {
-        return model.id !== undefined && model.id !== null;
-    }
-    /**
      * Check whether model is valid crudModel
      * @param model
      */
     isCrudModel(model: any): model is IBaseCrudModel {
-        return this.isModel(model) && model.modelState !== undefined && model.modelState !== null;
+        return model.modelState !== undefined && model.modelState !== null;
     }
-
-    //Set model state
+    /**
+     * Set model state according to form crud state
+     * @param model Model object
+     * @param state Model State - Entity State
+     * @param includeChildArray Flag that iterate all relational entities to modify model state
+     */
     setModelState(model: IBaseCrudModel, state: ModelStates, includeChildArray: boolean = true): IBaseCrudModel {
-        if (!model) return undefined;
+        if (!model || !this.config.setModelStateForEntityFramework) return model;
 
         if (model.modelState === state ||
             (state === ModelStates.Modified && model.modelState !== ModelStates.Unchanged)) {
             return model;
         }
         model.modelState = state;
-
+        //set child arrays
         if (includeChildArray) {
             for (let prop in model) {
                 if (model.hasOwnProperty(prop)) {
@@ -157,7 +163,7 @@ class Common implements ICommon {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.services.common', [])
+const module: ng.IModule = angular.module('rota.services.common', [])
     .service('Common', Common);
 //#endregion
 

@@ -48,7 +48,7 @@ namespace RotaTsFrameworkDemo.Controllers
                 value.Id = (Items.Count > 0 ? Items.Keys.Max() : 0) + 1;
                 Items.Add(value.Id, value);
             }
-            return new { Entity = value };
+            return new { Model = value };
         }
 
         // DELETE api/<controller>/5

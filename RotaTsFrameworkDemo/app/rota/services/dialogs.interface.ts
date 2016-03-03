@@ -146,8 +146,10 @@ interface IDialogs extends IBaseService {
     */
     showFileUpload(options: IFileUploadOptions): ng.IPromise<any>;
     /**
-   * Show modal 
-   * @param options Modal options
+   * Show modal window
+     * @description if controller not provided,BaseModalController will be used.
+     * if ControllerUrl not defined,it will be looked in templateUrl path
+     * @param options Modal options
    */
     showModal<TModel extends IBaseModel, TResult extends {}>(options: IModalOptions<TModel>): ng.IPromise<TResult>;
 }

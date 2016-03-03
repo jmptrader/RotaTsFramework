@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {ICacheable} from '../services/caching.interface';
 import {LogType} from '../services/logger.interface';
-import {IException, IChainableMethod} from '../services/common.interface';
+import {IServerFailedResponse, IChainableMethod} from '../services/common.interface';
 
 //#endregion
 
@@ -324,7 +324,7 @@ interface IBundle {
 /**
  * Parsers exception include notifictaion type and title
  */
-interface IParserException extends IException {
+interface IParserException extends IServerFailedResponse {
     /**
      * Log title
      */

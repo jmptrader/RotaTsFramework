@@ -4,7 +4,7 @@ import {IBundle, IBaseModel, IPager, IPagingListModel, IListPageOptions, IBaseLi
     IGridOptions, IBaseListModel, IListPageLocalization} from "./interfaces"
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
-import {IException} from '../services/common.interface';
+import {IServerFailedResponse} from '../services/common.interface';
 //deps
 import {BaseModelController} from "./basemodelcontroller"
 import * as _ from 'underscore';
@@ -361,7 +361,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
             if (this.common.isPromise(deleteResult)) {
                 return deleteResult.then(() => {
                     this.removeModelItemByKey(id);
-                }, (reason: IException) => {
+                }, (reason: IServerFailedResponse) => {
                     this.errorModel(reason);
                 });
             }
@@ -395,7 +395,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
                     keyArray.forEach((key) => {
                         this.removeModelItemByKey(key);
                     });
-                }, (reason: IException) => {
+                }, (reason: IServerFailedResponse) => {
                     this.errorModel(reason);
                 });
             }

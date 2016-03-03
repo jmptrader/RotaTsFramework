@@ -19,12 +19,12 @@ class Config extends BaseConfig<IMainConfig> {
                 ajaxFinished: 'ajaxFinished',
                 ajaxStarted: 'ajaxStarted',
                 loginRequired: 'loginRequired',
-                menuChanged: 'menuChanged',
-                badgeChanged: 'badgeChanged'
+                menuChanged: 'menuChanged'
             },
             gridDefaultPageSize: 25,
             gridDefaultOptionsName: 'vm.gridOptions',
-            supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }]
+            supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }],
+            setModelStateForEntityFramework: true
         };
         this.config = config;
     }

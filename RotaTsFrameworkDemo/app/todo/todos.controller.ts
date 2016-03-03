@@ -44,9 +44,7 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         });
 
         modalResult.then((model: ITodoModel) => {
-            debugger;
-        }, (reason: string) => {
-            debugger;
+            this.gridData.push(model);
         });
 
         return modalResult;
