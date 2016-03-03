@@ -4,7 +4,7 @@ import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, ICrudPageStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
     IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
     IValidationItem, IValidationResult, ICrudParsers, IParserException, CrudType, IDeleteOptions} from "./interfaces"
-import {IServerResponse, IServerFailedResponse} from '../services/common.interface';
+import {ICrudServerResponse, IServerFailedResponse} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
@@ -329,7 +329,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             //call user savemodel method
             const saveResult = this.saveModel(options);
             //success
-            saveResult.then((response: IServerResponse) => {
+            saveResult.then((response: ICrudServerResponse) => {
                 //show messages
                 if (options.showMessage) {
                     this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
@@ -372,7 +372,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * Save model
      * @param options Save options
      */
-    abstract saveModel(options: ISaveOptions): ng.IPromise<IServerResponse>;
+    abstract saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse>;
     //#endregion
 
     //#region Validation

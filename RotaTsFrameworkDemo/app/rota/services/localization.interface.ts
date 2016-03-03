@@ -1,11 +1,21 @@
 ﻿import { IBaseService} from "./service.interface";
-
+/**
+ * Json resource file
+ */
 interface IResource {
     [s: string]: any;
 }
-
+/**
+ * Language model
+ */
 interface ILanguage {
+    /**
+     * Lang code tr-tr,en-us ...
+     */
     code: string;
+    /**
+     * Language fullname
+     */
     fullname?: string;
 }
 

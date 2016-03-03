@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBaseCrudModel, ModelStates, IBaseModel} from "../base/interfaces"
-import {ICommon, IChainableMethod, IServerResponse} from './common.interface';
+import {ICommon, IChainableMethod} from './common.interface';
 import {IRouteConfig} from './routing.config'
 import {IMainConfig} from '../config/config.interface';
 //#endregion

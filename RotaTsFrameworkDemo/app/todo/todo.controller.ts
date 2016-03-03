@@ -2,7 +2,7 @@
 import {BaseCrudController} from "app/rota/base/basecrudcontroller";
 import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions,
     IValidationItem, IValidationResult, CrudType} from 'app/rota/base/interfaces';
-import {IServerResponse} from 'app/rota/services/common.interface';
+import {ICrudServerResponse} from 'app/rota/services/common.interface';
 
 import {ITodoModel} from "./todos.models";
 import {ITodoApi} from "./todos.service";
@@ -16,15 +16,15 @@ class TodoController extends BaseCrudController<ITodoModel> {
         super(bundle);
 
        
-        this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update });
+        this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update,order:1 });
     }
 
     checkDay(): ng.IPromise<any> {
         return this.common.rejectedPromise<IValidationResult>(
-            { messageI18N: 'todo.state' });
+            { message: 'Hata vartrrrrrrr'});
     }
 
-    saveModel(options: ISaveOptions): ng.IPromise<IServerResponse> {
+    saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {
         return this.todoApi.save(<ITodoModel>options.model);
     }
 

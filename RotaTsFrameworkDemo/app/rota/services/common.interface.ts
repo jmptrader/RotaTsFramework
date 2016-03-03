@@ -21,9 +21,14 @@ interface IChainableMethod<T> {
     (...args: any[]): ng.IPromise<T>;
 }
 /**
+ * Base server abstract response
+ */
+interface IBaseServerResponse {
+}
+/**
  * Common server error response
  */
-interface IServerFailedResponse {
+interface IServerFailedResponse extends IBaseServerResponse {
     /**
      * Exception message when debugging
      */
@@ -40,7 +45,7 @@ interface IServerFailedResponse {
 /**
  * Server crud response
  */
-interface IServerResponse {
+interface ICrudServerResponse extends IBaseServerResponse {
     /**
      * Crud Model
      */
@@ -140,4 +145,4 @@ interface ICommon extends IBaseService {
 }
 //#endregion
 
-export {ICommon, IRotaRootScope, IChainableMethod, IServerFailedResponse, IServerResponse}
+export {ICommon, IRotaRootScope, IChainableMethod, IServerFailedResponse, ICrudServerResponse, IBaseServerResponse}
