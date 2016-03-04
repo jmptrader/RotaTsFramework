@@ -12,13 +12,14 @@
         //libs
         'toastr': './app/rota/lib/toastr.min',
         underscore: './app/rota/lib/underscore.min',
-        'underscore-string': './app/rota/lib/underscore.string.min',
+        'underscore.string': './app/rota/lib/underscore.string.min',
         i18n: './app/rota/lib/i18n',
         moment: './app/rota/lib/moment.min',
         spinner: './app/rota/lib/spin.min',
         bootstrap: './app/rota/lib/bootstrap.min',
         grid: './app/rota/lib/ui-grid.min',
         hotkeys: './app/rota/lib/hotkeys.min',
+        select: './app/rota/lib/select.min',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
@@ -78,6 +79,9 @@
         },
         scroll: {
             deps: ['angular', 'jquery']
+        },
+        select: {
+            deps: ['angular']
         }
     }
 });

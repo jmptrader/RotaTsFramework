@@ -6,8 +6,7 @@ import "bootstrap"
 import "grid"
 import "hotkeys"
 import "scroll"
-
-import * as angular from "angular"
+import "select"
 
 angular.module('rota.lib',
     [
@@ -18,7 +17,7 @@ angular.module('rota.lib',
         //'ui.dateTimeInput',
         //'ui.bootstrap.datetimepicker',
         ////Dropdown select-ui
-        //'ui.select',
+        'ui.select',
         //Hotkeys keyboard support
         'cfp.hotkeys',
         ////ui-router plugins - sticky states for modal support

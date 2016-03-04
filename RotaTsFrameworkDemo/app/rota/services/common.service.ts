@@ -115,6 +115,21 @@ class Common implements ICommon {
     isArray<T>(value: any): value is Array<T> {
         return angular.isArray(value);
     }
+    /**
+     * Guard method checks for function
+     * @param value
+     */
+    isFunction(value: any): value is Function {
+        return angular.isFunction(value);
+    }
+    /**
+     * Convert html to plain text
+     * @param html Html  
+     */
+    htmlToPlaintext(html: string): string {
+        if (!html) return '';
+        return html.replace(/<[^>]+>/gm, '');
+    }
     //#endregion
 
     //#region Model Utils

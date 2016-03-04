@@ -142,6 +142,16 @@ interface ICommon extends IBaseService {
    * @param value Any object
    */
     isArray<T>(value: any): value is Array<T>;
+    /**
+    * Guard method checks for function
+    * @param value
+    */
+    isFunction(value: any): value is Function;
+    /**
+    * Convert html to plain text
+    * @param html Html  
+    */
+    htmlToPlaintext(html: string): string;
 }
 //#endregion
 

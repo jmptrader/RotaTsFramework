@@ -11,17 +11,19 @@ import "./todos.service";
 
 class TodoController extends BaseCrudController<ITodoModel> {
     todoApi: ITodoApi;
+    selectdata: Array<{ id: number, adi: string }>;
 
     constructor(bundle: IBundle) {
         super(bundle);
 
-       
-        this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update,order:1 });
+        this.selectdata = [{ id: 1, adi: "sercan" }, { id: 2, adi: "veli" }, { id: 3, adi: "ali" }];
+
+        this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update, order: 1 });
     }
 
     checkDay(): ng.IPromise<any> {
         return this.common.rejectedPromise<IValidationResult>(
-            { message: 'Hata vartrrrrrrr'});
+            { message: 'Hata vartrrrrrrr' });
     }
 
     saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {

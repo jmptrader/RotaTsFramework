@@ -192,6 +192,7 @@
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
     <Content Include="app\rota\lib\pdfmake.min.js" />
+    <Content Include="app\rota\lib\select.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
     <Content Include="app\rota\lib\toastr.min.js" />
     <Content Include="app\rota\lib\ui-grid.min.js" />
@@ -298,6 +299,7 @@
     <TypeScriptCompile Include="app\rota\directives\rtListButtons.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtMenu.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtPanel.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtSelect.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
     <TypeScriptCompile Include="app\rota\filters\index.ts" />
     <TypeScriptCompile Include="app\rota\filters\rtI18n.ts" />

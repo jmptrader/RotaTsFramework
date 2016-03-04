@@ -25,7 +25,7 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
     function compile(tElement: ng.IAugmentedJQuery, tAttrs: IButtonAttributes) {
         const userPredicates = tAttrs['ngDisabled'];
         tAttrs.$set('ngDisabled', 'isBusy' + (userPredicates !== null ? ' || ' + userPredicates : ''));
-        return function link(scope: IButtonScope, element: ng.IAugmentedJQuery, attrs: IButtonAttributes): void {
+        return (scope: IButtonScope, element: ng.IAugmentedJQuery, attrs: IButtonAttributes): void => {
             //get original items
             let orjText = scope.text;
             const orjIcon = scope.icon;
@@ -47,7 +47,7 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
             }
             scope.isBusy = false;
             //methods
-            const setButtonAttrs = (buttonAttrs: { caption: string, icon: string, showSpin?: boolean, disable: boolean }) => {
+            const setButtonAttrs = (buttonAttrs: { caption: string; icon: string; showSpin?: boolean; disable: boolean }) => {
                 scope.caption = buttonAttrs.caption;
                 scope.icon = buttonAttrs.icon;
                 scope.spin = buttonAttrs.showSpin && 'fa-spin';
