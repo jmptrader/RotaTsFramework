@@ -148,6 +148,11 @@ interface ICommon extends IBaseService {
     */
     isFunction(value: any): value is Function;
     /**
+     * Guard method checks for defined
+     * @param value
+     */
+    isDefined<T>(value: any): value is T;
+    /**
     * Convert html to plain text
     * @param html Html  
     */

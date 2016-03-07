@@ -20,6 +20,8 @@ class RouteConfig extends BaseConfig<IRouteConfig> {
         config.error404StateUrl = config.shellPath + 'error404.html';
         config.error500StateUrl = config.shellPath + 'error500.html';
         config.inactiveStateUrl = '/';
+        config.contentControllerAlias = 'vm';
+        config.shellControllerAlias = 'shellvm';
         this.config = config;
     }
 }

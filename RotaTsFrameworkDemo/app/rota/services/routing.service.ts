@@ -175,7 +175,7 @@ class Routing implements IRouting {
     private registerShellSections(): void {
         //shell sections
         var shellSections = [
-            { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController', controllerAs: 'shellvm' } },
+            { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController', controllerAs: this.routeconfig.shellControllerAlias } },
             { 'header@shell': { templateUrl: 'header.html' } },
             { 'footer@shell': { templateUrl: 'footer.html' } }
         ],
@@ -267,7 +267,7 @@ class Routing implements IRouting {
             templateUrl: templateFilePath,
             controller: state.controller,
             //ControllerAs syntax used as default 'vm'
-            controllerAs: state.controllerAs || 'vm',
+            controllerAs: state.controllerAs || this.routeconfig.contentControllerAlias,
             hierarchicalMenu: state.hierarchicalMenu,
             url: '/' + state.url,
             //HACK:Tum paramlara navItems array parmetresini ekliyoruz!

@@ -12,6 +12,7 @@ import "./todos.service";
 class TodoController extends BaseCrudController<ITodoModel> {
     todoApi: ITodoApi;
     selectdata: Array<{ id: number, adi: string }>;
+    selectvalue:number;
 
     constructor(bundle: IBundle) {
         super(bundle);
@@ -19,6 +20,7 @@ class TodoController extends BaseCrudController<ITodoModel> {
         this.selectdata = [{ id: 1, adi: "sercan" }, { id: 2, adi: "veli" }, { id: 3, adi: "ali" }];
 
         this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update, order: 1 });
+        this.selectvalue = 2;
     }
 
     checkDay(): ng.IPromise<any> {
@@ -39,7 +41,8 @@ class TodoController extends BaseCrudController<ITodoModel> {
     }
 
     getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<ITodoModel> {
-        return this.todoApi.getTodoById(modelFilter.id);
+        var s = this.todoApi.getTodoById(modelFilter.id);
+        return s;
     }
 }
 

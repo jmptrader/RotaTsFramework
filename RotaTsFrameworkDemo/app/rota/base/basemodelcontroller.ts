@@ -11,6 +11,7 @@ import {BaseController} from "./basecontroller"
 abstract class BaseModelController<TModel extends IBaseModel> extends BaseController {
     //#region Props
     protected _model: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>;
+    protected modelPromise: ng.IPromise<TModel | IBaseListModel<TModel> | IPagingListModel<TModel>>;
     /**
      * Model object
      * @returns {IModelType<TModel>}
@@ -112,7 +113,7 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      */
     protected initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IBaseListModel<TModel> | IPagingListModel<TModel>> {
         const defineModelResult = this.defineModel(modelFilter);
-        return this.common.makePromise(defineModelResult).then((data: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) => {
+        return this.modelPromise = this.common.makePromise(defineModelResult).then((data: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) => {
             return this.updateModel(data).then(() => {
                 this.loadedModel(data);
                 return data;

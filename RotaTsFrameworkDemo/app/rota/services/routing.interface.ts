@@ -122,6 +122,14 @@ interface IRouteConfig extends IBaseConfig {
      * State name that will be the first when app initiliazed
      */
     startUpState?: string;
+    /**
+    * Content controller alias name 
+    */
+    contentControllerAlias?: string;
+    /**
+     * Modal controller alias name 
+     */
+    shellControllerAlias?: string;
 }
 
 //#endregion

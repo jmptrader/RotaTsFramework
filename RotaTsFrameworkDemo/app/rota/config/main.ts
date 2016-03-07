@@ -13,6 +13,7 @@
         'toastr': './app/rota/lib/toastr.min',
         underscore: './app/rota/lib/underscore.min',
         'underscore.string': './app/rota/lib/underscore.string.min',
+        'underscore.mixed': './app/rota/lib/underscore.mixed',
         i18n: './app/rota/lib/i18n',
         moment: './app/rota/lib/moment.min',
         spinner: './app/rota/lib/spin.min',
@@ -82,6 +83,12 @@
         },
         select: {
             deps: ['angular']
+        },
+        'underscore': {
+            exports: '_'
+        },
+        'underscore.string': {
+            deps: ['underscore']
         }
     }
 });

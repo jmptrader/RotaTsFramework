@@ -123,6 +123,13 @@ class Common implements ICommon {
         return angular.isFunction(value);
     }
     /**
+     * Guard method checks for defined
+     * @param value
+     */
+    isDefined<T>(value: any): value is T {
+        return angular.isDefined(value);
+    }
+    /**
      * Convert html to plain text
      * @param html Html  
      */
