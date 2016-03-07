@@ -13,72 +13,199 @@ import * as $ from 'jquery';
 //#endregion
 
 //#region Interfaces
-
+/**
+ * Select Model
+ */
 interface ISelectModel extends IBaseModel {
 }
-
+/**
+ * Selection model interface for prototyping issues
+ */
 interface ISelection {
     model: ISelectModel
 }
-
+/**
+ * Used Constants
+ */
 interface ISelectConstants {
+    /**
+     * When Enum object binded,its key value
+     */
     objValuePropName: string;
+    /**
+     * When Enum object binded,its text value
+     */
     objDisplayPropName: string;
+    /**
+     * Filter startsWith 
+     */
     filterStartsWith: string;
+    /**
+     * Filter contains
+     */
     filterContains: string;
+    /**
+     * Default placeholder
+     */
     defaultPlaceholderKey: string;
+    /**
+     * Min autosuggest keyword length
+     */
     minAutoSuggestCharLen: number;
+    /**
+     * Key code to clear model 
+     */
     keyCodeToClearModel: number;
 }
-
+/**
+ * Selected event args
+ */
 interface ISelectedEventArgs {
     modelValue?: number;
     model?: IBaseModel,
     scope: ISelectScope;
 }
-
+/**
+ * Selected event
+ */
 interface ISelectedEvent {
     (args: ISelectedEventArgs): void
 }
-
+/**
+ * Data fetcher event interface
+ */
 interface ISelectDataMethod<T> {
     (...args: any[]): ng.IPromise<T> | T;
 }
 
 type ISelectItemsMethod = ISelectDataMethod<Array<ISelectModel>>;
 type ISelectItemMethod = ISelectDataMethod<ISelectModel>;
-
+/**
+ * rtSelect attributes
+ */
 interface ISelectAttributes extends ng.IAttributes {
+    /**
+     * New item modal options
+     */
     newItemOptions: string;
+    /**
+     * Search items modal options
+     */
     searchOptions: string;
+    /**
+     * Propertyof model to be grouped by
+     */
     groupbyProp: string;
+    /**
+     * Display property of model
+     */
     displayProp: string;
+    /**
+     * Value property of model
+     */
     valueProp: string;
+    /**
+     * Filter type
+     */
     filterType: "startsWith" | "contains";
+    /**
+     * Refresh method name for autosuggest mode
+     */
     refresh: string;
+    /**
+     * Items method name to get all items
+     */
     items: string;
+    /**
+     * Select method name for setting model by selected key value
+     */
     select: string;
+    /**
+     * Selectedchanged event name
+     */
     onSelect: string;
+    /**
+     * ngDisabled
+     */
     ngDisabled: any;
+    /**
+     * With of rtSelect default to 100%
+     */
     width: string;
+    /**
+     * rtSelect Placeholder
+     */
     placeholder: string;
+    /**
+     * rtSelect Placeholder i18n
+     */
     placeholderI18n: string;
+    /**
+     * Min autosuggest keyboard length
+     */
     minAutoSuggestCharLen: number;
+    /**
+     * Service name inherits from IBaseService 
+     */
     service: string;
+    /**
+     * Items method's optional parameters
+     */
     params: any;
+    /**
+     * ngModel
+     */
     ngModel: string;
+    /**
+     * Select data array name
+     */
     data: string;
 }
-
+/**
+ * Select scope
+ */
 interface ISelectScope extends ng.IScope {
+    /**
+     * Items binded to ui-select
+     */
     listItems: Array<ISelectModel>;
+    /**
+     * Selected model
+     */
     selected: ISelection;
+    /**
+     * New Item modal options
+     */
     showNewItemOptions: boolean;
+    /**
+     * Search items modal options
+     */
     showSearchOptions: boolean;
+    /**
+     * Group by function
+     * @param model Model
+     */
     groupbyFn: (model: ISelectModel) => any;
+    /**
+     * Refresh function to bind in autosuggest mode
+     * @param keyword Keyword
+     */
     refreshFn: (keyword: string) => ng.IPromise<Array<ISelectModel>> | Array<ISelectModel>;
+    /**
+     * Selected item changed event
+     * @param item Model
+     * @param model Model
+     */
     onItemSelect: (item: ISelectModel, model: ISelectModel) => void;
+    /**
+     * Opens a new item modal window
+     * @param event Event
+     */
     runNewItem: (event: ng.IAngularEvent) => void;
+    /**
+     * Opens a search items modal window
+     * @param event Event
+     */
     searchItems: (event: ng.IAngularEvent) => void;
 }
 
