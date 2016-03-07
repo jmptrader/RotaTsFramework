@@ -1,13 +1,18 @@
-﻿import {ILocalization} from '../services/localization.interface';
+﻿//#region Imports
+import {ILocalization} from '../services/localization.interface';
 import {ICommon} from '../services/common.interface';
 import {ILogger} from '../services/logger.interface';
-import {IDialogs} from '../services/dialogs.interface';
+import {IDialogs, IModalOptions} from '../services/dialogs.interface';
 import {IBaseModel} from '../base/interfaces';
 import {IBaseService} from '../services/service.interface';
 //deps
 import * as _ from "underscore";
 import * as _s from "underscore.string";
 import * as $ from 'jquery';
+
+//#endregion
+
+//#region Interfaces
 
 interface ISelectModel extends IBaseModel {
 }
@@ -23,18 +28,11 @@ interface ISelectConstants {
     filterContains: string;
     defaultPlaceholderKey: string;
     minAutoSuggestCharLen: number;
-}
-
-interface INewItemOptions {
-
-}
-
-interface ISearchOptions {
-
+    keyCodeToClearModel: number;
 }
 
 interface ISelectedEventArgs {
-    modelValue?: any;
+    modelValue?: number;
     model?: IBaseModel,
     scope: ISelectScope;
 }
@@ -60,7 +58,6 @@ interface ISelectAttributes extends ng.IAttributes {
     refresh: string;
     items: string;
     select: string;
-    //onSelect: (args?: ISelectedEventArgs) => void;
     onSelect: string;
     ngDisabled: any;
     width: string;
@@ -70,6 +67,7 @@ interface ISelectAttributes extends ng.IAttributes {
     service: string;
     params: any;
     ngModel: string;
+    data: string;
 }
 
 interface ISelectScope extends ng.IScope {
@@ -80,37 +78,41 @@ interface ISelectScope extends ng.IScope {
     groupbyFn: (model: ISelectModel) => any;
     refreshFn: (keyword: string) => ng.IPromise<Array<ISelectModel>> | Array<ISelectModel>;
     onItemSelect: (item: ISelectModel, model: ISelectModel) => void;
+    runNewItem: (event: ng.IAngularEvent) => void;
+    searchItems: (event: ng.IAngularEvent) => void;
 }
+
+//#endregion
 
 //#region Select Directive
 function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorService,
     $q: ng.IQService, localization: ILocalization, common: ICommon, logger: ILogger, dialogs: IDialogs,
     rtSelectConstants: ISelectConstants) {
 
-    function compile(tElement: ng.IAugmentedJQuery, tAttrs: ISelectAttributes) {
+    function compile(cElement: ng.IAugmentedJQuery, cAttrs: ISelectAttributes) {
         //#region Dom manupulations
-        const $select = $('ui-select', tElement),
-            $choices = $('ui-select-choices', tElement),
-            $match = $('ui-select-match', tElement);
+        const $select = $('ui-select', cElement),
+            $choices = $('ui-select-choices', cElement),
+            $match = $('ui-select-match', cElement);
 
-        const displayProp = tAttrs.displayProp || rtSelectConstants.objDisplayPropName;
-        const filterType = tAttrs.filterType || rtSelectConstants.filterContains;
+        const displayProp = cAttrs.displayProp || rtSelectConstants.objDisplayPropName;
+        const filterType = cAttrs.filterType || rtSelectConstants.filterContains;
 
         $choices.attr('repeat', 'listItem in listItems | rtSelectFilter:$select.search:\'' + displayProp + '\':\'' + filterType + '\'');
 
-        if (angular.isDefined(tAttrs.refresh)) {
+        if (angular.isDefined(cAttrs.refresh)) {
             $choices.attr('refresh', "refreshFn($select.search)")
                 .attr('refresh-delay', 0);
         } else {
-            if (angular.isDefined(tAttrs.groupbyProp)) {
+            if (angular.isDefined(cAttrs.groupbyProp)) {
                 $choices.attr('group-by', 'groupbyFn');
             }
         }
         //size & disabled
-        $select.css('width', tAttrs.width || '100%')
-            .attr('ng-disabled', tAttrs.ngDisabled);
+        $select.css('width', cAttrs.width || '100%')
+            .attr('ng-disabled', cAttrs.ngDisabled);
         //placeholder 
-        $match.attr('placeholder', (tAttrs.placeholder || localization.getLocal(tAttrs.placeholderI18n || rtSelectConstants.defaultPlaceholderKey)))
+        $match.attr('placeholder', (cAttrs.placeholder || localization.getLocal(cAttrs.placeholderI18n || rtSelectConstants.defaultPlaceholderKey)))
             .html('<b ng-bind-html="$select.selected.' + displayProp + '"></b>');
 
         $choices.html('<div ng-bind-html="listItem.' + displayProp + '"></div>');
@@ -128,17 +130,52 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             const ngModel = modelCtrl;
             const params = $parse(attrs.params);
             let valuePropGetter = attrs.valueProp && $parse(attrs.valueProp);
-            const newItemOptions: INewItemOptions = attrs.newItemOptions && $parse(attrs.newItemOptions)(scope);
-            const searchOptions: ISearchOptions = attrs.searchOptions && $parse(attrs.searchOptions)(scope);
-            //#endregion
-
-            //#region Mappers
-            const getValueMapper = function (itemObject: ISelectModel): any {
-                return valuePropGetter ? valuePropGetter(itemObject) : itemObject;
-            };
+            const newItemOptions: IModalOptions<ISelectModel> = attrs.newItemOptions && $parse(attrs.newItemOptions)(scope);
+            const searchOptions: IModalOptions<ISelectModel> = attrs.searchOptions && $parse(attrs.searchOptions)(scope);
             //#endregion
 
             //#region Utility Methods
+            /**
+             * Trigger select index changed event
+             * @param modelValue Selected model value
+             * @param model Selected model
+             */
+            const callSelectedEvent = function (modelValue?: number, model?: ISelectModel): void {
+                if (!common.isAssigned(attrs.onSelect)) return;
+
+                const onSelect = $parse(attrs.onSelect);
+                if (onSelect !== angular.noop) {
+                    const onSelectEvent: ISelectedEvent = onSelect(scope);
+                    if (onSelectEvent) {
+                        onSelectEvent({ model: model, scope: scope, modelValue: modelValue });
+                    }
+                }
+            }
+            /**
+             * Value mapper function
+             * @param itemObject Content obj or object itself
+             */
+            const getValueMapper = function (itemObject: ISelectModel | number): number {
+                return valuePropGetter ? valuePropGetter(itemObject) : itemObject;
+            };
+            /**
+             * Get item by model value wrapped by promise
+             * @param key Model Value
+             */
+            const findItemByKey = function (modelValue: number): ng.IPromise<ISelectModel> {
+                return asyncRequestingResult.then((items: Array<ISelectModel>) => {
+                    let foundItem: ISelectModel;
+                    if (common.isArray(items)) {
+                        for (let i = 0; i < items.length; i++) {
+                            const itemValue = getValueMapper(items[i]);
+                            if (itemValue === modelValue) {
+                                foundItem = items[i];
+                            }
+                        }
+                    }
+                    return foundItem ? common.promise(foundItem) : common.rejectedPromise('not found');
+                });
+            }
             /**
              * Convert object to generic array
              * @param obj Object to convert
@@ -191,15 +228,16 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Get all items 
              * @param funcName AllItems method name
              */
-            const callGetAllItems = function (funcName: string): ng.IPromise<Array<ISelectModel>> {
+            const bindAllItems = function (funcName: string): ng.IPromise<Array<ISelectModel>> {
                 const args = params(scope);
-                return asyncRequestingResult = callMethod<Array<ISelectModel> | ISelectModel>(funcName, args).then((data: Array<ISelectModel> | ISelectModel) => {
-                    if (data && !common.isArray(data)) {
-                        valuePropGetter = $parse(rtSelectConstants.objValuePropName);
-                        data = convertObjToArray<ISelectModel>(data);
-                    }
-                    return scope.listItems = <Array<ISelectModel>>data;
-                });
+                return asyncRequestingResult = callMethod<Array<ISelectModel> | ISelectModel>(funcName, args).then(
+                    (data: Array<ISelectModel> | ISelectModel) => {
+                        if (data && !common.isArray(data)) {
+                            valuePropGetter = $parse(rtSelectConstants.objValuePropName);
+                            data = convertObjToArray<ISelectModel>(data);
+                        }
+                        return scope.listItems = <Array<ISelectModel>>data;
+                    });
             };
             //#endregion
 
@@ -220,9 +258,25 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             };
             /**
              * Get all data and bind in normal mode
+             * @description itemsMethod will be used if auto-bind is demanded.Alternatively data attr should be used if array is used
              */
-            const initAllItems = function (): ng.IPromise<Array<ISelectModel>> {
-                return callGetAllItems(itemsMethod);
+            const initAllItems = function (): void {
+                if (common.isAssigned(itemsMethod)) {
+                    if (common.isAssigned(attrs.params)) {
+                        scope.$watch(attrs.params, () => {
+                            bindAllItems(itemsMethod);
+                        }, true);
+                    } else {
+                        bindAllItems(itemsMethod);
+                    }
+                } else
+                    if (common.isDefined(attrs.data)) {
+                        scope.$watch(attrs.data, (data: ISelectModel[]) => {
+                            scope.listItems = data;
+                        });
+                    } else {
+                        throw new Error("either items or data must be assigned for rtSelect");
+                    }
             };
             /**
              * Initing select data
@@ -233,60 +287,59 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             //#endregion
 
             //#region Model Methods
+            /**
+             * Set model 
+             * @param value Moel object
+             */
             const setModel = function (value?: ISelectModel): void {
                 scope.selected.model = value;
             };
-
-            const getAutoSuggestItem = function (key: any): ng.IPromise<ISelectModel> {
+            /**
+             * Get Item by key value for autosuggest mode
+             * @param key Model value
+             */
+            const getAutoSuggestItem = function (key: number): ng.IPromise<ISelectModel> {
+                if (!common.isAssigned(selectMethod)) {
+                    throw new Error("selectMethod must be assigned in autosuggest mode");
+                }
                 return callMethod(selectMethod, key).then((data: ISelectModel) => {
                     scope.listItems.unshift(data);
                     return data;
                 });
             };
-
-            const updateValueFromModel = function (modelValue: any): void {
+            /**
+             * Update selected model by modelValue stemming from ngModel watch
+             * @param modelValue Model value
+             */
+            const updateValueFromModel = function (modelValue: number): void {
                 if (!common.isAssigned(modelValue)) {
                     return setModel();
                 }
-                //Items promise cozulmesini bekle
-                asyncRequestingResult.then((items: Array<ISelectModel>) => {
-                    var found = false;
-                    angular.forEach(items, (item: ISelectModel) => {
-                        var itemValue = getValueMapper(item);
-                        if (itemValue === modelValue) {
-                            setModel(item);
-                            return found = true;
-                        }
-                    });
-                    //AutoSuggest ise model değiştiginde eger listede yoksa id ile select cekiyor
-                    if (!found && autoSuggest) {
+                //get item by key
+                findItemByKey(modelValue).then((item) => {
+                    setModel(item);
+                }, () => {
+                    if (autoSuggest) {
                         getAutoSuggestItem(modelValue).then((selItem: ISelectModel) => {
                             setModel(selItem);
                         });
                     }
-                }, err => {
-                    logger.toastr.error({ message: err });
                 });
             };
             //#endregion
 
-            //#region Events & Watchs
-            const callSelectedEvent = function (modelValue?: any, model?: ISelectModel): void {
-                const onSelect = $parse(attrs.onSelect);
-                if (onSelect !== angular.noop) {
-                    const onSelectEvent: ISelectedEvent = onSelect(scope);
-                    if (onSelectEvent) {
-                        onSelectEvent({ model: model, scope: scope, modelValue: model });
-                    }
-                }
-            }
-
-            scope.$watch(attrs.ngModel, function (modelValue) {
+            //#region Init events & watchs
+            /**
+             * Watch model changes
+             */
+            scope.$watch(attrs.ngModel, function (modelValue: number) {
                 updateValueFromModel(modelValue);
             });
-
+            /**
+             * Keyboad esc implementation to clear 
+             */
             $(element).bind('keydown', function (e: JQueryEventObject) {
-                if (e.which === 27) {
+                if (e.which === rtSelectConstants.keyCodeToClearModel) {
                     scope.$apply(() => {
                         ngModel.$setViewValue(undefined);
                         callSelectedEvent();
@@ -300,22 +353,59 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             //#region Init scope
             scope.listItems = [];
             scope.selected = { model: null };
-            scope.showNewItemOptions = angular.isDefined(attrs.newItemOptions);
-            scope.showSearchOptions = angular.isDefined(attrs.searchOptions);
-            if (angular.isDefined(attrs.groupbyProp)) {
+            //set groupBy function
+            if (common.isAssigned(attrs.groupbyProp)) {
                 scope.groupbyFn = item => item[attrs.groupbyProp];
             }
+            /**
+             * Selected index changed event  
+             * @param item Model
+             * @param model Model             
+             */
             scope.onItemSelect = function (item: ISelectModel, model: ISelectModel): void {
                 const modelValue = getValueMapper(item);
                 ngModel.$setViewValue(modelValue);
-                callSelectedEvent(model, model);
+                callSelectedEvent(modelValue, model);
+            }
+            //new item options
+            if (newItemOptions) {
+                scope.runNewItem = $event => {
+                    dialogs.showModal(newItemOptions).then((newItem: ISelectModel) => {
+                        if (newItem) {
+                            scope.listItems.unshift(newItem);
+                            setModel(newItem);
+                        }
+                    });
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                };
+            }
+            //search options
+            if (searchOptions) {
+                scope.searchItems = $event => {
+                    dialogs.showModal(searchOptions).then((foundItem: ISelectModel) => {
+                        if (foundItem) {
+                            const value = getValueMapper(foundItem);
+                            if (autoSuggest) {
+                                scope.listItems.unshift(foundItem);
+                                setModel(foundItem);
+                            } else {
+                                updateValueFromModel(value);
+                            }
+                        }
+                    });
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                };
             }
             //#endregion
 
             init();
         }
     }
-
+    /**
+     * Directive definition
+     */
     const directive = <ng.IDirective>{
         restrict: 'AE',
         require: 'ngModel',
@@ -360,14 +450,17 @@ var selectFilter = ['Common', 'rtSelectConstants', function (common: ICommon, rt
 }];
 //#endregion
 
+//#region Select Constants
 const selectDirectiveConstants = {
     objValuePropName: 'key',
     objDisplayPropName: 'value',
     filterStartsWith: 'startsWith',
     filterContains: 'contains',
     defaultPlaceholderKey: 'rota.seciniz',
-    minAutoSuggestCharLen: 3
+    minAutoSuggestCharLen: 3,
+    keyCodeToClearModel: 27
 }
+//#endregion
 
 //#region Register
 const module: ng.IModule = angular.module('rota.directives.rtselect', []);
