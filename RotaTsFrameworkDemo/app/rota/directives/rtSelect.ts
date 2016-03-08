@@ -160,6 +160,10 @@ interface ISelectAttributes extends ng.IAttributes {
      * Select data array name
      */
     data: string;
+    /**
+     * Custom class to be added container 
+     */
+    class: string;
 }
 /**
  * Select scope
@@ -236,8 +240,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             }
         }
         //size & disabled
-        $select.css('width', cAttrs.width || '100%')
-            .attr('ng-disabled', cAttrs.ngDisabled);
+        $select.attr('ng-disabled', cAttrs.ngDisabled);
         //placeholder 
         $match.attr('placeholder', (cAttrs.placeholder || localization.getLocal(cAttrs.placeholderI18n || rtSelectConstants.defaultPlaceholderKey)))
             .html('<b ng-bind-html="$select.selected.' + displayProp + '"></b>');
@@ -494,8 +497,11 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 ngModel.$setViewValue(modelValue);
                 callSelectedEvent(modelValue, model);
             }
+            //set options visibility
+            scope.showNewItemOptions = common.isAssigned(newItemOptions);
+            scope.showSearchOptions = common.isAssigned(searchOptions);
             //new item options
-            if (newItemOptions) {
+            if (scope.showNewItemOptions) {
                 scope.runNewItem = $event => {
                     dialogs.showModal(newItemOptions).then((newItem: ISelectModel) => {
                         if (newItem) {
@@ -508,7 +514,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 };
             }
             //search options
-            if (searchOptions) {
+            if (scope.showSearchOptions) {
                 scope.searchItems = $event => {
                     dialogs.showModal(searchOptions).then((foundItem: ISelectModel) => {
                         if (foundItem) {
@@ -536,11 +542,9 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
     const directive = <ng.IDirective>{
         restrict: 'AE',
         require: 'ngModel',
+        replace: true,
         scope: true,
-        templateUrl: (elem: ng.IAugmentedJQuery, attr: ISelectAttributes) => {
-            return angular.isDefined(attr.newItemOptions) || angular.isDefined(attr.searchOptions) ?
-                'rota/rtselect-options.tpl.html' : 'rota/rtselect.tpl.html';
-        },
+        templateUrl: 'rota/rtselect-options.tpl.html',
         compile: compile
     };
     return directive;
@@ -596,15 +600,9 @@ module.directive('rtSelect', selectDirective)
     .constant('rtSelectConstants', selectDirectiveConstants)
     .run([
         '$templateCache', ($templateCache: ng.ITemplateCacheService) => {
-            $templateCache.put('rota/rtselect.tpl.html',
-                '<ui-select name="{{name}}" ' +
-                'reset-search-input="true" ng-model="selected.model" ' +
-                'on-select="onItemSelect($item, $model)" theme="select2">' +
-                '<ui-select-match allow-clear="true"></ui-select-match>' +
-                '<ui-select-choices></ui-select-choices></ui-select>');
             $templateCache.put('rota/rtselect-options.tpl.html',
-                '<div class="input-group"><ui-select name="{{name}}" ' +
-                'reset-search-input="true" ng-model="selected.model" ' +
+                '<div class="input-group col-md-12 col-sm-12 col-lg-12 col-xs-12"><ui-select name="{{name}}" ' +
+                'style="width:100%" reset-search-input="true" ng-model="selected.model" ' +
                 'on-select="onItemSelect($item, $model)" theme="select2">' +
                 '<ui-select-match allow-clear="true"></ui-select-match>' +
                 '<ui-select-choices></ui-select-choices></ui-select>' +
