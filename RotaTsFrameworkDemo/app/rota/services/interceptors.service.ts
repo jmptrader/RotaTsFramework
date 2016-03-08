@@ -4,7 +4,7 @@ import {ILogger} from './logger.interface';
 //#endregion
 
 //#region Request Tracker
-var httpRequestTrackerService = ($q: ng.IQService,
+const httpRequestTrackerService = ($q: ng.IQService,
     $location: ng.ILocationService,
     $rootScope: ng.IRootScopeService,
     $timeout: ng.ITimeoutService,

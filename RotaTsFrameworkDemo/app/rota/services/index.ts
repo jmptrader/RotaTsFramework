@@ -1,4 +1,5 @@
 ﻿import "./logger.service"
+import "./logger.exception"
 import "./routing.service"
 import "./dialogs.service"
 import "./common.service"

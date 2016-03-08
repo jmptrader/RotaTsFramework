@@ -157,6 +157,11 @@ interface ICommon extends IBaseService {
     * @param html Html  
     */
     htmlToPlaintext(html: string): string;
+    /**
+    * PreventDefault utility method
+    * @param $event Angular event
+    */
+    preventClick($event: ng.IAngularEvent): void;
 }
 //#endregion
 

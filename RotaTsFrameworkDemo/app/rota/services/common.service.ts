@@ -137,6 +137,14 @@ class Common implements ICommon {
         if (!html) return '';
         return html.replace(/<[^>]+>/gm, '');
     }
+    /**
+     * PreventDefault utility method
+     * @param $event Angular event
+     */
+    preventClick($event: ng.IAngularEvent): void {
+        $event.preventDefault();
+        $event.stopPropagation();
+    }
     //#endregion
 
     //#region Model Utils
