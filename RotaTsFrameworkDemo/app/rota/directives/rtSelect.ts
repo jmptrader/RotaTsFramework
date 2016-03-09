@@ -19,6 +19,11 @@ import * as $ from 'jquery';
 export interface ISelectModel extends IBaseModel {
 }
 /**
+ * Group Item Moedl
+ */
+export interface IGroupItemModel extends ISelectModel {
+}
+/**
  * Selection model interface for prototyping issues
  */
 interface ISelection {
@@ -78,8 +83,8 @@ interface ISelectDataMethod<T> {
     (...args: any[]): ng.IPromise<T> | T;
 }
 
-type ISelectItemsMethod = ISelectDataMethod<Array<ISelectModel>>;
-type ISelectItemMethod = ISelectDataMethod<ISelectModel>;
+export type ISelectItemsMethod = ISelectDataMethod<Array<ISelectModel>>;
+export type ISelectItemMethod = ISelectDataMethod<ISelectModel>;
 /**
  * rtSelect attributes
  */
@@ -97,11 +102,11 @@ export interface ISelectAttributes extends ng.IAttributes {
      */
     groupbyProp: string;
     /**
-     * Display property of model
+     * Display property name of model
      */
     displayProp: string;
     /**
-     * Value property of model
+     * Value property anme of model
      */
     valueProp: string;
     /**
@@ -250,17 +255,54 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
         return (scope: ISelectScope, element: ng.IAugmentedJQuery, attrs: ISelectAttributes, modelCtrl: ng.INgModelController): void => {
             //#region Init attrs
-            let asyncRequestingResult = common.promise<ISelectModel | Array<ISelectModel>>();
+            /**
+             * Listing defer obj
+             * @description  Wait for the request to finish so that items would be available for ngModel changes to select
+             */
+            const asyncModelRequestResult = $q.defer<Array<ISelectModel>>();
+            /**
+             * * Min autosuggest keyboard length
+             */
             const minAutoSuggestCharLen = attrs.minAutoSuggestCharLen || rtSelectConstants.minAutoSuggestCharLen;
+            /**
+             * AutoSuggest flag
+             */
             const autoSuggest = angular.isDefined(attrs.refresh);
+            /**
+             * User Service used to be context
+             */
             const service = attrs.service && $injector.get<IBaseService>(attrs.service);
+            /**
+             * Refresh method name
+             */
             const refreshMethod = attrs.refresh;
+            /**
+             * Select method name for setting model by selected key value
+             */
             const selectMethod = attrs.select;
+            /**
+             * Select method name for setting model by selected key value
+             */
             const itemsMethod = attrs.items;
+            /**
+             * NgModel controller
+             */
             const ngModel = modelCtrl;
+            /**
+             * Items method's optional parameters
+             */
             const params = $parse(attrs.params);
+            /**
+             * Value property name of model 
+             */
             let valuePropGetter = attrs.valueProp && $parse(attrs.valueProp);
+            /**
+             * New item modal options
+             */
             const newItemOptions: IModalOptions<ISelectModel> = attrs.newItemOptions && $parse(attrs.newItemOptions)(scope);
+            /**
+             * Search items modal options
+             */
             const searchOptions: IModalOptions<ISelectModel> = attrs.searchOptions && $parse(attrs.searchOptions)(scope);
             //#endregion
 
@@ -282,7 +324,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param modelValue Selected model value
              * @param model Selected model
              */
-            const callSelectedEvent = function (modelValue?: number, model?: ISelectModel): void {
+            const callSelectedEvent = (modelValue?: number, model?: ISelectModel): void => {
                 if (!common.isAssigned(attrs.onSelect)) return;
 
                 const onSelect = $parse(attrs.onSelect);
@@ -297,15 +339,14 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Value mapper function
              * @param itemObject Content obj or object itself
              */
-            const getValueMapper = function (itemObject: ISelectModel | number): number {
-                return valuePropGetter ? valuePropGetter(itemObject) : itemObject;
-            };
+            const getValueMapper = (itemObject: ISelectModel | number): number => (valuePropGetter ? valuePropGetter(itemObject) : itemObject);
             /**
              * Get item by model value wrapped by promise
              * @param key Model Value
              */
-            const findItemByKey = function (modelValue: number): ng.IPromise<ISelectModel> {
-                return asyncRequestingResult.then((items: Array<ISelectModel>) => {
+            const findItemByKey = (modelValue: number): ng.IPromise<ISelectModel> => {
+                const resultPromise = asyncModelRequestResult.promise;
+                return resultPromise.then((items: Array<ISelectModel>) => {
                     let foundItem: ISelectModel;
                     if (common.isArray(items)) {
                         for (let i = 0; i < items.length; i++) {
@@ -315,31 +356,17 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                             }
                         }
                     }
-                    return foundItem ? common.promise(foundItem) : common.rejectedPromise('not found');
+                    if (foundItem)
+                        return foundItem;
+                    return common.rejectedPromise('not found');
                 });
             }
-            /**
-             * Convert object to generic array
-             * @param obj Object to convert
-             */
-            const convertObjToArray = function <T>(obj): Array<T> {
-                const result = new Array<T>();
-                for (var prop in obj) {
-                    if (obj.hasOwnProperty(prop)) {
-                        const item: T = <T>{};
-                        item[rtSelectConstants.objValuePropName] = obj[prop];
-                        item[rtSelectConstants.objDisplayPropName] = prop;
-                        result.push(item);
-                    }
-                }
-                return result;
-            };
             /**
              * Call select directive methods,
              * @param funcName Function name to be called
              * @param args Optional function params
              */
-            const callMethod = function <T>(funcName: string, ...args: any[]): ng.IPromise<T> {
+            const callMethod = <T>(funcName: string, ...args: any[]): ng.IPromise<T> => {
                 const d = $q.defer<T>();
                 let methodResult: any;
                 //check service method applied
@@ -366,64 +393,6 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 });
                 return d.promise;
             };
-            /**
-             * Get all items 
-             * @param funcName AllItems method name
-             */
-            const bindAllItems = function (funcName: string): ng.IPromise<Array<ISelectModel>> {
-                const args = params(scope);
-                return asyncRequestingResult = callMethod<Array<ISelectModel> | ISelectModel>(funcName, args).then(
-                    (data: Array<ISelectModel> | ISelectModel) => {
-                        if (data && !common.isArray(data)) {
-                            valuePropGetter = $parse(rtSelectConstants.objValuePropName);
-                            data = convertObjToArray<ISelectModel>(data);
-                        }
-                        return scope.listItems = <Array<ISelectModel>>data;
-                    });
-            };
-            //#endregion
-
-            //#region Init
-            /**
-             * Assign "refreshFn" function to scope
-             * @description This method is called when in autosuggest mode,more than "minAutoSuggestCharLen" chars is typed
-             */
-            const initAutoSuggest = function (): void {
-                scope.refreshFn = (keyword: string): ng.IPromise<any> => {
-                    if (keyword && minAutoSuggestCharLen <= keyword.length) {
-                        const args = params(scope);
-                        return asyncRequestingResult = callMethod<Array<ISelectModel>>(refreshMethod, keyword, args).then(
-                            data => scope.listItems = data);
-                    }
-                    return undefined;
-                };
-            };
-            /**
-             * Get all data and bind in normal mode
-             * @description itemsMethod will be used if auto-bind is demanded.Alternatively data attr should be used if array is used
-             */
-            const initAllItems = function (): void {
-                if (common.isAssigned(itemsMethod)) {
-                    if (common.isAssigned(attrs.params)) {
-                        scope.$watch(attrs.params, () => {
-                            bindAllItems(itemsMethod);
-                        }, true);
-                    } else {
-                        bindAllItems(itemsMethod);
-                    }
-                } else
-                    if (common.isDefined(attrs.data)) {
-                        scope.$watch(attrs.data, (data: ISelectModel[]) => {
-                            scope.listItems = data;
-                        });
-                    }
-            };
-            /**
-             * Initing select data
-             */
-            const init = function (): void {
-                autoSuggest ? initAutoSuggest() : initAllItems();
-            }
             //#endregion
 
             //#region Model Methods
@@ -431,19 +400,55 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Set model 
              * @param value Moel object
              */
-            const setModel = function (value?: ISelectModel): void {
+            const setModel = (value?: ISelectModel): void => {
                 scope.selected.model = value;
+            };
+            /**
+             * Set select data and resolve promise
+             * @param items Items
+             */
+            const setItems = (items: ISelectModel[], updateData: boolean = true): void => {
+                if (!common.isArray(items)) return;
+
+                asyncModelRequestResult.resolve(items);
+                scope.listItems = items;
+                //give out data to 'data' prop
+                if (updateData && common.isDefined(attrs.data)) {
+                    const dataSetter = $parse(attrs.data);
+                    if (dataSetter !== angular.noop) {
+                        dataSetter.assign(scope, items);
+                    }
+                }
+            }
+            /**
+           * Get all items 
+           * @param funcName AllItems method name
+           */
+            const bindAllItems = (funcName: string): void => {
+                const args = params(scope);
+                callMethod<Array<ISelectModel>>(funcName, args).then(
+                    (data: Array<ISelectModel>) => {
+                        //convert enum obj to array
+                        if (data && !common.isArray(data)) {
+                            valuePropGetter = $parse(rtSelectConstants.objValuePropName);
+                            data = common.convertObjToArray<ISelectModel>(data, rtSelectConstants.objValuePropName,
+                                rtSelectConstants.objDisplayPropName);
+                        }
+                        setItems(data);
+                    });
             };
             /**
              * Get Item by key value for autosuggest mode
              * @param key Model value
              */
-            const getAutoSuggestItem = function (key: number): ng.IPromise<ISelectModel> {
+            const getAutoSuggestItem = (key: number): ng.IPromise<ISelectModel> => {
                 if (!common.isDefined(selectMethod)) {
                     throw new Error("selectMethod must be assigned in autosuggest mode");
                 }
                 return callMethod(selectMethod, key).then((data: ISelectModel) => {
-                    scope.listItems.unshift(data);
+                    if (data) {
+                        setItems([data]);
+                    }
                     return data;
                 });
             };
@@ -451,7 +456,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Update selected model by modelValue stemming from ngModel watch
              * @param modelValue Model value
              */
-            const updateValueFromModel = function (modelValue: number): void {
+            const updateValueFromModel = (modelValue: number): void => {
                 if (!common.isAssigned(modelValue)) {
                     return setModel();
                 }
@@ -463,22 +468,71 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                         getAutoSuggestItem(modelValue).then((selItem: ISelectModel) => {
                             setModel(selItem);
                         });
+                    } else {
+                        logger.console.warn({ message: 'item not found by value ' + modelValue });
                     }
                 });
             };
             //#endregion
 
+            //#region Init
+            /**
+             * Assign "refreshFn" function to scope
+             * @description This method is called when in autosuggest mode,more than "minAutoSuggestCharLen" chars is typed
+             */
+            const initAutoSuggest = (): void => {
+                scope.refreshFn = (keyword: string): ng.IPromise<any> => {
+                    if (keyword && minAutoSuggestCharLen <= keyword.length) {
+                        const args = params(scope);
+                        callMethod<Array<ISelectModel>>(refreshMethod, keyword, args).then(
+                            data => {
+                                setItems(data);
+                            });
+                    }
+                    return undefined;
+                };
+            };
+            /**
+             * Get all data and bind in normal mode
+             * @description itemsMethod will be used if auto-bind is demanded.Alternatively data attr should be used if array is used
+             */
+            const initAllItems = (): void => {
+                if (common.isAssigned(itemsMethod)) {
+                    if (common.isAssigned(attrs.params)) {
+                        //watch params
+                        scope.$watch(attrs.params, () => {
+                            bindAllItems(itemsMethod);
+                        }, true);
+                    } else {
+                        bindAllItems(itemsMethod);
+                    }
+                } else
+                    if (common.isDefined(attrs.data)) {
+                        scope.$watch(attrs.data, (data: ISelectModel[]) => {
+                            setItems(data, false);
+                        });
+                    }
+            };
+            /**
+             * Initing select data
+             */
+            const init = (): void => {
+                autoSuggest ? initAutoSuggest() : initAllItems();
+            }
+            //#endregion
+
             //#region Init events & watchs
             /**
-             * Watch model changes
+             * Inject formatter pipeline
              */
-            scope.$watch(attrs.ngModel, function (modelValue: number) {
+            ngModel.$formatters.push((modelValue: number) => {
                 updateValueFromModel(modelValue);
+                return modelValue;
             });
             /**
              * Keyboad esc implementation to clear 
              */
-            $(element).bind('keydown', function (e: JQueryEventObject) {
+            $(element).bind('keydown', (e: JQueryEventObject) => {
                 if (e.which === rtSelectConstants.keyCodeToClearModel) {
                     scope.$apply(() => {
                         ngModel.$setViewValue(undefined);
