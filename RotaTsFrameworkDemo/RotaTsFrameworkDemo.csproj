@@ -311,6 +311,7 @@
     <TypeScriptCompile Include="app\rota\services\common.service.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\dialogs.service.ts" />
+    <TypeScriptCompile Include="app\rota\services\logger.exception.ts" />
     <TypeScriptCompile Include="app\rota\services\titlebadges.interface.ts" />
     <TypeScriptCompile Include="app\rota\services\titlebadges.service.ts" />
     <TypeScriptCompile Include="app\rota\services\index.ts" />

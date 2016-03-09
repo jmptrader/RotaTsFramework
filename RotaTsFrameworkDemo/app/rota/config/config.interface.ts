@@ -1,5 +1,5 @@
 ﻿//#region Imports
-import { IBaseConfig } from "../base/interfaces";
+import { IBaseConfig, IBaseConfigProvider } from "../base/interfaces";
 import {ILanguage} from '../services/localization.interface';
 
 //#endregion
@@ -71,6 +71,17 @@ interface IMainConfig extends IBaseConfig {
      * Flag that indicates modelState property is assigned to model for crud operations
      */
     setModelStateForEntityFramework?: boolean;
+    /**
+     * Exception will be logged to Elmah db
+     */
+    serverExceptionLoggingEnabled?: boolean;
+
+    serverExceptionLoggingBackendUrl?: string;
+}
+/**
+ * Main config provider
+ */
+interface IMainConfigProvider extends IBaseConfigProvider<IMainConfig> {
 }
 
-export {IMainConfig}
+export {IMainConfig, IMainConfigProvider}

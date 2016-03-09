@@ -24,7 +24,8 @@ class Config extends BaseConfig<IMainConfig> {
             gridDefaultPageSize: 25,
             gridDefaultOptionsName: 'vm.gridOptions',
             supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }],
-            setModelStateForEntityFramework: true
+            setModelStateForEntityFramework: true,
+            serverExceptionLoggingEnabled: false
         };
         this.config = config;
     }

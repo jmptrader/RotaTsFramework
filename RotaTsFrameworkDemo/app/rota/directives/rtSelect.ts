@@ -16,7 +16,7 @@ import * as $ from 'jquery';
 /**
  * Select Model
  */
-interface ISelectModel extends IBaseModel {
+export interface ISelectModel extends IBaseModel {
 }
 /**
  * Selection model interface for prototyping issues
@@ -83,7 +83,7 @@ type ISelectItemMethod = ISelectDataMethod<ISelectModel>;
 /**
  * rtSelect attributes
  */
-interface ISelectAttributes extends ng.IAttributes {
+export interface ISelectAttributes extends ng.IAttributes {
     /**
      * New item modal options
      */
@@ -264,6 +264,18 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             const searchOptions: IModalOptions<ISelectModel> = attrs.searchOptions && $parse(attrs.searchOptions)(scope);
             //#endregion
 
+            //#region Validations
+            if (autoSuggest) {
+                if (!common.isDefined(refreshMethod)) {
+                    throw new Error("refreshMethod must be assigned in autosuggest mode");
+                }
+            } else {
+                if (!common.isDefined(itemsMethod) && !common.isDefined(attrs.data)) {
+                    throw new Error("either items or data must be assigned");
+                }
+            }
+            //#endregion
+
             //#region Utility Methods
             /**
              * Trigger select index changed event
@@ -404,8 +416,6 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                         scope.$watch(attrs.data, (data: ISelectModel[]) => {
                             scope.listItems = data;
                         });
-                    } else {
-                        throw new Error("either items or data must be assigned for rtSelect");
                     }
             };
             /**
@@ -429,7 +439,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param key Model value
              */
             const getAutoSuggestItem = function (key: number): ng.IPromise<ISelectModel> {
-                if (!common.isAssigned(selectMethod)) {
+                if (!common.isDefined(selectMethod)) {
                     throw new Error("selectMethod must be assigned in autosuggest mode");
                 }
                 return callMethod(selectMethod, key).then((data: ISelectModel) => {
@@ -582,7 +592,7 @@ var selectFilter = ['Common', 'rtSelectConstants', function (common: ICommon, rt
 //#endregion
 
 //#region Select Constants
-const selectDirectiveConstants = {
+const selectDirectiveConstants: ISelectConstants = {
     objValuePropName: 'key',
     objDisplayPropName: 'value',
     filterStartsWith: 'startsWith',

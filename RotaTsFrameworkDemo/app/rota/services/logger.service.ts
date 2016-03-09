@@ -5,6 +5,7 @@ import {IMainConfig} from '../config/config.interface';
 import {IBaseConfigProvider} from "../base/interfaces";
 import {ILocalization} from './localization.interface';
 import {IRotaState} from './routing.interface';
+import {IMainConfigProvider} from '../config/config.interface';
 //deps
 import {Localization} from './localization.service';
 import "./logger.config";
@@ -332,10 +333,10 @@ var module: ng.IModule = angular.module('rota.services.log', ['rota.services.log
 module.service('Logger', Logger);
 //Config 
 module.config([
-    '$logProvider', 'LoggerConfigProvider',
-    ($logProvider: ng.ILogProvider, loggerConfigProvider: IBaseConfigProvider<ILoggerConfig>) => {
+    '$logProvider', 'ConfigProvider',
+    ($logProvider: ng.ILogProvider, configProvider: IMainConfigProvider) => {
         if ($logProvider.debugEnabled) {
-            $logProvider.debugEnabled(loggerConfigProvider.config.debugEnabled);
+            $logProvider.debugEnabled(configProvider.config.debugMode);
         }
     }
 ]);

@@ -9,7 +9,6 @@ class LoggerConfig extends BaseConfig<ILoggerConfig> {
     constructor() {
         super();
         const config: ILoggerConfig = {}; //$Log service enabled
-        config.debugEnabled = true;
         //toastr common settings
         toastr.options.timeOut = 2000;
         toastr.options.positionClass = 'toast-bottom-right';

@@ -2,6 +2,7 @@
 import {IBaseApi, BaseApi} from "../base/baseapi";
 import {IRotaApp} from './app.interface';
 import {IBundle} from '../base/interfaces';
+import {IMainConfigProvider} from './config.interface';
 //deps
 import {BaseController} from '../base/basecontroller';
 import {BaseModalController} from '../base/basemodalcontroller';
@@ -20,16 +21,20 @@ class RotaApp implements IRotaApp {
     constructor(moduleName: string) {
         this.rotaModule = angular.module(moduleName, ["rota"]);
 
-        this.configure(['$controllerProvider', '$provide',
-            ($controllerProvider: ng.IControllerProvider, $provide: angular.auto.IProvideService) => {
+        this.configure(['$compileProvider', '$controllerProvider', '$provide', 'ConfigProvider',
+            ($compileProvider: ng.ICompileProvider, $controllerProvider: ng.IControllerProvider,
+                $provide: angular.auto.IProvideService, configProvider: IMainConfigProvider) => {
                 this.controllerProvider = $controllerProvider;
                 this.provideService = $provide;
+                //remove debug info in prod
+                if (!configProvider.config.debugMode) {
+                    $compileProvider.debugInfoEnabled(false);
+                }
             }]);
         //add base modal controller if not defined controller
         this.rotaModule.controller(Dialogs.defaultModalControllerName,
             this.createControllerAnnotation(BaseModalController));
     }
-
     //#endregion
 
     //#region App Methods
