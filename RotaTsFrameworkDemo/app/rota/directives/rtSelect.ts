@@ -73,30 +73,24 @@ interface ISelectedEventArgs {
 /**
  * Selected event
  */
-interface ISelectedEvent {
+interface ISelectedIndexChangedEvent {
     (args: ISelectedEventArgs): void
 }
 /**
  * Data fetcher event interface
  */
-interface ISelectDataMethod<T> {
+interface IItemsDataSourceMethod<T> {
     (...args: any[]): ng.IPromise<T> | T;
 }
-
-export type ISelectItemsMethod = ISelectDataMethod<Array<ISelectModel>>;
-export type ISelectItemMethod = ISelectDataMethod<ISelectModel>;
+/**
+ * Data Source objects and service method name
+ */
+type IItemsDataSource<T> = string | T | ng.IPromise<T>;
 /**
  * rtSelect attributes
  */
 export interface ISelectAttributes extends ng.IAttributes {
-    /**
-     * New item modal options
-     */
-    newItemOptions: string;
-    /**
-     * Search items modal options
-     */
-    searchOptions: string;
+    autoSuggest: boolean;
     /**
      * Propertyof model to be grouped by
      */
@@ -113,26 +107,6 @@ export interface ISelectAttributes extends ng.IAttributes {
      * Filter type
      */
     filterType: "startsWith" | "contains";
-    /**
-     * Refresh method name for autosuggest mode
-     */
-    refresh: string;
-    /**
-     * Items method name to get all items
-     */
-    items: string;
-    /**
-     * Select method name for setting model by selected key value
-     */
-    select: string;
-    /**
-     * Selectedchanged event name
-     */
-    onSelect: string;
-    /**
-     * ngDisabled
-     */
-    ngDisabled: any;
     /**
      * With of rtSelect default to 100%
      */
@@ -154,17 +128,9 @@ export interface ISelectAttributes extends ng.IAttributes {
      */
     service: string;
     /**
-     * Items method's optional parameters
+     * Service fetch methd name 
      */
-    params: any;
-    /**
-     * ngModel
-     */
-    ngModel: string;
-    /**
-     * Select data array name
-     */
-    data: string;
+    serviceFetch: string;
     /**
      * Custom class to be added container 
      */
@@ -174,6 +140,7 @@ export interface ISelectAttributes extends ng.IAttributes {
  * Select scope
  */
 interface ISelectScope extends ng.IScope {
+    //#region Internal params
     /**
      * Items binded to ui-select
      */
@@ -182,14 +149,6 @@ interface ISelectScope extends ng.IScope {
      * Selected model
      */
     selected: ISelection;
-    /**
-     * New Item modal options
-     */
-    showNewItemOptions: boolean;
-    /**
-     * Search items modal options
-     */
-    showSearchOptions: boolean;
     /**
      * Group by function
      * @param model Model
@@ -216,6 +175,43 @@ interface ISelectScope extends ng.IScope {
      * @param event Event
      */
     searchItems: (event: ng.IAngularEvent) => void;
+    //#endregion
+
+    //#region External params 
+    /**
+     * SelectedIndex changed event 
+     */
+    selectedItemChanged: ISelectedIndexChangedEvent;
+    /**
+     * Triggered event after items get populated
+     * @param model Items
+     */
+    dataSourceRetrived: (model: { items: Array<ISelectModel> }) => void;
+    /**
+     * New item modal options
+     */
+    newItemOptions: IModalOptions<ISelectModel>;
+    /**
+     * Search items model options
+     */
+    searchItemsOptions: IModalOptions<ISelectModel>;
+    /**
+     * Datasource object model
+     */
+    dataSourceObject: IItemsDataSource<Array<ISelectModel>>;
+    /**
+     * Method that returns datasource object
+     */
+    dataSourceMethod: IItemsDataSourceMethod<Array<ISelectModel>>;
+    /**
+     * In AutoSuggest mode,get select model by model value
+     */
+    getItemMethod: IItemsDataSourceMethod<ISelectModel>;
+    /**
+    * Items method's optional parameters
+    */
+    params: any;
+    //#endregion
 }
 
 //#endregion
@@ -236,7 +232,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
         $choices.attr('repeat', 'listItem in listItems | rtSelectFilter:$select.search:\'' + displayProp + '\':\'' + filterType + '\'');
 
-        if (angular.isDefined(cAttrs.refresh)) {
+        if (angular.isDefined(cAttrs.autoSuggest)) {
             $choices.attr('refresh', "refreshFn($select.search)")
                 .attr('refresh-delay', 0);
         } else {
@@ -245,7 +241,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             }
         }
         //size & disabled
-        $select.attr('ng-disabled', cAttrs.ngDisabled);
+        //$select.attr('ng-disabled', cAttrs.ngDisabled);
         //placeholder 
         $match.attr('placeholder', (cAttrs.placeholder || localization.getLocal(cAttrs.placeholderI18n || rtSelectConstants.defaultPlaceholderKey)))
             .html('<b ng-bind-html="$select.selected.' + displayProp + '"></b>');
@@ -267,55 +263,38 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             /**
              * AutoSuggest flag
              */
-            const autoSuggest = angular.isDefined(attrs.refresh);
+            const autoSuggest = angular.isDefined(attrs.autoSuggest);
             /**
              * User Service used to be context
              */
             const service = attrs.service && $injector.get<IBaseService>(attrs.service);
             /**
-             * Refresh method name
-             */
-            const refreshMethod = attrs.refresh;
-            /**
-             * Select method name for setting model by selected key value
-             */
-            const selectMethod = attrs.select;
-            /**
-             * Select method name for setting model by selected key value
-             */
-            const itemsMethod = attrs.items;
-            /**
-             * NgModel controller
-             */
-            const ngModel = modelCtrl;
-            /**
-             * Items method's optional parameters
-             */
-            const params = $parse(attrs.params);
-            /**
              * Value property name of model 
              */
             let valuePropGetter = attrs.valueProp && $parse(attrs.valueProp);
-            /**
-             * New item modal options
-             */
-            const newItemOptions: IModalOptions<ISelectModel> = attrs.newItemOptions && $parse(attrs.newItemOptions)(scope);
-            /**
-             * Search items modal options
-             */
-            const searchOptions: IModalOptions<ISelectModel> = attrs.searchOptions && $parse(attrs.searchOptions)(scope);
             //#endregion
 
             //#region Validations
-            if (autoSuggest) {
-                if (!common.isDefined(refreshMethod)) {
-                    throw new Error("refreshMethod must be assigned in autosuggest mode");
-                }
-            } else {
-                if (!common.isDefined(itemsMethod) && !common.isDefined(attrs.data)) {
-                    throw new Error("either items or data must be assigned");
-                }
-            }
+            //dataSourceObject
+            //if (common.isDefined(scope.dataSourceObject) &&
+            //    !common.isArray(scope.dataSourceObject) &&
+            //    !common.isPromise(scope.dataSourceObject) &&
+            //    !common.isString(scope.dataSourceObject)) {
+            //    throw new Error("items must be array,promise or string");
+            //}
+
+            //if (autoSuggest) {
+            //    if (!common.isDefined(refreshMethod)) {
+            //        throw new Error("refreshMethod must be assigned in autosuggest mode");
+            //    }
+            //} else {
+            //    //if (!common.isDefined(scope.dataSourceObject) && !common.isDefined(attrs.data)) {
+            //    //    throw new Error("either items or data must be assigned");
+            //    //}
+
+            //    /*if (common.isAssigned(scope.dataSourceObject) ||
+            //        common.isAssigned(scope.dataSourceMethod)) {*/
+            //}
             //#endregion
 
             //#region Utility Methods
@@ -325,21 +304,15 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param model Selected model
              */
             const callSelectedEvent = (modelValue?: number, model?: ISelectModel): void => {
-                if (!common.isAssigned(attrs.onSelect)) return;
-
-                const onSelect = $parse(attrs.onSelect);
-                if (onSelect !== angular.noop) {
-                    const onSelectEvent: ISelectedEvent = onSelect(scope);
-                    if (onSelectEvent) {
-                        onSelectEvent({ model: model, scope: scope, modelValue: modelValue });
-                    }
+                if (common.isAssigned(scope.selectedItemChanged)) {
+                    scope.selectedItemChanged({ model: model, scope: scope, modelValue: modelValue });
                 }
             }
             /**
              * Value mapper function
              * @param itemObject Content obj or object itself
              */
-            const getValueMapper = (itemObject: ISelectModel | number): number => (valuePropGetter ? valuePropGetter(itemObject) : itemObject);
+            const getValueMapper = (itemObject: ISelectModel): number => (valuePropGetter ? valuePropGetter(itemObject) : itemObject);
             /**
              * Get item by model value wrapped by promise
              * @param key Model Value
@@ -353,12 +326,11 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                             const itemValue = getValueMapper(items[i]);
                             if (itemValue === modelValue) {
                                 foundItem = items[i];
+                                break;
                             }
                         }
                     }
-                    if (foundItem)
-                        return foundItem;
-                    return common.rejectedPromise('not found');
+                    return foundItem || common.rejectedPromise('not found by value ' + modelValue);
                 });
             }
             /**
@@ -366,24 +338,25 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param funcName Function name to be called
              * @param args Optional function params
              */
-            const callMethod = <T>(funcName: string, ...args: any[]): ng.IPromise<T> => {
+            const callMethod = <T>(dataSource: IItemsDataSource<T> | IItemsDataSourceMethod<T>, ...args: any[]): ng.IPromise<T> => {
                 const d = $q.defer<T>();
-                let methodResult: any;
+                let methodResult: T | ng.IPromise<T>;
                 //check service method applied
-                if (service && service[funcName]) {
-                    const selectMethod: ISelectItemMethod | ISelectItemsMethod = service[funcName];
-                    //call service method
-                    methodResult = selectMethod.apply(service, args);
-                } else {
-                    //parse on scope 
-                    const controllerObject = $parse(funcName)(scope);
+                if (common.isString(dataSource)) {
+                    if (service && service[<string>dataSource]) {
+                        const selectMethod: IItemsDataSourceMethod<T> = service[<string>dataSource];
+                        //call service method
+                        methodResult = selectMethod.apply(service, args);
+                    }
+                }
+                else {
                     //check func is function
-                    if (common.isFunction(controllerObject)) {
+                    if (common.isFunction(dataSource)) {
+                        const controllerMethod = <IItemsDataSourceMethod<T>>dataSource;
                         //call scope method
-                        methodResult = controllerObject.apply(scope, args);
+                        methodResult = controllerMethod(args);
                     } else {
-                        //otherwise its supposed to be an array
-                        methodResult = controllerObject;
+                        methodResult = <T | ng.IPromise<T>>dataSource;
                     }
                 }
                 common.makePromise<T>(methodResult).then(callMethodResult => {
@@ -407,31 +380,27 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Set select data and resolve promise
              * @param items Items
              */
-            const setItems = (items: ISelectModel[], updateData: boolean = true): void => {
+            const setItems = (items: ISelectModel[]): void => {
                 if (!common.isArray(items)) return;
 
                 asyncModelRequestResult.resolve(items);
                 scope.listItems = items;
                 //give out data to 'data' prop
-                if (updateData && common.isDefined(attrs.data)) {
-                    const dataSetter = $parse(attrs.data);
-                    if (dataSetter !== angular.noop) {
-                        dataSetter.assign(scope, items);
-                    }
+                if (common.isDefined(scope.dataSourceRetrived)) {
+                    scope.dataSourceRetrived({ items: items });
                 }
             }
             /**
            * Get all items 
            * @param funcName AllItems method name
            */
-            const bindAllItems = (funcName: string): void => {
-                const args = params(scope);
-                callMethod<Array<ISelectModel>>(funcName, args).then(
-                    (data: Array<ISelectModel>) => {
+            const bindAllItems = <T extends Array<ISelectModel>>(dataSource: IItemsDataSource<T> | IItemsDataSourceMethod<T>): void => {
+                callMethod<T>(dataSource, scope.params).then(
+                    (data: T) => {
                         //convert enum obj to array
                         if (data && !common.isArray(data)) {
                             valuePropGetter = $parse(rtSelectConstants.objValuePropName);
-                            data = common.convertObjToArray<ISelectModel>(data, rtSelectConstants.objValuePropName,
+                            data = <T>common.convertObjToArray<ISelectModel>(data, rtSelectConstants.objValuePropName,
                                 rtSelectConstants.objDisplayPropName);
                         }
                         setItems(data);
@@ -442,10 +411,10 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param key Model value
              */
             const getAutoSuggestItem = (key: number): ng.IPromise<ISelectModel> => {
-                if (!common.isDefined(selectMethod)) {
+                if (!common.isDefined(scope.getItemMethod)) {
                     throw new Error("selectMethod must be assigned in autosuggest mode");
                 }
-                return callMethod(selectMethod, key).then((data: ISelectModel) => {
+                return callMethod(scope.getItemMethod, key).then((data: ISelectModel) => {
                     if (data) {
                         setItems([data]);
                     }
@@ -481,37 +450,26 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @description This method is called when in autosuggest mode,more than "minAutoSuggestCharLen" chars is typed
              */
             const initAutoSuggest = (): void => {
-                scope.refreshFn = (keyword: string): ng.IPromise<any> => {
+                scope.refreshFn = (keyword: string): ng.IPromise<Array<ISelectModel>> => {
                     if (keyword && minAutoSuggestCharLen <= keyword.length) {
-                        const args = params(scope);
-                        callMethod<Array<ISelectModel>>(refreshMethod, keyword, args).then(
+                        return callMethod<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod || attrs.serviceFetch,
+                            keyword, scope.params).then(
                             data => {
                                 setItems(data);
+                                return data;
                             });
                     }
-                    return undefined;
                 };
             };
             /**
              * Get all data and bind in normal mode
-             * @description itemsMethod will be used if auto-bind is demanded.Alternatively data attr should be used if array is used
+             * @description itemsMethod will be used if auto-bind is demanded.Watch triggers initally for first load
              */
             const initAllItems = (): void => {
-                if (common.isAssigned(itemsMethod)) {
-                    if (common.isAssigned(attrs.params)) {
-                        //watch params
-                        scope.$watch(attrs.params, () => {
-                            bindAllItems(itemsMethod);
-                        }, true);
-                    } else {
-                        bindAllItems(itemsMethod);
-                    }
-                } else
-                    if (common.isDefined(attrs.data)) {
-                        scope.$watch(attrs.data, (data: ISelectModel[]) => {
-                            setItems(data, false);
-                        });
-                    }
+                //watch params changes to rebind,fire for undefined first
+                scope.$watch('params', (newValue: any) => {
+                    bindAllItems<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod || attrs.serviceFetch);
+                }, true);
             };
             /**
              * Initing select data
@@ -525,7 +483,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             /**
              * Inject formatter pipeline
              */
-            ngModel.$formatters.push((modelValue: number) => {
+            modelCtrl.$formatters.push((modelValue: number) => {
                 updateValueFromModel(modelValue);
                 return modelValue;
             });
@@ -535,7 +493,8 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             $(element).bind('keydown', (e: JQueryEventObject) => {
                 if (e.which === rtSelectConstants.keyCodeToClearModel) {
                     scope.$apply(() => {
-                        ngModel.$setViewValue(undefined);
+                        modelCtrl.$setViewValue(undefined);
+                        setModel();
                         callSelectedEvent();
                     });
                     e.preventDefault();
@@ -556,31 +515,28 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param item Model
              * @param model Model             
              */
-            scope.onItemSelect = function (item: ISelectModel, model: ISelectModel): void {
+            scope.onItemSelect = (item: ISelectModel, model: ISelectModel): void => {
                 const modelValue = getValueMapper(item);
-                ngModel.$setViewValue(modelValue);
+                modelCtrl.$setViewValue(modelValue);
                 callSelectedEvent(modelValue, model);
             }
             //set options visibility
-            scope.showNewItemOptions = common.isAssigned(newItemOptions);
-            scope.showSearchOptions = common.isAssigned(searchOptions);
             //new item options
-            if (scope.showNewItemOptions) {
+            if (scope.newItemOptions) {
                 scope.runNewItem = $event => {
-                    dialogs.showModal(newItemOptions).then((newItem: ISelectModel) => {
+                    dialogs.showModal(scope.newItemOptions).then((newItem: ISelectModel) => {
                         if (newItem) {
                             scope.listItems.unshift(newItem);
                             setModel(newItem);
                         }
                     });
-                    $event.preventDefault();
-                    $event.stopPropagation();
+                    common.preventClick($event);
                 };
             }
             //search options
-            if (scope.showSearchOptions) {
+            if (scope.searchItemsOptions) {
                 scope.searchItems = $event => {
-                    dialogs.showModal(searchOptions).then((foundItem: ISelectModel) => {
+                    dialogs.showModal(scope.searchItemsOptions).then((foundItem: ISelectModel) => {
                         if (foundItem) {
                             const value = getValueMapper(foundItem);
                             if (autoSuggest) {
@@ -591,8 +547,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                             }
                         }
                     });
-                    $event.preventDefault();
-                    $event.stopPropagation();
+                    common.preventClick($event);
                 };
             }
             //#endregion
@@ -604,10 +559,20 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
      * Directive definition
      */
     const directive = <ng.IDirective>{
-        restrict: 'AE',
+        restrict: 'E',
         require: 'ngModel',
         replace: true,
-        scope: true,
+        scope: {
+            dataSourceObject: '=?items',
+            dataSourceMethod: '&?onFetch',
+            dataSourceRetrived: '&?onRetrived',
+            selectedItemChanged: '&?onChanged',
+            getItemMethod: '&?onGet',
+            params: '=?',
+            newItemOptions: '=?',
+            searchItemsOptions: '=?',
+            ngDisabled: '=?'
+        },
         templateUrl: 'rota/rtselect-options.tpl.html',
         compile: compile
     };
@@ -665,13 +630,13 @@ module.directive('rtSelect', selectDirective)
     .run([
         '$templateCache', ($templateCache: ng.ITemplateCacheService) => {
             $templateCache.put('rota/rtselect-options.tpl.html',
-                '<div class="input-group col-md-12 col-sm-12 col-lg-12 col-xs-12"><ui-select name="{{name}}" ' +
+                '<div class="input-group col-md-12 col-sm-12 col-lg-12 col-xs-12"><ui-select ng-disabled=ngDisabled name="{{name}}" ' +
                 'style="width:100%" reset-search-input="true" ng-model="selected.model" ' +
                 'on-select="onItemSelect($item, $model)" theme="select2">' +
                 '<ui-select-match allow-clear="true"></ui-select-match>' +
                 '<ui-select-choices></ui-select-choices></ui-select>' +
-                '<a href ng-if="showNewItemOptions" ng-click="runNewItem($event)" class="input-group-addon"><i class="fa fa-ellipsis-h"></i></a>' +
-                '<a href ng-if="showSearchOptions" ng-click="searchItems($event)" class="input-group-addon"><i class="fa fa-search"></i></a></div>');
+                '<a href ng-if="newItemOptions" ng-click="runNewItem($event)" class="input-group-addon"><i class="fa fa-ellipsis-h"></i></a>' +
+                '<a href ng-if="searchItemsOptions" ng-click="searchItems($event)" class="input-group-addon"><i class="fa fa-search"></i></a></div>');
         }
     ]);
 //#endregion
