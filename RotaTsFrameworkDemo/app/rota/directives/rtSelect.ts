@@ -4,7 +4,6 @@ import {ICommon} from '../services/common.interface';
 import {ILogger} from '../services/logger.interface';
 import {IDialogs, IModalOptions} from '../services/dialogs.interface';
 import {IBaseModel} from '../base/interfaces';
-import {IBaseService} from '../services/service.interface';
 //deps
 import * as _ from "underscore";
 import * as _s from "underscore.string";
@@ -83,9 +82,10 @@ interface IItemsDataSourceMethod<T> {
     (...args: any[]): ng.IPromise<T> | T;
 }
 /**
- * Data Source objects and service method name
+ * Data Source objects 
  */
-type IItemsDataSource<T> = string | T | ng.IPromise<T>;
+type IItemsDataSource<T> = T | ng.IPromise<T>;
+type IDataSource<T> = IItemsDataSource<T> | IItemsDataSourceMethod<T>;
 /**
  * rtSelect attributes
  */
@@ -123,14 +123,6 @@ export interface ISelectAttributes extends ng.IAttributes {
      * Min autosuggest keyboard length
      */
     minAutoSuggestCharLen: number;
-    /**
-     * Service name inherits from IBaseService 
-     */
-    service: string;
-    /**
-     * Service fetch methd name 
-     */
-    serviceFetch: string;
     /**
      * Custom class to be added container 
      */
@@ -252,6 +244,10 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
         return (scope: ISelectScope, element: ng.IAugmentedJQuery, attrs: ISelectAttributes, modelCtrl: ng.INgModelController): void => {
             //#region Init attrs
             /**
+           * AutoSuggest flag
+           */
+            const autoSuggest = angular.isDefined(attrs.autoSuggest);
+            /**
              * Listing defer obj
              * @description  Wait for the request to finish so that items would be available for ngModel changes to select
              */
@@ -260,14 +256,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * * Min autosuggest keyboard length
              */
             const minAutoSuggestCharLen = attrs.minAutoSuggestCharLen || rtSelectConstants.minAutoSuggestCharLen;
-            /**
-             * AutoSuggest flag
-             */
-            const autoSuggest = angular.isDefined(attrs.autoSuggest);
-            /**
-             * User Service used to be context
-             */
-            const service = attrs.service && $injector.get<IBaseService>(attrs.service);
+
             /**
              * Value property name of model 
              */
@@ -338,26 +327,16 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param funcName Function name to be called
              * @param args Optional function params
              */
-            const callMethod = <T>(dataSource: IItemsDataSource<T> | IItemsDataSourceMethod<T>, ...args: any[]): ng.IPromise<T> => {
+            const callMethod = <T>(dataSource: IDataSource<T>, params: any): ng.IPromise<T> => {
                 const d = $q.defer<T>();
                 let methodResult: T | ng.IPromise<T>;
-                //check service method applied
-                if (common.isString(dataSource)) {
-                    if (service && service[<string>dataSource]) {
-                        const selectMethod: IItemsDataSourceMethod<T> = service[<string>dataSource];
-                        //call service method
-                        methodResult = selectMethod.apply(service, args);
-                    }
-                }
-                else {
-                    //check func is function
-                    if (common.isFunction(dataSource)) {
-                        const controllerMethod = <IItemsDataSourceMethod<T>>dataSource;
-                        //call scope method
-                        methodResult = controllerMethod(args);
-                    } else {
-                        methodResult = <T | ng.IPromise<T>>dataSource;
-                    }
+                //check func is function
+                if (common.isFunction(dataSource)) {
+                    const controllerMethod = <IItemsDataSourceMethod<T>>dataSource;
+                    //call scope method
+                    methodResult = controllerMethod(params);
+                } else {
+                    methodResult = <IItemsDataSource<T>>dataSource;
                 }
                 common.makePromise<T>(methodResult).then(callMethodResult => {
                     d.resolve(callMethodResult);
@@ -395,7 +374,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
            * @param funcName AllItems method name
            */
             const bindAllItems = <T extends Array<ISelectModel>>(dataSource: IItemsDataSource<T> | IItemsDataSourceMethod<T>): void => {
-                callMethod<T>(dataSource, scope.params).then(
+                callMethod<T>(dataSource, { params: scope.params }).then(
                     (data: T) => {
                         //convert enum obj to array
                         if (data && !common.isArray(data)) {
@@ -414,7 +393,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 if (!common.isDefined(scope.getItemMethod)) {
                     throw new Error("selectMethod must be assigned in autosuggest mode");
                 }
-                return callMethod(scope.getItemMethod, key).then((data: ISelectModel) => {
+                return callMethod(scope.getItemMethod, { id: key }).then((data: ISelectModel) => {
                     if (data) {
                         setItems([data]);
                     }
@@ -429,18 +408,16 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 if (!common.isAssigned(modelValue)) {
                     return setModel();
                 }
-                //get item by key
-                findItemByKey(modelValue).then((item) => {
-                    setModel(item);
-                }, () => {
-                    if (autoSuggest) {
-                        getAutoSuggestItem(modelValue).then((selItem: ISelectModel) => {
-                            setModel(selItem);
-                        });
-                    } else {
-                        logger.console.warn({ message: 'item not found by value ' + modelValue });
-                    }
-                });
+                if (autoSuggest) {
+                    getAutoSuggestItem(modelValue).then((selItem: ISelectModel) => {
+                        setModel(selItem);
+                    });
+                } else {
+                    //get item by key
+                    findItemByKey(modelValue).then((item) => {
+                        setModel(item);
+                    });
+                }
             };
             //#endregion
 
@@ -452,8 +429,8 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             const initAutoSuggest = (): void => {
                 scope.refreshFn = (keyword: string): ng.IPromise<Array<ISelectModel>> => {
                     if (keyword && minAutoSuggestCharLen <= keyword.length) {
-                        return callMethod<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod || attrs.serviceFetch,
-                            keyword, scope.params).then(
+                        return callMethod<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod,
+                            { keyword: keyword }).then(
                             data => {
                                 setItems(data);
                                 return data;
@@ -468,7 +445,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             const initAllItems = (): void => {
                 //watch params changes to rebind,fire for undefined first
                 scope.$watch('params', (newValue: any) => {
-                    bindAllItems<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod || attrs.serviceFetch);
+                    bindAllItems<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod);
                 }, true);
             };
             /**
