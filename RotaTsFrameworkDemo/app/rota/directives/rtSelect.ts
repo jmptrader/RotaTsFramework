@@ -258,7 +258,6 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * * Min autosuggest keyboard length
              */
             const minAutoSuggestCharLen = attrs.minAutoSuggestCharLen || rtSelectConstants.minAutoSuggestCharLen;
-
             /**
              * Value property name of model 
              */
@@ -267,25 +266,20 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
             //#region Validations
             //dataSourceObject
-            //if (common.isDefined(scope.dataSourceObject) &&
-            //    !common.isArray(scope.dataSourceObject) &&
-            //    !common.isPromise(scope.dataSourceObject) &&
-            //    !common.isString(scope.dataSourceObject)) {
-            //    throw new Error("items must be array,promise or string");
-            //}
-
-            //if (autoSuggest) {
-            //    if (!common.isDefined(refreshMethod)) {
-            //        throw new Error("refreshMethod must be assigned in autosuggest mode");
-            //    }
-            //} else {
-            //    //if (!common.isDefined(scope.dataSourceObject) && !common.isDefined(attrs.data)) {
-            //    //    throw new Error("either items or data must be assigned");
-            //    //}
-
-            //    /*if (common.isAssigned(scope.dataSourceObject) ||
-            //        common.isAssigned(scope.dataSourceMethod)) {*/
-            //}
+            if (!attrs.displayProp) {
+                throw new Error("display prop must be defined");
+            }
+            if (!common.isDefined(scope.dataSourceObject) && !common.isDefined(scope.dataSourceMethod)) {
+                throw new Error("items or on-fetch must be defined");
+            }
+            if (common.isDefined(scope.dataSourceObject) &&
+                !common.isArray(scope.dataSourceObject) &&
+                !common.isPromise(scope.dataSourceObject)) {
+                throw new Error("items must be array or promise ");
+            }
+            if (autoSuggest && !common.isAssigned(scope.getItemMethod)) {
+                throw new Error("onGet method must be defined in autosuggest");
+            }
             //#endregion
 
             //#region Utility Methods
