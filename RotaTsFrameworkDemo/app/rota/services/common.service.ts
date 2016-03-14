@@ -109,6 +109,13 @@ class Common implements ICommon {
         return value !== undefined && value !== null;
     }
     /**
+     * Guard method checks for string
+     * @param value Any object
+     */
+    isString(value: any): value is String {
+        return angular.isString(value);
+    }
+    /**
      * Guard method checks for array objects
      * @param value Any object
      */
@@ -141,9 +148,26 @@ class Common implements ICommon {
      * PreventDefault utility method
      * @param $event Angular event
      */
-    preventClick($event: ng.IAngularEvent): void {
-        $event.preventDefault();
-        $event.stopPropagation();
+    preventClick(event: ng.IAngularEvent | Event | JQueryEventObject): void {
+        if (!event) return;
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    /**
+    * Convert object to generic array
+    * @param obj Object to convert
+    */
+    convertObjToArray<T>(obj: any, objValuePropName: string = 'key', objDisplayPropName: string = 'value'): Array<T> {
+        const result = new Array<T>();
+        for (let prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                const item: T = <T>{};
+                item[objValuePropName] = obj[prop];
+                item[objDisplayPropName] = prop;
+                result.push(item);
+            }
+        }
+        return result;
     }
     //#endregion
 

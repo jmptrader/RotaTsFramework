@@ -1,6 +1,5 @@
 ﻿<div>
     <rt-form>
-        <!--<rt-button click="vm.initSearchModel()" text="rota.ara" icon="search" color="warning"></rt-button>-->
         <rt-list-buttons></rt-list-buttons>
         <rt-panel title="Filtre" icon="filter">
             <div class="form-group col-md-7">
@@ -12,13 +11,30 @@
             <div class="form-group">
                 <label class="control-label col-md-3" i18n="todo.todo"></label>
                 <div class="col-md-9">
-                    <rt-select data="vm.model"
-                               ng-model="vm.selectvalue"
+                    <button ng-click="vm.pp =vm.pp+1;">Change param</button>
+                    <button ng-click="vm.selectvalue = 1 + vm.selectvalue ;">Change model</button>
+
+                    <!--<rt-select items="vm.musteriler"
+                               ng-model="vm.selectvalue2"
                                value-prop="id"
-                              
                                display-prop="text"></rt-select>
 
+                    <rt-select on-fetch="vm.getMusteriler(keyword)"
+                               on-get="vm.getMusteriById(id)"
+                               auto-suggest
+                               ng-model="vm.selectvalue"
+                               on-retrived="vm.dataArrived(items)"
+                               new-item-options="{controllerUrl:'app/todo/todo.modal.controller.js',controller:'todoModalController',templateUrl:'app/todo/todo.modal.html'}"
+                               value-prop="id"
+                               display-prop="text"></rt-select>-->
+
+                    <rt-multi-select items="vm.musteriler"
+                                     ng-model="vm.selected"
+                                     value-prop="id"
+                                     display-prop="text"></rt-multi-select>
+
                 </div>
+                <!--params="vm.pp"-->
             </div>
             <div class="clearfix"></div>
         </rt-panel>

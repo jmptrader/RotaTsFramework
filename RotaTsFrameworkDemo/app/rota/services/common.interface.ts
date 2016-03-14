@@ -117,10 +117,6 @@ interface ICommon extends IBaseService {
      */
     addPrefixSlash(path: string): string;
     /**
-    * Check whether model is valid baseModel
-    * @param model
-    */
-    /**
     * Check whether model is valid crudModel
     * @param model
     */
@@ -137,6 +133,11 @@ interface ICommon extends IBaseService {
      * @param value Any object
      */
     isAssigned(value: any): boolean;
+    /**
+     * Guard method checks for string
+     * @param value Any object
+     */
+    isString(value: any): value is String;
     /**
    * Guard method checks for array objects
    * @param value Any object
@@ -161,7 +162,12 @@ interface ICommon extends IBaseService {
     * PreventDefault utility method
     * @param $event Angular event
     */
-    preventClick($event: ng.IAngularEvent): void;
+    preventClick(event: ng.IAngularEvent | Event | JQueryEventObject): void;
+    /**
+    * Convert object to generic array
+    * @param obj Object to convert
+    */
+    convertObjToArray<T>(obj: any, objValuePropName: string, objDisplayPropName: string): Array<T>;
 }
 //#endregion
 

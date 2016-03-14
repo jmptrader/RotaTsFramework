@@ -9,9 +9,11 @@ import {IMainConfigProvider} from '../config/config.interface';
 //deps
 import {Localization} from './localization.service';
 import "./logger.config";
+import '../config/config';
 import * as toastr from "toastr";
 import * as moment from "moment";
 import * as angular from "angular";
+
 //#endregion
 
 //#region Log Services
@@ -329,7 +331,7 @@ class Logger implements ILogger {
 //#endregion
 
 //#region Register
-var module: ng.IModule = angular.module('rota.services.log', ['rota.services.log.config']);
+var module: ng.IModule = angular.module('rota.services.log', ['rota.services.log.config','rota.config']);
 module.service('Logger', Logger);
 //Config 
 module.config([

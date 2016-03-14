@@ -368,6 +368,16 @@ ul.nav-tabs {
     }
 /*#endregion */
 
+/*#region Select */
+
+.rt-select {
+}
+
+    .rt-select a {
+        cursor: pointer;
+    }
+/*#endregion */
+
 /*#region Grid Classes */
 .grid {
     width: 100%;

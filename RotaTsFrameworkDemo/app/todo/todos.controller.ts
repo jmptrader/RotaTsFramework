@@ -9,13 +9,33 @@ import "./todos.service";
 class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
 
     todoApi: ITodoApi;
+    selectvalue: number;
+    pp: number;
+    musteriler: ng.IPromise<ITodoModel[]>;
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
+
+        this.selectvalue = 5;
+        this.pp = 4;
+
+        this.musteriler = this.todoApi.getTodos();
     }
 
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
         return this.todoApi.getTodos(modelFilter);
+    }
+
+    dataArrived(data: any) {
+    }
+
+    getMusteriById(id: number): ng.IPromise<ITodoModel> {
+        return this.todoApi.getTodoById(id);
+    }
+
+    getMusteriler(keyword: string): ng.IPromise<ITodoModel[]> {
+        debugger;
+        return this.todoApi.getTodos({ Text: keyword });
     }
 
     getGridColumns(options: IGridOptions): uiGrid.IColumnDef[] {

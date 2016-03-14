@@ -40,6 +40,8 @@ interface ILog {
      */
     data?: any;
 }
+
+type IAlertStyle = 'warning' | 'danger' | 'success' | 'info';
 /**
  * Log object for notification
  */
@@ -52,7 +54,7 @@ interface INotify extends ILog {
      * Notifictaion style
      * @description It should be bootstrap styles warning,danger,success,info
      */
-    style: 'warning' | 'danger' | 'success' | 'info';
+    style: IAlertStyle;
 }
 /**
  * Generic log call method
@@ -157,4 +159,4 @@ export enum NotifyType {
 }
 //#endregion
 
-export {IToastr, IBaseLogger, INotification, INotify, ILog, ILoggerConfig, ILogger, IConsole, IServerExceptionLog}
+export {IToastr, IBaseLogger, INotification, INotify, ILog, ILoggerConfig, ILogger, IConsole, IServerExceptionLog, IAlertStyle}

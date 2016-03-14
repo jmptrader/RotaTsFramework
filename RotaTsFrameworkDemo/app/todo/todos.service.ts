@@ -5,7 +5,7 @@ import {ICrudServerResponse} from 'app/rota/services/common.interface';
 
 
 interface ITodoApi extends IBaseApi {
-    getTodos(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]>;
+    getTodos(modelFilter?: ITodoFilter): ng.IPromise<ITodoModel[]>;
     getTodoById(id: number): angular.IPromise<ITodoModel>;
     save(model: ITodoModel): ng.IPromise<ICrudServerResponse>;
     deleteById(id: number): ng.IPromise<any>;
@@ -13,8 +13,8 @@ interface ITodoApi extends IBaseApi {
 
 class TodoApi extends BaseApi implements ITodoApi {
 
-    getTodos(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
-        return this.post<ITodoModel[]>("todo/getall", modelFilter);
+    getTodos(modelFilter?: ITodoFilter): ng.IPromise<ITodoModel[]> {
+        return this.post<ITodoModel[]>("todo/getall", modelFilter || {});
     }
 
     getTodoById(id: number): ng.IPromise<ITodoModel> {

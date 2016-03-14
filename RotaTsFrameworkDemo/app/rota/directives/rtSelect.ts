@@ -62,32 +62,38 @@ interface ISelectConstants {
      * Key code to clear model 
      */
     keyCodeToClearModel: number;
+    /**
+     * Key code to add model 
+     */
+    keyCodeToAddModel: number;
 }
 /**
  * Selected event args
  */
-interface ISelectedEventArgs {
-    modelValue?: number;
-    model?: IBaseModel,
-    scope: ISelectScope;
+export interface ISelectedEventArgs {
+    args: {
+        modelValue?: number;
+        model?: IBaseModel,
+        scope: ISelectScope;
+    }
 }
 /**
  * Selected event
  */
-interface ISelectedIndexChangedEvent {
+export interface ISelectedIndexChangedEvent {
     (args: ISelectedEventArgs): void
 }
 /**
  * Data fetcher event interface
  */
-interface IItemsDataSourceMethod<T> {
+export interface IItemsDataSourceMethod<T> {
     (...args: any[]): ng.IPromise<T> | T;
 }
 /**
  * Data Source objects 
  */
-type IItemsDataSource<T> = T | ng.IPromise<T>;
-type IDataSource<T> = IItemsDataSource<T> | IItemsDataSourceMethod<T>;
+export type IItemsDataSource<T> = T | ng.IPromise<T>;
+export type IDataSource<T> = IItemsDataSource<T> | IItemsDataSourceMethod<T>;
 /**
  * rtSelect attributes
  */
@@ -133,7 +139,7 @@ export interface ISelectAttributes extends ng.IAttributes {
 /**
  * Select scope
  */
-interface ISelectScope extends ng.IScope {
+export interface ISelectScope extends ng.IScope {
     //#region Internal params
     /**
      * Items binded to ui-select
@@ -163,7 +169,7 @@ interface ISelectScope extends ng.IScope {
      * Opens a new item modal window
      * @param event Event
      */
-    runNewItem: (event: ng.IAngularEvent) => void;
+    runNewItem: (event?: ng.IAngularEvent) => void;
     /**
      * Opens a search items modal window
      * @param event Event
@@ -175,12 +181,12 @@ interface ISelectScope extends ng.IScope {
     /**
      * SelectedIndex changed event 
      */
-    selectedItemChanged: ISelectedIndexChangedEvent;
+    onChange: ISelectedIndexChangedEvent;
     /**
      * Triggered event after items get populated
      * @param model Items
      */
-    dataSourceRetrived: (model: { items: Array<ISelectModel> }) => void;
+    onRetrived: (model: { items: Array<ISelectModel> }) => void;
     /**
      * New item modal options
      */
@@ -192,19 +198,23 @@ interface ISelectScope extends ng.IScope {
     /**
      * Datasource object model
      */
-    dataSourceObject: IItemsDataSource<Array<ISelectModel>>;
+    items: IItemsDataSource<Array<ISelectModel>>;
     /**
      * Method that returns datasource object
      */
-    dataSourceMethod: IItemsDataSourceMethod<Array<ISelectModel>>;
+    onFetch: IItemsDataSourceMethod<Array<ISelectModel>>;
     /**
      * In AutoSuggest mode,get select model by model value
      */
-    getItemMethod: IItemsDataSourceMethod<ISelectModel>;
+    onGet: IItemsDataSourceMethod<ISelectModel>;
     /**
     * Items method's optional parameters
     */
     params: any;
+    /**
+     * Disable state
+     */
+    ngDisabled: any;
     //#endregion
 }
 
@@ -213,7 +223,7 @@ interface ISelectScope extends ng.IScope {
 //#region Select Directive
 function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorService,
     $q: ng.IQService, localization: ILocalization, common: ICommon, logger: ILogger, dialogs: IDialogs,
-    rtSelectConstants: ISelectConstants) {
+    rtSelectConstants: ISelectConstants, hotkeys: ng.hotkeys.HotkeysProvider) {
 
     function compile(cElement: ng.IAugmentedJQuery, cAttrs: ISelectAttributes) {
         //#region Dom manupulations
@@ -234,8 +244,6 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 $choices.attr('group-by', 'groupbyFn');
             }
         }
-        //size & disabled
-        //$select.attr('ng-disabled', cAttrs.ngDisabled);
         //placeholder 
         $match.attr('placeholder', (cAttrs.placeholder || localization.getLocal(cAttrs.placeholderI18n || rtSelectConstants.defaultPlaceholderKey)))
             .html('<b ng-bind-html="$select.selected.' + displayProp + '"></b>');
@@ -266,18 +274,18 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
             //#region Validations
             //dataSourceObject
-            if (!attrs.displayProp) {
-                throw new Error("display prop must be defined");
-            }
-            if (!common.isDefined(scope.dataSourceObject) && !common.isDefined(scope.dataSourceMethod)) {
+            //if (!common.isDefined(attrs.displayProp)) {
+            //    throw new Error("display prop must be defined");
+            //}
+            if (!common.isDefined(scope.items) && !common.isDefined(scope.onFetch)) {
                 throw new Error("items or on-fetch must be defined");
             }
-            if (common.isDefined(scope.dataSourceObject) &&
-                !common.isArray(scope.dataSourceObject) &&
-                !common.isPromise(scope.dataSourceObject)) {
+            if (common.isDefined(scope.items) &&
+                !common.isArray(scope.items) &&
+                !common.isPromise(scope.items)) {
                 throw new Error("items must be array or promise ");
             }
-            if (autoSuggest && !common.isAssigned(scope.getItemMethod)) {
+            if (autoSuggest && !common.isAssigned(scope.onGet)) {
                 throw new Error("onGet method must be defined in autosuggest");
             }
             //#endregion
@@ -289,8 +297,8 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param model Selected model
              */
             const callSelectedEvent = (modelValue?: number, model?: ISelectModel): void => {
-                if (common.isAssigned(scope.selectedItemChanged)) {
-                    scope.selectedItemChanged({ model: model, scope: scope, modelValue: modelValue });
+                if (common.isAssigned(scope.onChange)) {
+                    scope.onChange({ args: { model: model, scope: scope, modelValue: modelValue } });
                 }
             }
             /**
@@ -351,6 +359,18 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 scope.selected.model = value;
             };
             /**
+             * Clear model
+             */
+            const clearModel = (): void => {
+                modelCtrl.$setViewValue(undefined);
+                setModel();
+
+                if (autoSuggest) {
+                    scope.listItems = [];
+                }
+                callSelectedEvent();
+            }
+            /**
              * Set select data and resolve promise
              * @param items Items
              */
@@ -359,8 +379,8 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
                 scope.listItems = items;
                 //give out data to 'data' prop
-                if (common.isDefined(scope.dataSourceRetrived)) {
-                    scope.dataSourceRetrived({ items: items });
+                if (common.isDefined(scope.onRetrived)) {
+                    scope.onRetrived({ items: items });
                 }
                 return items;
             }
@@ -369,7 +389,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
            * @param funcName AllItems method name
            */
             const bindAllItems = (): void => {
-                asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod,
+                asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.items || scope.onFetch,
                     { params: scope.params }).then(
                     (data) => {
                         //convert enum obj to array
@@ -386,7 +406,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param key Model value
              */
             const bindItemById = (key: number): void => {
-                asyncModelRequestResult = callMethod<ISelectModel>(scope.getItemMethod, { id: key }).then(
+                asyncModelRequestResult = callMethod<ISelectModel>(scope.onGet, { id: key }).then(
                     (data: ISelectModel) => {
                         if (data) {
                             return setItems([data]);
@@ -399,7 +419,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @param keyword Keyword
              */
             const bindItemsByKeyword = (keyword: string): void => {
-                asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.dataSourceObject || scope.dataSourceMethod,
+                asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.items || scope.onFetch,
                     { keyword: keyword }).then(
                     data => {
                         return setItems(data);
@@ -471,14 +491,13 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Keyboad esc implementation to clear 
              */
             $(element).bind('keydown', (e: JQueryEventObject) => {
-                if (e.which === rtSelectConstants.keyCodeToClearModel) {
-                    scope.$apply(() => {
-                        modelCtrl.$setViewValue(undefined);
-                        setModel();
-                        callSelectedEvent();
-                    });
-                    e.preventDefault();
-                    e.stopPropagation();
+                switch (e.which) {
+                    case rtSelectConstants.keyCodeToClearModel:
+                        scope.$apply(() => {
+                            clearModel();
+                            common.preventClick(e);
+                        });
+                        break;
                 }
             });
             //#endregion
@@ -504,6 +523,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             //new item options
             if (scope.newItemOptions) {
                 scope.runNewItem = $event => {
+                    if (scope.ngDisabled) return;
                     dialogs.showModal(scope.newItemOptions).then((newItem: ISelectModel) => {
                         if (newItem) {
                             scope.listItems.unshift(newItem);
@@ -516,6 +536,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             //search options
             if (scope.searchItemsOptions) {
                 scope.searchItems = $event => {
+                    if (scope.ngDisabled) return;
                     dialogs.showModal(scope.searchItemsOptions).then((foundItem: ISelectModel) => {
                         if (foundItem) {
                             const value = getValueMapper(foundItem);
@@ -543,11 +564,11 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
         require: 'ngModel',
         replace: true,
         scope: {
-            dataSourceObject: '=?items',
-            dataSourceMethod: '&?onFetch',
-            dataSourceRetrived: '&?onRetrived',
-            selectedItemChanged: '&?onChanged',
-            getItemMethod: '&?onGet',
+            items: '=?',
+            onFetch: '&?',
+            onRetrived: '&?',
+            onChange: '&?',
+            onGet: '&?',
             params: '=?',
             newItemOptions: '=?',
             searchItemsOptions: '=?',
@@ -558,7 +579,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
     };
     return directive;
 }
-selectDirective.$inject = ['$parse', '$injector', '$q', 'Localization', 'Common', 'Logger', 'Dialogs', 'rtSelectConstants'];
+selectDirective.$inject = ['$parse', '$injector', '$q', 'Localization', 'Common', 'Logger', 'Dialogs', 'rtSelectConstants', 'hotkeys'];
 //#endregion
 
 //#region Select Filter
@@ -598,7 +619,8 @@ const selectDirectiveConstants: ISelectConstants = {
     filterContains: 'contains',
     defaultPlaceholderKey: 'rota.seciniz',
     minAutoSuggestCharLen: 3,
-    keyCodeToClearModel: 27
+    keyCodeToClearModel: 27,
+    keyCodeToAddModel: 107
 }
 //#endregion
 
@@ -610,7 +632,7 @@ module.directive('rtSelect', selectDirective)
     .run([
         '$templateCache', ($templateCache: ng.ITemplateCacheService) => {
             $templateCache.put('rota/rtselect-options.tpl.html',
-                '<div class="input-group col-md-12 col-sm-12 col-lg-12 col-xs-12"><ui-select ng-disabled=ngDisabled name="{{name}}" ' +
+                '<div class="input-group col-md-12 col-sm-12 col-lg-12 col-xs-12 rt-select"><ui-select ng-disabled=ngDisabled name="{{name}}" ' +
                 'style="width:100%" reset-search-input="true" ng-model="selected.model" ' +
                 'on-select="onItemSelect($item, $model)" theme="select2">' +
                 '<ui-select-match allow-clear="true"></ui-select-match>' +
