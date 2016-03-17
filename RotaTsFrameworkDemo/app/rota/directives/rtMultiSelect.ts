@@ -103,6 +103,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
 
     function compile(cElement: ng.IAugmentedJQuery, cAttrs: IMultiSelectAttributes) {
         //#region DOM manupulations
+        //#region rtSelect 
         const dropDown = $('rt-select', cElement);
         dropDown.attr('value-prop', cAttrs.valueProp)
             .attr('display-prop', cAttrs.displayProp)
@@ -116,12 +117,9 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             dropDown.attr('items', 'items');
             dropDown.attr('on-fetch', 'onFetch({params:params})');
         }
+        //#endregion
 
-        //set command buttons hide depends on ng-disabled
-        //$('a.command', cElement).attr('ng-hide', cAttrs.ngDisabled);
-        //groupby enabled
         const groupbyEnabled = common.isDefined(cAttrs.groupbyProp);
-        //row template
         var displayPropMarkup = '{{item' + (cAttrs.displayProp ? '.' + cAttrs.displayProp : '') + '}}';
         $('td.value', cElement).html(displayPropMarkup);
         //Selection Prop
@@ -538,27 +536,27 @@ module.factory('rtMultiSelectI18N', multiSelectI18NService)
         '$templateCache', ($templateCache: ng.ITemplateCacheService) => {
             $templateCache.put('rota/rtmultiselect.tpl.html',
                 '<div class="rt-multiselect" ng-style="controlHeight">' +
-                '<div class="header"><rt-select ng-model="selectedModel" on-retrived="onItemsPopulated(items)" on-change="onSelectionChanged(args)"></rt-select></div>' +
+                '<div class="header"><rt-select ng-disabled=ngDisabled ng-model="selectedModel" on-retrived="onItemsPopulated(items)" on-change="onSelectionChanged(args)"></rt-select></div>' +
                 '<div class="body" ng-style="controlBodyHeight"><table class="items">' +
                 '<tr ng-if="visibleItems.length==0" class="empty-row"><td>' +
                 '<label class="label label-default">{{::tt_kayitbulunamadi}}</label></td></tr>' +
                 '<tr class="item" ng-repeat="item in visibleItems"><td class="selection" ng-if="showSelection">' +
                 '<input type="radio" ng-value="true" ng-click="setSelected(item)"/></td><td class="value"></td>' +
                 '<td align="right" class="text-align-center" style="width:10px">' +
-                '<a class="command" href ng-click="removeItem(item,$event)" tooltip="{{::tt_sil}}" tooltip-placement="right">' +
+                '<a class="command" ng-hide=ngDisabled href ng-click="removeItem(item,$event)" tooltip="{{::tt_sil}}" tooltip-placement="right">' +
                 '<i class="fa fa-minus-circle text-danger"></i></a></td></tr></table></div>' +
                 '<div class="footer"><span class="label alert-info"><i>{{recordInfo}}</i></span>' +
                 '&nbsp;<span ng-if="notification" ng-class="\'alert-\' + notification.type" class="badge notification">' +
                 '<i>{{notification.message}}</i></span>' +
                 '<div class="pull-right">' +
-                '<a class="command" href ng-if="!autoSuggest" ng-click="addAll($event)" tooltip="{{::tt_tumunuekle}}" tooltip-placement="top">' +
+                '<a class="command" ng-hide=ngDisabled href ng-if="!autoSuggest" ng-click="addAll($event)" tooltip="{{::tt_tumunuekle}}" tooltip-placement="top">' +
                 '<i class="fa fa-plus-square text-info"></i></a>&nbsp;' +
-                '<a class="command" href ng-click="removeAll($event)" tooltip="{{::tt_tumunusil}}" tooltip-placement="top">' +
+                '<a class="command" ng-hide=ngDisabled href ng-click="removeAll($event)" tooltip="{{::tt_tumunusil}}" tooltip-placement="top">' +
                 '<i class="fa fa-minus-square text-danger"></i></a></div>' +
                 '<div class="clearfix"></div></div></div>');
             $templateCache.put('rota/rtmultiselect.group.tpl.html',
                 '<div class="rt-multiselect" ng-style="controlHeight">' +
-                '<div class="header"><rt-select ng-model="selectedModel" on-retrived="onItemsPopulated(items)" on-change="onSelectionChanged(args)"></rt-select></div>' +
+                '<div class="header"><rt-select ng-disabled=ngDisabled ng-model="selectedModel" on-retrived="onItemsPopulated(items)" on-change="onSelectionChanged(args)"></rt-select></div>' +
                 '<div class="body" ng-style="controlBodyHeight"><table class="items">' +
                 '<tr ng-if="visibleItems.length==0" class="empty-row"><td>' +
                 '<label class="label label-default">{{::tt_kayitbulunamadi}}</label></td></tr>' +

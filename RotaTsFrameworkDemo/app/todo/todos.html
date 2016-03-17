@@ -13,6 +13,11 @@
                 <div class="col-md-9">
                     <button ng-click="vm.pp =vm.pp+1;">Change param</button>
                     <button ng-click="vm.selectvalue = 1 + vm.selectvalue ;">Change model</button>
+                    <button ng-click="vm.enable=!vm.enable">Disable</button>
+
+                    {{vm.selectvalue3}}
+                    <rt-select items="vm.musteriTip"
+                                   ng-model="vm.selectvalue3"></rt-select>
 
                     <!--<rt-select items="vm.musteriler"
                                ng-model="vm.selectvalue2"
@@ -26,10 +31,11 @@
                                on-retrived="vm.dataArrived(items)"
                                new-item-options="{controllerUrl:'app/todo/todo.modal.controller.js',controller:'todoModalController',templateUrl:'app/todo/todo.modal.html'}"
                                value-prop="id"
-                               display-prop="text"></rt-select>-->
+                               display-prop="text"></rt-select>
                     {{vm.selected}}
                     <rt-multi-select on-refresh="vm.getMusterilerByKeyword(keyword)"
                                      ng-model="vm.selected"
+                                     ng-disabled="vm.enable"
                                      on-get="vm.getMusteriById(id)"
                                      model-prop="bagOlgKullId"
                                      value-prop="id"

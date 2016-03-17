@@ -6,6 +6,11 @@ import {ITodoApi} from "./todos.service";
 import {BaseListController} from "app/rota/base/baselistcontroller";
 import "./todos.service";
 
+enum MusteriTipi {
+    Tuzel,
+    Sahis
+}
+
 class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
 
     todoApi: ITodoApi;
@@ -13,15 +18,19 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
     pp: number;
     musteriler: ng.IPromise<ITodoModel[]>;
     selected: any[];
+    musteriTip:any;
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
 
         this.selectvalue = 5;
         this.pp = 4;
-        //this.selected = [{ bagOlgKullId: 3 }, { bagOlgKullId: 1 }];
+        this.selected = [{ bagOlgKullId: 3 }, { bagOlgKullId: 1 }];
 
         this.musteriler = this.todoApi.getTodos();
+        this.musteriTip = {
+            
+        }
     }
 
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
