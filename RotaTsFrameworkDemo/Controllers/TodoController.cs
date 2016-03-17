@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web.Http;
 
@@ -73,9 +74,11 @@ namespace RotaTsFrameworkDemo.Controllers
             Id = id;
             Text = text;
             Done = done;
+            ModelState = EntityState.Unchanged;
         }
         public int Id { get; set; }
         public string Text { get; set; }
         public bool Done { get; set; }
+        public EntityState ModelState { get; set; }
     }
 }

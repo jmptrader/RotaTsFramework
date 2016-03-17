@@ -12,12 +12,14 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
     selectvalue: number;
     pp: number;
     musteriler: ng.IPromise<ITodoModel[]>;
+    selected: any[];
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
 
         this.selectvalue = 5;
         this.pp = 4;
+        //this.selected = [{ bagOlgKullId: 3 }, { bagOlgKullId: 1 }];
 
         this.musteriler = this.todoApi.getTodos();
     }
@@ -33,8 +35,12 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         return this.todoApi.getTodoById(id);
     }
 
-    getMusteriler(keyword: string): ng.IPromise<ITodoModel[]> {
-        debugger;
+    getMusteriler(params: any): ng.IPromise<ITodoModel[]> {
+        return this.todoApi.getTodos();
+    }
+
+
+    getMusterilerByKeyword(keyword: string): ng.IPromise<ITodoModel[]> {
         return this.todoApi.getTodos({ Text: keyword });
     }
 

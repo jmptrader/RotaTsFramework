@@ -19,7 +19,7 @@
                                value-prop="id"
                                display-prop="text"></rt-select>
 
-                    <rt-select on-fetch="vm.getMusteriler(keyword)"
+                    <rt-select on-refresh="vm.getMusteriler(keyword)"
                                on-get="vm.getMusteriById(id)"
                                auto-suggest
                                ng-model="vm.selectvalue"
@@ -27,9 +27,17 @@
                                new-item-options="{controllerUrl:'app/todo/todo.modal.controller.js',controller:'todoModalController',templateUrl:'app/todo/todo.modal.html'}"
                                value-prop="id"
                                display-prop="text"></rt-select>-->
-
-                    <rt-multi-select items="vm.musteriler"
+                    {{vm.selected}}
+                    <rt-multi-select on-refresh="vm.getMusterilerByKeyword(keyword)"
                                      ng-model="vm.selected"
+                                     on-get="vm.getMusteriById(id)"
+                                     model-prop="bagOlgKullId"
+                                     value-prop="id"
+                                     display-prop="text"></rt-multi-select>
+
+                    <rt-multi-select on-fetch="vm.getMusteriler(params)"
+                                     ng-model="vm.selected2"
+                                     model-prop="bagOlgKullId"
                                      value-prop="id"
                                      display-prop="text"></rt-multi-select>
 

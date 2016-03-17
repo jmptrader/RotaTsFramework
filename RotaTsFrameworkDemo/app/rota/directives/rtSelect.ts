@@ -27,7 +27,7 @@ export interface IGroupItemModel extends ISelectModel {
 /**
  * Selection model interface for prototyping issues
  */
-interface ISelection {
+export interface ISelection {
     model: ISelectModel
 }
 /**
@@ -71,17 +71,15 @@ interface ISelectConstants {
  * Selected event args
  */
 export interface ISelectedEventArgs {
-    args: {
-        modelValue?: number;
-        model?: IBaseModel,
-        scope: ISelectScope;
-    }
+    modelValue?: number;
+    model?: IBaseModel,
+    scope: ISelectScope;
 }
 /**
  * Selected event
  */
 export interface ISelectedIndexChangedEvent {
-    (args: ISelectedEventArgs): void
+    (args: { args: ISelectedEventArgs }): void
 }
 /**
  * Data fetcher event interface
@@ -98,7 +96,10 @@ export type IDataSource<T> = IItemsDataSource<T> | IItemsDataSourceMethod<T>;
  * rtSelect attributes
  */
 export interface ISelectAttributes extends ng.IAttributes {
-    autoSuggest: boolean;
+    /**
+     * Flag to check autosuggest mode is on
+     */
+    onRefresh: string;
     /**
      * Propertyof model to be grouped by
      */
@@ -203,6 +204,7 @@ export interface ISelectScope extends ng.IScope {
      * Method that returns datasource object
      */
     onFetch: IItemsDataSourceMethod<Array<ISelectModel>>;
+    onRefresh: IItemsDataSourceMethod<Array<ISelectModel>>;
     /**
      * In AutoSuggest mode,get select model by model value
      */
@@ -236,7 +238,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
 
         $choices.attr('repeat', 'listItem in listItems | rtSelectFilter:$select.search:\'' + displayProp + '\':\'' + filterType + '\'');
 
-        if (angular.isDefined(cAttrs.autoSuggest)) {
+        if (angular.isDefined(cAttrs.onRefresh)) {
             $choices.attr('refresh', "refreshFn($select.search)")
                 .attr('refresh-delay', 0);
         } else {
@@ -256,9 +258,9 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             /**
            * AutoSuggest flag
            */
-            const autoSuggest = angular.isDefined(attrs.autoSuggest);
+            const autoSuggest = angular.isDefined(attrs.onRefresh);
             /**
-             * Listing defer obj
+             * Listing promise obj
              * @description  Wait for the request to finish so that items would be available for ngModel changes to select
              */
             let asyncModelRequestResult: ng.IPromise<Array<ISelectModel>>;
@@ -273,20 +275,23 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             //#endregion
 
             //#region Validations
-            //dataSourceObject
-            //if (!common.isDefined(attrs.displayProp)) {
-            //    throw new Error("display prop must be defined");
-            //}
-            if (!common.isDefined(scope.items) && !common.isDefined(scope.onFetch)) {
-                throw new Error("items or on-fetch must be defined");
-            }
-            if (common.isDefined(scope.items) &&
-                !common.isArray(scope.items) &&
-                !common.isPromise(scope.items)) {
-                throw new Error("items must be array or promise ");
-            }
-            if (autoSuggest && !common.isAssigned(scope.onGet)) {
-                throw new Error("onGet method must be defined in autosuggest");
+            if (!autoSuggest) {
+                if (!common.isDefined(scope.items) && !common.isDefined(scope.onFetch)) {
+                    throw new Error("items or on-fetch must be defined");
+                }
+
+                if (common.isDefined(scope.items) &&
+                    !common.isArray(scope.items) &&
+                    !common.isPromise(scope.items)) {
+                    throw new Error("items must be array or promise");
+                }
+            } else {
+                if (!common.isAssigned(scope.onGet)) {
+                    throw new Error("onGet method must be defined in autosuggest");
+                }
+                if (!common.isAssigned(scope.onRefresh)) {
+                    throw new Error("onRefresh method must be defined in autosuggest");
+                }
             }
             //#endregion
 
@@ -355,8 +360,15 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Set model 
              * @param value Moel object
              */
-            const setModel = (value?: ISelectModel): void => {
-                scope.selected.model = value;
+            const setModel = (model?: ISelectModel): void => {
+                const currentValue = getValueMapper(scope.selected.model);
+                const newValue = getValueMapper(model);
+
+                if (currentValue !== newValue) {
+                    callSelectedEvent(newValue, model);
+                }
+
+                scope.selected.model = model;
             };
             /**
              * Clear model
@@ -368,7 +380,6 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 if (autoSuggest) {
                     scope.listItems = [];
                 }
-                callSelectedEvent();
             }
             /**
              * Set select data and resolve promise
@@ -408,7 +419,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             const bindItemById = (key: number): void => {
                 asyncModelRequestResult = callMethod<ISelectModel>(scope.onGet, { id: key }).then(
                     (data: ISelectModel) => {
-                        if (data) {
+                        if (common.isAssigned(data)) {
                             return setItems([data]);
                         }
                         return [];
@@ -418,12 +429,10 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * Get itesm by keyword
              * @param keyword Keyword
              */
-            const bindItemsByKeyword = (keyword: string): void => {
-                asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.items || scope.onFetch,
+            const bindItemsByKeyword = (keyword: string): ng.IPromise<Array<ISelectModel>> => {
+                return asyncModelRequestResult = callMethod<Array<ISelectModel>>(scope.onRefresh,
                     { keyword: keyword }).then(
-                    data => {
-                        return setItems(data);
-                    });
+                    data => setItems(data));
             };
             //#endregion
 
@@ -433,9 +442,9 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
              * @description This method is called when in autosuggest mode,more than "minAutoSuggestCharLen" chars is typed
              */
             const initAutoSuggest = (): void => {
-                scope.refreshFn = (keyword: string): void => {
+                scope.refreshFn = (keyword: string): ng.IPromise<Array<ISelectModel>> => {
                     if (keyword && minAutoSuggestCharLen <= keyword.length) {
-                        bindItemsByKeyword(keyword);
+                        return bindItemsByKeyword(keyword);
                     }
                 };
             };
@@ -566,13 +575,15 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
         scope: {
             items: '=?',
             onFetch: '&?',
+            onRefresh: '&?',
             onRetrived: '&?',
             onChange: '&?',
             onGet: '&?',
             params: '=?',
             newItemOptions: '=?',
             searchItemsOptions: '=?',
-            ngDisabled: '=?'
+            ngDisabled: '=?',
+            modelPromise: '=?'
         },
         templateUrl: 'rota/rtselect-options.tpl.html',
         compile: compile
