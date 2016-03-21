@@ -18,14 +18,14 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
     pp: number;
     musteriler: ng.IPromise<ITodoModel[]>;
     selected: any[];
-    musteriTip:any;
+    musteriTip: any;
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
 
         this.selectvalue = 5;
         this.pp = 4;
-        this.selected = [{ bagOlgKullId: 3 }, { bagOlgKullId: 1 }];
+        this.selected = [{ bagOlgKullId: 3, secili: true }, { bagOlgKullId: 1 }, { "bagOlgKullId": 9, secili: true}];
 
         this.musteriler = this.todoApi.getTodos();
         this.musteriTip = this.common.convertEnumToArray(MusteriTipi);

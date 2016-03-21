@@ -9,16 +9,16 @@ namespace RotaTsFrameworkDemo.Controllers
     {
         private static readonly IDictionary<int, TodoItem> Items = new Dictionary<int, TodoItem>
         {
-            {1,new TodoItem(1,"Bakkaldan 1 ekmek yarım kilo yoğurt",false)},
-            {2,new TodoItem(2,"Rota frameworkde int lar byte olmalı",false)},
-            {3,new TodoItem(3,"Bu SPA projesi bir harika dostum",true)},
-            {4,new TodoItem(4,"Pluralsight üyeliği yenilenmeli",false)},
-            {5,new TodoItem(5,"Angular + RequireJS ile uygulama geliştirmem lazim",true)},
-            {6,new TodoItem(6,"Bu todo uygulamasını iyice incelemeliyim",false)},
-            {7,new TodoItem(7,"Bootstrap alaternatif apiler araştirmaliyim",true)},
-            {8,new TodoItem(8,"TypeScript\' kodlarken ozellikle olusan js kodu kontrol etmeliyim",false)},
-            {9,new TodoItem(9,"ASP.NET5 MVC6 demolari incelenmeli",false)},
-            {10,new TodoItem(10,"Visual Studio Code ile TypeScript code geliştirmeliyim",true)}
+            {1,new TodoItem(1,"Bakkaldan 1 ekmek yarım kilo yoğurt", false,"Genel")},
+            {2,new TodoItem(2,"Rota frameworkde int lar byte olmalı",false,"Yazılım")},
+            {3,new TodoItem(3,"Bu SPA projesi bir harika dostum",true,"Yazılım")},
+            {4,new TodoItem(4,"Pluralsight üyeliği yenilenmeli",false,"Yazılım")},
+            {5,new TodoItem(5,"Angular + RequireJS ile uygulama geliştirmem lazim",true,"Yazılım")},
+            {6,new TodoItem(6,"Bu todo uygulamasını iyice incelemeliyim",false,"Genel")},
+            {7,new TodoItem(7,"Bootstrap alaternatif apiler araştirmaliyim",true,"Yazılım")},
+            {8,new TodoItem(8,"TypeScript\' kodlarken ozellikle olusan js kodu kontrol etmeliyim",false,"Yazılım")},
+            {9,new TodoItem(9,"ASP.NET5 MVC6 demolari incelenmeli",false,"Genel")},
+            {10,new TodoItem(10,"Visual Studio Code ile TypeScript code geliştirmeliyim",true,"Genel")}
         };
 
         // GET api/<controller>
@@ -69,16 +69,20 @@ namespace RotaTsFrameworkDemo.Controllers
 
     public class TodoItem
     {
-        public TodoItem(int id, string text, bool done)
+        public TodoItem(int id, string text, bool done, string kategori, bool secili = false)
         {
             Id = id;
             Text = text;
             Done = done;
             ModelState = EntityState.Unchanged;
+            Secili = secili;
+            Kategori = kategori;
         }
         public int Id { get; set; }
         public string Text { get; set; }
         public bool Done { get; set; }
+        public bool Secili { get; set; }
+        public string Kategori { get; set; }
         public EntityState ModelState { get; set; }
     }
 }

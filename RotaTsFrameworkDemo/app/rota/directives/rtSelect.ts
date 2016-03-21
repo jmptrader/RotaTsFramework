@@ -22,7 +22,7 @@ export interface ISelectModel extends IBaseModel {
 /**
  * Group Item Moedl
  */
-export interface IGroupItemModel extends ISelectModel {
+interface IGroupItemModel extends ISelectModel {
 }
 /**
  * Selection model interface for prototyping issues

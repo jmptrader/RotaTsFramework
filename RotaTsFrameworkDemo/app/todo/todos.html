@@ -36,18 +36,21 @@
                                value-prop="id"
                                display-prop="text"></rt-select>-->
                     {{vm.selected}}
-                    <rt-multi-select on-refresh="vm.getMusterilerByKeyword(keyword)"
+                    <!--<rt-multi-select on-refresh="vm.getMusterilerByKeyword(keyword)"
                                      ng-model="vm.selected"
                                      ng-disabled="vm.enable"
                                      on-get="vm.getMusteriById(id)"
                                      model-prop="bagOlgKullId"
                                      value-prop="id"
-                                     display-prop="text"></rt-multi-select>
+                                     display-prop="text"></rt-multi-select>-->
 
                     <rt-multi-select on-fetch="vm.getMusteriler(params)"
-                                     ng-model="vm.selected2"
+                                     ng-model="vm.selected"
                                      model-prop="bagOlgKullId"
                                      value-prop="id"
+                                     selection-prop="secili"
+                                     height="300"
+                                     groupby-prop="kategori"
                                      display-prop="text"></rt-multi-select>
 
                 </div>

@@ -6,7 +6,7 @@ import {IDialogs, IModalOptions} from '../services/dialogs.interface';
 import {IBaseModel, ModelStates, IBaseCrudModel} from '../base/interfaces';
 import {IBaseService} from '../services/service.interface';
 import {ISelectAttributes, ISelectScope, ISelectModel, IDataSource, IItemsDataSource,
-    IItemsDataSourceMethod, IGroupItemModel, ISelectedEventArgs} from './rtSelect';
+    IItemsDataSourceMethod, ISelectedEventArgs} from './rtSelect';
 //deps
 import * as _ from "underscore";
 import * as _s from "underscore.string";
@@ -18,6 +18,11 @@ import * as $ from 'jquery';
 interface IMultiSelectListModel extends IBaseModel {
 }
 
+/**
+ * Group Item Moedl
+ */
+interface IGroupItemModel extends IMultiSelectListModel {
+}
 /**
  * Used Constants
  */
@@ -55,6 +60,7 @@ interface IMultiSelectAttributes extends ISelectAttributes {
      * Value prop name of list model which equals to value-prop of select model
      */
     modelProp: string;
+    selectionProp: string;
     ngDisabled: any;
     required: boolean;
 
@@ -71,12 +77,14 @@ interface IMultiSelectScope extends ISelectScope {
     ttTumunusil: string;
     ttSil: string;
     ttKayitbulunamadi: string;
+    showSelection: boolean;
 
     visibleItems: IMultiSelectListModel[];
     groupItems: _.Dictionary<IMultiSelectListModel[]>;
 
     recordInfo: string;
 
+    setSelected: (selItem: IMultiSelectListModel, groupItems: IGroupItemModel[]) => void;
     removeItem: (item: IMultiSelectListModel, event: ng.IAngularEvent) => ng.IPromise<any>;
     addAll: (event: ng.IAngularEvent) => ng.IPromise<any>;
     removeAll: (event: ng.IAngularEvent) => ng.IPromise<any>;
@@ -107,6 +115,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
         const dropDown = $('rt-select', cElement);
         dropDown.attr('value-prop', cAttrs.valueProp)
             .attr('display-prop', cAttrs.displayProp)
+            .attr('groupby-prop', cAttrs.groupbyProp)
             .attr('placeholder-i18n', cAttrs.placeholderI18n)
             .attr('placeholder', cAttrs.placeholder);
 
@@ -123,14 +132,14 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
         var displayPropMarkup = '{{item' + (cAttrs.displayProp ? '.' + cAttrs.displayProp : '') + '}}';
         $('td.value', cElement).html(displayPropMarkup);
         //Selection Prop
-        //if (common.isDefined(cAttrs.selectionProp)) {
-        //    var timestamp = new Date().getTime();
-        //    //TODO:{{group}} icin slugify filter yazilabilir.!! Tehlikeli
-        //    $('td.selection>input:radio', cElement).attr('name', (groupbyEnabled ? '{{group}}' + timestamp : timestamp))
-        //        .attr('ng-model', 'item.' + cAttrs.selectionProp);
-        //    //selection row highlight class
-        //    $('tr.item', cElement).attr('ng-class', '{selected:item.' + cAttrs.selectionProp + '}');
-        //}
+        if (common.isDefined(cAttrs.selectionProp)) {
+            const timestamp = new Date().getTime();
+            //TODO:{{group}} icin slugify filter yazilabilir.!! Tehlikeli
+            $('td.selection>input:radio', cElement).attr('name', (groupbyEnabled ? '{{group}}' + timestamp : timestamp))
+                .attr('ng-model', 'item.' + cAttrs.selectionProp);
+            //selection row highlight class
+            $('tr.item', cElement).attr('ng-class', '{selected:item.' + cAttrs.selectionProp + '}');
+        }
         //#endregion
 
         return (scope: IMultiSelectScope, element: ng.IAugmentedJQuery, attrs: IMultiSelectAttributes, modelCtrl: ng.INgModelController): void => {
@@ -156,23 +165,13 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              */
             const groupbyPropGetter = attrs.groupbyProp && $parse(attrs.groupbyProp);
             /**
+             * Selection (radio button) prop getter function
+             */
+            const selectionPropGetter = attrs.selectionProp && $parse(attrs.selectionProp);
+            /**
              * Added items store 
              */
             const addedItems: IMultiSelectListModel[] = [];
-            /**
-             * Items thats is visible on the list
-             */
-            Object.defineProperty(scope, 'visibleItems', {
-                configurable: false,
-                get() {
-                    return _.filter(addedItems, item => {
-                        if (common.isCrudModel(item)) {
-                            return item.modelState !== ModelStates.Deleted;
-                        }
-                        return true;
-                    });
-                }
-            });
             /**
              * Listing defer obj
              * @description  Wait for the request to finish so that items would be available for ngModel changes to select
@@ -442,6 +441,20 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              */
             scope.controlBodyHeight = { height: (attrs.height || multiSelectDirectiveConstants.defaultHeight) - 60 };
             /**
+            * Items thats is visible on the list
+            */
+            Object.defineProperty(scope, 'visibleItems', {
+                configurable: false,
+                get() {
+                    return _.filter(addedItems, item => {
+                        if (common.isCrudModel(item)) {
+                            return item.modelState !== ModelStates.Deleted;
+                        }
+                        return true;
+                    });
+                }
+            });
+            /**
              * Watch items to obtain some info
              */
             scope.$watchCollection('visibleItems', (newValue: IMultiSelectListModel[]) => {
@@ -514,6 +527,33 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                         scope.selectedModel = null;
                     });
             }
+            /**
+             * Show selection radio
+             */
+            scope.showSelection = angular.isDefined(attrs.selectionProp);
+            /**
+             * Selection raido button click event
+             * @param selItem Selected item
+             * @param groupItems Grouped items if grouping enabled
+             */
+            scope.setSelected = (selItem: IMultiSelectListModel, groupItems?: IMultiSelectListModel[]) => {
+                //uncheck all items
+                (groupItems || addedItems).forEach((item: IMultiSelectListModel) => {
+                    if (item[attrs.selectionProp] === true) {
+                        item[attrs.selectionProp] = false;
+                        if (common.isCrudModel(item)) {
+                            item = common.setModelState(<IBaseCrudModel>item, ModelStates.Modified);
+                        }
+                    }
+                });
+                //set selection
+                selItem[attrs.selectionProp] = true;
+                if (common.isCrudModel(selItem)) {
+                    selItem = common.setModelState(<IBaseCrudModel>selItem, ModelStates.Modified);
+                }
+                updateModel();
+            }
+
             /**
              * Event triggered since Select items gets populated
              * @description Defer object resolved here to wait for ngModel changes
