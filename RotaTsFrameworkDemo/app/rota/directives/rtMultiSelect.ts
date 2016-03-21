@@ -136,18 +136,32 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
         return (scope: IMultiSelectScope, element: ng.IAugmentedJQuery, attrs: IMultiSelectAttributes, modelCtrl: ng.INgModelController): void => {
             //#region Init Attrs
             /**
-           * AutoSuggest flag
-           */
+            * AutoSuggest flag
+            */
             const autoSuggest = angular.isDefined(attrs.onRefresh);
-            const valuePropGetter = $parse(attrs.valueProp);
-            const displayPropGetter = $parse(attrs.displayProp);
-            const groupbyPropGetter = attrs.groupbyProp && $parse(attrs.groupbyProp);
-            const modelValuePropGetter = $parse(attrs.modelProp);
             /**
-             * Added items store
+             * Value prop getter function
+             */
+            const valuePropGetter = attrs.valueProp && $parse(attrs.valueProp);
+            /**
+             * Display prop getter function
+             */
+            const displayPropGetter = attrs.displayProp && $parse(attrs.displayProp);
+            /**
+             * Model value prop getter function
+             */
+            const modelValuePropGetter = attrs.modelProp && $parse(attrs.modelProp);
+            /**
+             * Group prop getter function
+             */
+            const groupbyPropGetter = attrs.groupbyProp && $parse(attrs.groupbyProp);
+            /**
+             * Added items store 
              */
             const addedItems: IMultiSelectListModel[] = [];
-
+            /**
+             * Items thats is visible on the list
+             */
             Object.defineProperty(scope, 'visibleItems', {
                 configurable: false,
                 get() {
@@ -159,7 +173,6 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     });
                 }
             });
-
             /**
              * Listing defer obj
              * @description  Wait for the request to finish so that items would be available for ngModel changes to select
@@ -167,9 +180,24 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             const asyncModelRequestResult: ng.IDeferred<Array<ISelectModel>> = $q.defer();
             //#endregion
 
-            //TODO:Validations goes here
+            //#region Validations
+            if (!common.isAssigned(valuePropGetter)) {
+                throw new Error('value prop must be defined');
+            }
+            if (!common.isAssigned(displayPropGetter)) {
+                throw new Error('display prop must be defined');
+            }
+            if (!common.isAssigned(modelValuePropGetter)) {
+                throw new Error('model prop must be defined');
+            }
+            //#endregion
 
             //#region Mappers
+            /**
+             * Base mapper function
+             * @param context Context obj
+             * @param parser Parser method
+             */
             const getMappedValue = <TContext extends IBaseModel, TTarget>(context: TContext, parser?: ng.ICompiledExpression): TTarget => {
                 if (parser && angular.isObject(context)) {
                     return <TTarget>parser(context);
@@ -211,29 +239,6 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                 });
             }
             /**
-             * Call select directive methods,
-             * @param funcName Function name to be called
-             * @param args Optional function params
-             */
-            const callMethod = <T>(dataSource: IDataSource<T>, params: any): ng.IPromise<T> => {
-                const d = $q.defer<T>();
-                let methodResult: T | ng.IPromise<T>;
-                //check func is function
-                if (common.isFunction(dataSource)) {
-                    const controllerMethod = <IItemsDataSourceMethod<T>>dataSource;
-                    //call scope method
-                    methodResult = controllerMethod(params);
-                } else {
-                    methodResult = <IItemsDataSource<T>>dataSource;
-                }
-                common.makePromise<T>(methodResult).then(callMethodResult => {
-                    d.resolve(callMethodResult);
-                }, (reason) => {
-                    d.reject(reason);
-                });
-                return d.promise;
-            };
-            /**
              * Show multiSelect notification on footer
              * @param message Message
              * @param type Type
@@ -250,6 +255,12 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             //#endregion
 
             //#region Methods
+            /**
+             * Create new MultiSelectListModel
+             * @param selectItem SelectItem
+             * @param status Model Status  
+             * @param existingModelItem Exisiting model to expand
+             */
             const createMultiSelectModel = (selectItem: ISelectModel, status: ModelStates, existingModelItem?: IMultiSelectListModel) => {
                 let listItem: IMultiSelectListModel = {};
                 listItem[attrs.modelProp] = getSelectValueMapper(selectItem);
@@ -264,13 +275,20 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                 }
                 return angular.extend({}, existingModelItem, listItem);
             }
-
+            /**
+             * Update required validation
+             */
             const updateValidation = () => {
                 //Required settings
                 var required = !scope.visibleItems.length && common.isDefined(attrs.required) && attrs.required;
                 modelCtrl.$setValidity('required', !required);
             };
-
+            /**
+             * Add item to list
+             * @param selectItem Select Item
+             * @param modelStatus Model status for crud models
+             * @param existingModelItem
+             */
             const addItem = (selectItem: ISelectModel, modelStatus: ModelStates = ModelStates.Added,
                 existingModelItem?: IMultiSelectListModel): ng.IPromise<any> => {
                 const defer = $q.defer<any>();
@@ -308,7 +326,9 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                 }
                 return defer.promise;
             }
-
+            /**
+             * Add all items to list
+             */
             const addAll = (): ng.IPromise<any> => {
                 return asyncModelRequestResult.promise.then((items: ISelectModel[]) => {
                     const itemPromises: ng.IPromise<any>[] = [];
@@ -318,7 +338,10 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     return $q.all(itemPromises);
                 });
             }
-
+            /**
+             * Remove selected item
+             * @param item Item to be removed
+             */
             const removeItem = (item: IMultiSelectListModel): ng.IPromise<any> => {
                 if (!common.isAssigned(item)) return common.rejectedPromise('item must be assigned');
                 const removeResult = scope.onRemove(item);
@@ -342,7 +365,9 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     scope.onRemoved(item);
                 });
             }
-
+            /**
+             * Remove all items
+             */
             const removeAll = (): ng.IPromise<any> => {
                 const itemPromises: ng.IPromise<any>[] = [];
                 addedItems.forEach((item): void => {
@@ -354,15 +379,23 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             //#endregion
 
             //#region Model Methods
+            /**
+             * Update ngModel
+             */
             const updateModel = () => {
                 //Set model
                 modelCtrl.$setViewValue(addedItems);
                 //Validation
                 updateValidation();
             };
-
+            /**
+             * Update value according to ngModel
+             * @param model
+             */
             const updateValueFromModel = (model: any[]): void => {
-                if (!common.isArray(model)) return;
+                if (!common.isArray(model)) {
+                    throw new Error('model must be array for rtMultiSelect');
+                }
                 const resultPromises: ng.IPromise<any>[] = [];
                 if (!autoSuggest) {
                     model.forEach((item): void => {
@@ -385,25 +418,51 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     updateValidation();
                 });
             }
-
+            /**
+             * Inject ngModel formatter
+             */
             modelCtrl.$formatters.push((model: any[]) => {
+                if (!common.isAssigned(model)) return model;
                 updateValueFromModel(model);
                 return model;
             });
             //#endregion
 
             //#region Init scope
+            /**
+             * Auto suggest
+             */
             scope.autoSuggest = autoSuggest;
+            /**
+             * MultiSelect height
+             */
             scope.controlHeight = { height: attrs.height || multiSelectDirectiveConstants.defaultHeight };
+            /**
+             * MultiSelect list height
+             */
             scope.controlBodyHeight = { height: (attrs.height || multiSelectDirectiveConstants.defaultHeight) - 60 };
-
+            /**
+             * Watch items to obtain some info
+             */
+            scope.$watchCollection('visibleItems', (newValue: IMultiSelectListModel[]) => {
+                if (common.isArray(newValue)) {
+                    scope.recordInfo = newValue.length + ' ' + multiSelectI18NService.kayitsayisi;
+                    if (groupbyEnabled) {
+                        scope.groupItems = _.groupBy<IMultiSelectListModel>(newValue, attrs.groupbyProp);
+                    }
+                }
+            });
             //#region Tooltips
             scope.ttTumunuekle = multiSelectI18NService.tumunuekle;
             scope.ttTumunusil = multiSelectI18NService.tumunusil;
             scope.ttSil = multiSelectI18NService.sil;
             scope.ttKayitbulunamadi = multiSelectI18NService.kayitbulunamadi;
             //#endregion
-
+            /**
+             * Remove item
+             * @param item MultiSelectListItem
+             * @param event Angular event
+             */
             scope.removeItem = (item: IMultiSelectListModel, event: ng.IAngularEvent) => {
                 common.preventClick(event);
                 return removeItem(item).then(() => {
@@ -413,7 +472,10 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     logger.toastr.error({ message: message });
                 });
             };
-
+            /**
+             * Add all items 
+             * @param event Angular event
+             */
             scope.addAll = (event: ng.IAngularEvent): ng.IPromise<any> => {
                 common.preventClick(event);
                 return dialogs.showConfirm({ message: multiSelectI18NService.onaytumkayitekle }).then(() => {
@@ -422,7 +484,10 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     });
                 });
             };
-
+            /**
+             * Remove all items
+             * @param event Angular event
+             */
             scope.removeAll = (event: ng.IAngularEvent): ng.IPromise<any> => {
                 common.preventClick(event);
                 return dialogs.showConfirm({ message: multiSelectI18NService.onaytumkayitsil }).then(() => {
@@ -431,7 +496,10 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     });
                 });
             };
-
+            /**
+             * rtSelect selected index changed event
+             * @param args Selected index changed event args             
+             */
             scope.onSelectionChanged = (args: ISelectedEventArgs): void => {
                 if (!common.isAssigned(args.model)) return;
 
@@ -446,16 +514,11 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                         scope.selectedModel = null;
                     });
             }
-
-            scope.$watchCollection('visibleItems', (newValue: IMultiSelectListModel[]) => {
-                if (common.isArray(newValue)) {
-                    scope.recordInfo = newValue.length + ' ' + multiSelectI18NService.kayitsayisi;
-                    if (groupbyEnabled) {
-                        scope.groupItems = _.groupBy<IMultiSelectListModel>(newValue, attrs.groupbyProp);
-                    }
-                }
-            });
-
+            /**
+             * Event triggered since Select items gets populated
+             * @description Defer object resolved here to wait for ngModel changes
+             * @param items Select items
+             */
             scope.onItemsPopulated = (items: Array<ISelectModel>): void => {
                 asyncModelRequestResult.resolve(items);
             }
@@ -494,6 +557,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
     };
     return directive;
 }
+//injections
 multiSelectDirective.$inject = ['$timeout', '$parse', '$injector', '$q', 'Common', 'Logger',
     'Dialogs', 'rtMultiSelectConstants', 'rtMultiSelectI18N'];
 //#endregion

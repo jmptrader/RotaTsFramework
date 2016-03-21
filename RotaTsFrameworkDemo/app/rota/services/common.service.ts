@@ -169,6 +169,21 @@ class Common implements ICommon {
         }
         return result;
     }
+    /**
+     * Convert Enum obj to Array for binding
+     * @param value Enum object
+     */
+    convertEnumToArray(value: any): any[] {
+        const result = [];
+        for (let item in value) {
+            if (value.hasOwnProperty(item) && /^\d+$/.test(item)) {
+                const key = item;
+                const text = value[item];
+                result.push({ key: key, text: text });
+            }
+        }
+        return result;
+    }
     //#endregion
 
     //#region Model Utils

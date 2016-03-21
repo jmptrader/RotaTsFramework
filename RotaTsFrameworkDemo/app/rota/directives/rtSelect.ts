@@ -279,18 +279,12 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
                 if (!common.isDefined(scope.items) && !common.isDefined(scope.onFetch)) {
                     throw new Error("items or on-fetch must be defined");
                 }
-
-                if (common.isDefined(scope.items) &&
-                    !common.isArray(scope.items) &&
-                    !common.isPromise(scope.items)) {
-                    throw new Error("items must be array or promise");
-                }
             } else {
                 if (!common.isAssigned(scope.onGet)) {
-                    throw new Error("onGet method must be defined in autosuggest");
+                    throw new Error("onGet method must be defined in autosuggest mode");
                 }
                 if (!common.isAssigned(scope.onRefresh)) {
-                    throw new Error("onRefresh method must be defined in autosuggest");
+                    throw new Error("onRefresh method must be defined in autosuggest mode");
                 }
             }
             //#endregion

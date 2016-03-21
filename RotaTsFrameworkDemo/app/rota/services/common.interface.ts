@@ -168,6 +168,11 @@ interface ICommon extends IBaseService {
     * @param obj Object to convert
     */
     convertObjToArray<T>(obj: any, objValuePropName: string, objDisplayPropName: string): Array<T>;
+    /**
+    * Convert Enum obj to Array for binding
+    * @param value Enum object
+    */
+    convertEnumToArray(value: any): any[];
 }
 //#endregion
 

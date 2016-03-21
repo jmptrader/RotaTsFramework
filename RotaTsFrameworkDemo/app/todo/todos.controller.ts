@@ -28,9 +28,7 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         this.selected = [{ bagOlgKullId: 3 }, { bagOlgKullId: 1 }];
 
         this.musteriler = this.todoApi.getTodos();
-        this.musteriTip = {
-            
-        }
+        this.musteriTip = this.common.convertEnumToArray(MusteriTipi);
     }
 
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
