@@ -100,20 +100,50 @@ class Common implements ICommon {
     }
     //#endregion
 
-    //#region Utils
-    /**
-     * Return true if value nor null and undefined
-     * @param value Any object
-     */
-    isAssigned(value: any): boolean {
-        return value !== undefined && value !== null;
-    }
+    //#region String Utils
     /**
      * Guard method checks for string
      * @param value Any object
      */
     isString(value: any): value is String {
         return angular.isString(value);
+    }
+    /**
+     * Checks string value is not empty or null
+     * @param value
+     */
+    isNullOrEmpty(value: string): boolean {
+        if (this.isAssigned(value)) {
+            const v = value.trim();
+            return v === "";
+        }
+        return true;
+    }
+    //#endregion
+
+    //#region Utils
+    /**
+     * Extend TSource
+     * @param source Source of TSource
+     * @param destinations Destinations of any
+     */
+    extend<TSource>(source: TSource, extension: any): TSource {
+        return <TSource>angular.extend(source || {}, extension);
+    }
+    /**
+     * Merge source with all destinations
+     * @param source Source of TSource
+     * @param destinations Destinations of any
+     */
+    merge<TSource>(source: TSource, extension: any): TSource {
+        return source = this.extend(source, extension);
+    }
+    /**
+     * Return true if value nor null and undefined
+     * @param value Any object
+     */
+    isAssigned(value: any): boolean {
+        return value !== undefined && value !== null;
     }
     /**
      * Guard method checks for array objects
@@ -188,11 +218,18 @@ class Common implements ICommon {
 
     //#region Model Utils
     /**
+     * Get new crud model
+     * @param props
+     */
+    newCrudModel(props?: any): IBaseCrudModel {
+        return this.extend<IBaseCrudModel>({ id: 0, modelState: ModelStates.Added }, props);
+    }
+    /**
      * Check whether model is valid crudModel
      * @param model
      */
     isCrudModel(model: any): model is IBaseCrudModel {
-        return model.modelState !== undefined && model.modelState !== null;
+        return this.isAssigned(model.modelState);
     }
     /**
      * Set model state according to form crud state

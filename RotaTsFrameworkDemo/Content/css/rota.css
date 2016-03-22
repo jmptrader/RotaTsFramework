@@ -600,6 +600,11 @@ ul.nav-tabs {
 .rt-grid-select {
 }
 
+    .rt-grid-select .grid {
+        height: 250px;
+        border-bottom: none !important;
+    }
+
     .rt-grid-select .footer {
         /*position: absolute;
         bottom: 0;

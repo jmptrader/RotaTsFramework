@@ -129,6 +129,28 @@ interface ICommon extends IBaseService {
     */
     setModelState(model: IBaseCrudModel, state: ModelStates, includeChildArray?: boolean): IBaseCrudModel;
     /**
+     * Get a new crud model 
+     * @param props
+     */
+    newCrudModel(props?: any): IBaseCrudModel;
+    /**
+     * Extend T
+     * @param source Source of T
+     * @param destinations Destinations of T
+     */
+    extend<TSource>(source: TSource, ...destinations: any[]): TSource;
+    /**
+    * Merge source with all destinations
+    * @param source Source of TSource
+    * @param destinations Destinations of any
+    */
+    merge<TSource>(source: TSource, ...destinations: any[]): TSource;
+    /**
+     * Checks string value is not empty or null
+     * @param value
+     */
+    isNullOrEmpty(value: string): boolean;
+    /**
      * Return true if value nor null and undefined
      * @param value Any object
      */

@@ -63,6 +63,10 @@ interface IMainConfig extends IBaseConfig {
      */
     gridDefaultOptionsName?: string;
     /**
+     * Grid Full feature list
+     */
+    gridFullFeatureList?: string;
+    /**
      * Supported languages
      * @description if new lang is added,nls folder must be updaded accordingly in resource 
      */
@@ -75,7 +79,9 @@ interface IMainConfig extends IBaseConfig {
      * Exception will be logged to Elmah db
      */
     serverExceptionLoggingEnabled?: boolean;
-
+    /**
+     * Elmah logging endpoint
+     */
     serverExceptionLoggingBackendUrl?: string;
 }
 /**

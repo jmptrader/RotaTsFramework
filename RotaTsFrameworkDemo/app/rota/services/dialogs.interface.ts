@@ -90,6 +90,19 @@ interface IFileUploadScope extends ng.IScope, IFileUploadOptions {
     dismiss(): void;
 }
 /**
+ * Options used in modal instance
+ */
+interface IModalInstanceOptions<TModel> {
+    /**
+     * Your custom modal model transferred to modal instance
+     */
+    model?: TModel;
+    /**
+     * Any custom additional data transferred to modal instance
+     */
+    params?: any;
+}
+/**
  * Modal options
  */
 interface IModalOptions<TModel extends IBaseModel> extends ng.ui.bootstrap.IModalSettings {
@@ -102,9 +115,9 @@ interface IModalOptions<TModel extends IBaseModel> extends ng.ui.bootstrap.IModa
      */
     controllerUrl?: string;
     /**
-     * Your custom modal model
+     * Modal instance options 
      */
-    model?: TModel;
+    instanceOptions?: IModalInstanceOptions<TModel>;
     /**
      * Modal controller name.
      * @description Controller should be string or left undefined.In case of undefined,default modal controller assigned to modal (BaseModalController)
@@ -157,4 +170,4 @@ interface IDialogs extends IBaseService {
 //#endregion
 
 export {IDialogOptions, IDialogScope, IConfirmOptions, IConfirmScope, IProgressOptions, IProgressScope,
-IProgressModalInstance, IPromptOptions, IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs}
+IProgressModalInstance, IPromptOptions, IPromptScope, IFileUploadOptions, IFileUploadScope, IModalOptions, IDialogs, IModalInstanceOptions}

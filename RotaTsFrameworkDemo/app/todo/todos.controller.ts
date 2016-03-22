@@ -2,33 +2,38 @@
 import {IBundle, IGridOptions} from 'app/rota/base/interfaces';
 import {ITodoModel, ITodoFilter} from "./todos.models";
 import {ITodoApi} from "./todos.service";
+import {IGridSelectOptions} from 'app/rota/directives/rtGridSelect';
 //deps
 import {BaseListController} from "app/rota/base/baselistcontroller";
 import "./todos.service";
 
-enum MusteriTipi {
-    Tuzel,
-    Sahis
-}
-
 class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
 
     todoApi: ITodoApi;
-    selectvalue: number;
-    pp: number;
-    musteriler: ng.IPromise<ITodoModel[]>;
-    selected: any[];
-    musteriTip: any;
+    dataOptions: IGridSelectOptions<ITodoModel>;
+    dataModel: ITodoModel[];
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
 
-        this.selectvalue = 5;
-        this.pp = 4;
-        this.selected = [{ bagOlgKullId: 3, secili: true }, { bagOlgKullId: 1 }, { "bagOlgKullId": 9, secili: true}];
+        this.dataOptions = {
+            showDeleteButton: true,
+            showEditButton: true,
+            columnDefs: [
+                {
+                    field: 'text',
+                    width: '*'
 
-        this.musteriler = this.todoApi.getTodos();
-        this.musteriTip = this.common.convertEnumToArray(MusteriTipi);
+                }],
+            newItemOptions: {
+                templateUrl: 'app/todo/todo.modal.html'
+            }
+        }
+
+    }
+
+    loadedModel(model: ITodoModel[]): void {
+        this.dataModel = model;
     }
 
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {

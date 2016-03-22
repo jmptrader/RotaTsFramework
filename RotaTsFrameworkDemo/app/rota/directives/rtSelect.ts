@@ -559,9 +559,7 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             init();
         }
     }
-    /**
-     * Directive definition
-     */
+    //#region Directive definition
     const directive = <ng.IDirective>{
         restrict: 'E',
         require: 'ngModel',
@@ -583,8 +581,11 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
         compile: compile
     };
     return directive;
+    //#endregion
 }
+//#region Injections
 selectDirective.$inject = ['$parse', '$injector', '$q', 'Localization', 'Common', 'Logger', 'Dialogs', 'rtSelectConstants', 'hotkeys'];
+//#endregion
 //#endregion
 
 //#region Select Filter

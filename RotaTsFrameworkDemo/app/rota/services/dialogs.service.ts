@@ -204,7 +204,7 @@ class Dialogs implements IDialogs {
      * @param options Modal options
      */
     showModal<TModel extends IBaseModel, TResult extends {}>(options: IModalOptions<TModel>): ng.IPromise<TResult> {
-        const templateFilePath = (this.common.isHtml(<string>options.templateUrl) ?
+        const templateFilePath = (this.common.isHtml(options.templateUrl) ?
             this.routeconfig.basePath : '') + options.templateUrl;
         //default options
         const defaultModalOptions: ng.ui.bootstrap.IModalSettings = {
@@ -218,7 +218,7 @@ class Dialogs implements IDialogs {
         const modalOptions: ng.ui.bootstrap.IModalSettings = angular.extend(defaultModalOptions, options);
         //resolve data
         modalOptions.resolve = {
-            modalParams: () => options.model
+            instanceOptions: () => options.instanceOptions
         }
         //load controller file
         if (angular.isString(modalOptions.controller)) {

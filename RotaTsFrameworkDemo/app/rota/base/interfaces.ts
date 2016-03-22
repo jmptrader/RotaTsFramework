@@ -77,7 +77,7 @@ interface IBaseCrudModel extends IBaseModel {
     id: number;
     /**
      * Model state
-     * @description Shoul be used along with entityframework entity state
+     * @description Should be used along with entityframework entity state
      */
     modelState?: ModelStates;
 }

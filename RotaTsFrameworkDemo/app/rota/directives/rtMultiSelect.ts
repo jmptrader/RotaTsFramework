@@ -11,15 +11,16 @@ import {ISelectAttributes, ISelectScope, ISelectModel, IDataSource, IItemsDataSo
 import * as _ from "underscore";
 import * as _s from "underscore.string";
 import * as $ from 'jquery';
-
 //#endregion
 
 //#region Interfaces
-interface IMultiSelectListModel extends IBaseModel {
-}
-
 /**
- * Group Item Moedl
+ * Multi Select Model
+ */
+interface IMultiSelectListModel extends IBaseCrudModel {
+}
+/**
+ * Group Item Model
  */
 interface IGroupItemModel extends IMultiSelectListModel {
 }
@@ -27,15 +28,31 @@ interface IGroupItemModel extends IMultiSelectListModel {
  * Used Constants
  */
 interface IMultiSelectConstants {
+    /**
+     * Default height
+     */
     defaultHeight: number;
+    /**
+     * Delay value before notification label disappears
+     */
     notificationDelay: number;
 }
-
+/**
+ * Notififcation struct
+ */
 interface IMultiSelectNotification {
+    /**
+     * Notification message
+     */
     message: string;
+    /**
+     * Notification Type
+     */
     type: IAlertStyle;
 }
-
+/**
+ * Localization structs
+ */
 interface IMultiSelectI18NService {
     kayitsayisi: string;
     kayitbulunamadi: string;
@@ -50,58 +67,138 @@ interface IMultiSelectI18NService {
     tumkayitlarsilindi: string;
     tumkayitlareklendi: string;
 }
-
 /**
  * rtMultiSelect attributes
  */
 interface IMultiSelectAttributes extends ISelectAttributes {
+    /**
+     * List height
+     */
     height: number;
     /**
      * Value prop name of list model which equals to value-prop of select model
      */
     modelProp: string;
+    /**
+     * Radio selection model property name
+     */
     selectionProp: string;
+    /**
+     * NgDisabled - Disabled state
+     */
     ngDisabled: any;
+    /**
+     * Required flag
+     */
     required: boolean;
-
 }
 /**
  * Multi Select scope
  */
 interface IMultiSelectScope extends ISelectScope {
+    /**
+     * Autosuggest flag
+     * @description declared refresh  method indicates that control will be autosuggest
+     */
     autoSuggest: boolean;
-    selectedModel: number;
+    /**
+     * Selected model {ISelectModel}
+     */
+    selectedModel: ISelectModel;
+    /**
+     * Control height
+     */
     controlHeight: any;
+    /**
+     * Control body height
+     */
     controlBodyHeight: any;
+    //Localizations
     ttTumunuekle: string;
     ttTumunusil: string;
     ttSil: string;
     ttKayitbulunamadi: string;
+    /**
+     * Selection enabled flag
+     */
     showSelection: boolean;
-
+    /**
+     * Visible items shown on the list
+     */
     visibleItems: IMultiSelectListModel[];
+    /**
+     * Grouped items
+     */
     groupItems: _.Dictionary<IMultiSelectListModel[]>;
-
+    /**
+     * Information label shown on footer
+     */
     recordInfo: string;
-
+    /**
+     * Selection event when triggered radio button clicked
+     * @param selItem Selection item
+     * @param groupItems Grouped items if enabled
+     */
     setSelected: (selItem: IMultiSelectListModel, groupItems: IGroupItemModel[]) => void;
+    /**
+     * Remove item
+     * @param item Item to be removed 
+     * @param event Angular event
+     */
     removeItem: (item: IMultiSelectListModel, event: ng.IAngularEvent) => ng.IPromise<any>;
+    /**
+     * Add all items
+     * @param event Angular event     
+     */
     addAll: (event: ng.IAngularEvent) => ng.IPromise<any>;
+    /**
+     * Remove all items
+     * @param event Angular event     
+     */
     removeAll: (event: ng.IAngularEvent) => ng.IPromise<any>;
-
+    /**
+     * Triggered when select items get populated
+     * @param items Select items     
+     */
     onItemsPopulated: (items: Array<ISelectModel>) => void;
+    /**
+     * Triggered when selection changed
+     * @param args Selection args     
+     */
     onSelectionChanged: (args: ISelectedEventArgs) => void;
+    /**
+     * Notification object
+     */
     notification: IMultiSelectNotification;
+    /**
+     * Triggered when an item has been removed
+     * @param item Removed item
+     */
     onRemoved: (item: IMultiSelectListModel) => void;
+    /**
+     * Triggered when an item is about to remove
+     * @description Return rejected promise to stop removing process
+     * @param item Removed item
+     */
     onRemove: (item: IMultiSelectListModel) => ng.IPromise<any>;
+    /**
+     * Triggered when an item has been added
+     * @param item Removed item
+     */
     onAdded: (item: ISelectModel) => void;
+    /**
+     * Triggered when an item is about to add
+     * @description Return rejected promise to stop adding process
+     * @param item Added item
+     */
     onAdd: (item: ISelectModel) => ng.IPromise<any>;
 }
-
+/**
+ * Mapper obj
+ */
 interface IMapper<TContext, TTarget> {
     (context: TContext): TTarget;
 }
-
 //#endregion
 
 //#region Multi Select Directive
@@ -129,7 +226,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
         //#endregion
 
         const groupbyEnabled = common.isDefined(cAttrs.groupbyProp);
-        var displayPropMarkup = '{{item' + (cAttrs.displayProp ? '.' + cAttrs.displayProp : '') + '}}';
+        const displayPropMarkup = '{{item' + (cAttrs.displayProp ? '.' + cAttrs.displayProp : '') + '}}';
         $('td.value', cElement).html(displayPropMarkup);
         //Selection Prop
         if (common.isDefined(cAttrs.selectionProp)) {
@@ -141,8 +238,8 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             $('tr.item', cElement).attr('ng-class', '{selected:item.' + cAttrs.selectionProp + '}');
         }
         //#endregion
-
-        return (scope: IMultiSelectScope, element: ng.IAugmentedJQuery, attrs: IMultiSelectAttributes, modelCtrl: ng.INgModelController): void => {
+        return (scope: IMultiSelectScope, element: ng.IAugmentedJQuery, attrs: IMultiSelectAttributes,
+            modelCtrl: ng.INgModelController): void => {
             //#region Init Attrs
             /**
             * AutoSuggest flag
@@ -205,8 +302,9 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             }
             const getSelectValueMapper: IMapper<ISelectModel, number> = (context: ISelectModel): number => getMappedValue<ISelectModel, number>(context, valuePropGetter);
             const getSelectDisplayMapper: IMapper<ISelectModel, string> = (context: ISelectModel): string => getMappedValue<ISelectModel, string>(context, displayPropGetter);
-            const getGroupbyMapper: IMapper<IGroupItemModel, any> = (context: IGroupItemModel): any => getMappedValue<ISelectModel, any>(context, groupbyPropGetter);
+            const getGroupbyMapper: IMapper<ISelectModel, any> = (context: ISelectModel): any => getMappedValue<ISelectModel, any>(context, groupbyPropGetter);
             const getModelValueMapper: IMapper<IMultiSelectListModel, number> = (context: IMultiSelectListModel) => getMappedValue<IMultiSelectListModel, number>(context, modelValuePropGetter);
+            const getSelectionMapper: IMapper<ISelectModel, boolean> = (context: ISelectModel) => getMappedValue<ISelectModel, boolean>(context, selectionPropGetter);
             //#endregion
 
             //#region Utility
@@ -260,13 +358,16 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              * @param status Model Status  
              * @param existingModelItem Exisiting model to expand
              */
-            const createMultiSelectModel = (selectItem: ISelectModel, status: ModelStates, existingModelItem?: IMultiSelectListModel) => {
-                let listItem: IMultiSelectListModel = {};
+            const createMultiSelectModel = (selectItem: ISelectModel, status: ModelStates,
+                existingModelItem?: IMultiSelectListModel): IMultiSelectListModel => {
+                let listItem: IMultiSelectListModel = { id: null };
                 listItem[attrs.modelProp] = getSelectValueMapper(selectItem);
                 listItem[attrs.displayProp] = _s.trim(getSelectDisplayMapper(selectItem), '- ');
 
-                if (common.isCrudModel(selectItem)) {
-                    listItem = common.setModelState(<IBaseCrudModel>listItem, status);
+                listItem = common.setModelState(listItem, status);
+
+                if (scope.showSelection) {
+                    listItem[attrs.selectionProp] = getSelectionMapper(selectItem);
                 }
 
                 if (groupbyEnabled) {
@@ -279,7 +380,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              */
             const updateValidation = () => {
                 //Required settings
-                var required = !scope.visibleItems.length && common.isDefined(attrs.required) && attrs.required;
+                const required = !scope.visibleItems.length && common.isDefined(attrs.required) && attrs.required;
                 modelCtrl.$setValidity('required', !required);
             };
             /**
@@ -309,19 +410,16 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                         defer.reject(reason);
                     });
                 } else {
-                    if (common.isCrudModel(existingListItem)) {
-                        if (existingListItem.modelState === ModelStates.Deleted) {
-                            existingListItem.modelState = ModelStates.Unchanged;
-                            //call added event
-                            scope.onAdded(selectItem);
-                            //resolve defer
-                            defer.resolve(existingListItem);
-                        } else {
-                            defer.reject(multiSelectI18NService.zatenekli);
-                        }
+                    if (existingListItem.modelState === ModelStates.Deleted) {
+                        existingListItem.modelState = ModelStates.Unchanged;
+                        //call added event
+                        scope.onAdded(selectItem);
+                        //resolve defer
+                        defer.resolve(existingListItem);
                     } else {
                         defer.reject(multiSelectI18NService.zatenekli);
                     }
+
                 }
                 return defer.promise;
             }
@@ -351,15 +449,12 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     if (index === -1)
                         return common.rejectedPromise('no item found at index ' + index);
 
-                    if (common.isCrudModel(item)) {
-                        if (item.modelState === ModelStates.Added) {
-                            addedItems.splice(index, 1);
-                        } else {
-                            item.modelState = ModelStates.Deleted;
-                        }
-                    } else {
+                    if (item.modelState === ModelStates.Added) {
                         addedItems.splice(index, 1);
+                    } else {
+                        item.modelState = ModelStates.Deleted;
                     }
+
                     updateModel();
                     scope.onRemoved(item);
                 });
@@ -447,10 +542,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                 configurable: false,
                 get() {
                     return _.filter(addedItems, item => {
-                        if (common.isCrudModel(item)) {
-                            return item.modelState !== ModelStates.Deleted;
-                        }
-                        return true;
+                        return item.modelState !== ModelStates.Deleted;
                     });
                 }
             });
@@ -541,16 +633,13 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                 (groupItems || addedItems).forEach((item: IMultiSelectListModel) => {
                     if (item[attrs.selectionProp] === true) {
                         item[attrs.selectionProp] = false;
-                        if (common.isCrudModel(item)) {
-                            item = common.setModelState(<IBaseCrudModel>item, ModelStates.Modified);
-                        }
+                        item = common.setModelState(item, ModelStates.Modified);
+
                     }
                 });
                 //set selection
                 selItem[attrs.selectionProp] = true;
-                if (common.isCrudModel(selItem)) {
-                    selItem = common.setModelState(<IBaseCrudModel>selItem, ModelStates.Modified);
-                }
+                selItem = common.setModelState(selItem, ModelStates.Modified);
                 updateModel();
             }
 
@@ -565,10 +654,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             //#endregion
         }
     }
-
-    /**
-     * Directive definition
-     */
+    //#region Directive definition
     const directive = <ng.IDirective>{
         restrict: 'AE',
         require: 'ngModel',
@@ -596,10 +682,12 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
         compile: compile
     };
     return directive;
+    //#endregion
 }
-//injections
+//#region Injections
 multiSelectDirective.$inject = ['$timeout', '$parse', '$injector', '$q', 'Common', 'Logger',
     'Dialogs', 'rtMultiSelectConstants', 'rtMultiSelectI18N'];
+//#endregion
 //#endregion
 
 //#region MultiSelect Constants

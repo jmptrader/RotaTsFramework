@@ -8,54 +8,17 @@
                     <input type="text" class="form-control" ng-model="vm.filter.Text" />
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label col-md-3" i18n="todo.todo"></label>
-                <div class="col-md-9">
-                    <button ng-click="vm.pp =vm.pp+1;">Change param</button>
-                    <button ng-click="vm.selectvalue = 1 + vm.selectvalue ;">Change model</button>
-                    <button ng-click="vm.enable=!vm.enable">Disable</button>
-
-                    <!--{{vm.selectvalue3}}
-                    <rt-select items="vm.musteriTip"
-                               ng-model="vm.selectvalue3"
-                               value-prop="key"
-                               display-prop="text"
-                               ></rt-select>-->
-
-                    <!--<rt-select items="vm.musteriler"
-                               ng-model="vm.selectvalue2"
-                               value-prop="id"
-                               display-prop="text"></rt-select>
-
-                    <rt-select on-refresh="vm.getMusteriler(keyword)"
-                               on-get="vm.getMusteriById(id)"
-                               auto-suggest
-                               ng-model="vm.selectvalue"
-                               on-retrived="vm.dataArrived(items)"
-                               new-item-options="{controllerUrl:'app/todo/todo.modal.controller.js',controller:'todoModalController',templateUrl:'app/todo/todo.modal.html'}"
-                               value-prop="id"
-                               display-prop="text"></rt-select>-->
-                    {{vm.selected}}
-                    <!--<rt-multi-select on-refresh="vm.getMusterilerByKeyword(keyword)"
-                                     ng-model="vm.selected"
-                                     ng-disabled="vm.enable"
-                                     on-get="vm.getMusteriById(id)"
-                                     model-prop="bagOlgKullId"
-                                     value-prop="id"
-                                     display-prop="text"></rt-multi-select>-->
-
-                    <rt-multi-select on-fetch="vm.getMusteriler(params)"
-                                     ng-model="vm.selected"
-                                     model-prop="bagOlgKullId"
-                                     value-prop="id"
-                                     selection-prop="secili"
-                                     height="300"
-                                     groupby-prop="kategori"
-                                     display-prop="text"></rt-multi-select>
-
-                </div>
-            </div>
             <div class="clearfix"></div>
+
+            {{vm.selected}}
+            <rt-grid-select ng-model="vm.dataModel"
+                            value-prop="text"
+                            options="vm.dataOptions">
+
+            </rt-grid-select>
+            
+
+
         </rt-panel>
         <rt-grid></rt-grid>
     </rt-form>
