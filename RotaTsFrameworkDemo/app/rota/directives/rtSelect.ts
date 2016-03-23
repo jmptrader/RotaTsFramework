@@ -72,7 +72,7 @@ interface ISelectConstants {
  */
 export interface ISelectedEventArgs {
     modelValue?: number;
-    model?: IBaseModel,
+    model?: ISelectModel,
     scope: ISelectScope;
 }
 /**
@@ -527,6 +527,10 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             if (scope.newItemOptions) {
                 scope.runNewItem = $event => {
                     if (scope.ngDisabled) return;
+                    scope.newItemOptions.instanceOptions = {
+                        model: scope.selected.model,
+                        params: scope.params
+                    };
                     dialogs.showModal(scope.newItemOptions).then((newItem: ISelectModel) => {
                         if (newItem) {
                             scope.listItems.unshift(newItem);
@@ -540,6 +544,10 @@ function selectDirective($parse: ng.IParseService, $injector: ng.auto.IInjectorS
             if (scope.searchItemsOptions) {
                 scope.searchItems = $event => {
                     if (scope.ngDisabled) return;
+                    scope.newItemOptions.instanceOptions = {
+                        model: scope.selected.model,
+                        params: scope.params
+                    };
                     dialogs.showModal(scope.searchItemsOptions).then((foundItem: ISelectModel) => {
                         if (foundItem) {
                             const value = getValueMapper(foundItem);

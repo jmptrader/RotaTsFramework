@@ -185,6 +185,7 @@
     <Content Include="app\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\core\angular-animate.js" />
     <Content Include="app\rota\core\angular-sanitize.js" />
+    <Content Include="app\rota\core\angular-ui-router.js" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
     <Content Include="app\rota\lib\angular-scroll.min.js" />
@@ -220,7 +221,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app\rota\core\angular-ui-router.js" />
     <Content Include="app\rota\core\angular.js" />
     <Content Include="app\rota\core\require.js" />
     <Content Include="app\todo\todo.html" />
@@ -278,6 +278,7 @@
     <TypeScriptCompile Include="app\rota\base\baseconfig.ts" />
     <TypeScriptCompile Include="app\rota\base\basecontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basecrudcontroller.ts" />
+    <TypeScriptCompile Include="app\rota\base\baseformcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\baselistcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodalcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodelcontroller.ts" />

@@ -315,13 +315,10 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
             const findSelectItem = (value: IMultiSelectListModel): ng.IPromise<ISelectModel> => {
                 const findValue = getModelValueMapper(value);
                 return asyncModelRequestResult.promise.then((items: ISelectModel[]) => {
-                    for (let i = 0; i < items.length; i++) {
-                        const modelValue = getSelectValueMapper(items[i]);
-                        if (modelValue === findValue) {
-                            return items[i];
-                        }
-                    }
-                    return undefined;
+                    return _.find<ISelectModel>(items, (item): boolean => {
+                        const modelValue = getSelectValueMapper(item);
+                        return modelValue === findValue;
+                    });
                 });
             }
             /**
@@ -360,20 +357,18 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              */
             const createMultiSelectModel = (selectItem: ISelectModel, status: ModelStates,
                 existingModelItem?: IMultiSelectListModel): IMultiSelectListModel => {
-                let listItem: IMultiSelectListModel = { id: null };
+                let listItem = common.newCrudModel(existingModelItem);
                 listItem[attrs.modelProp] = getSelectValueMapper(selectItem);
                 listItem[attrs.displayProp] = _s.trim(getSelectDisplayMapper(selectItem), '- ');
-
-                listItem = common.setModelState(listItem, status);
-
                 if (scope.showSelection) {
                     listItem[attrs.selectionProp] = getSelectionMapper(selectItem);
                 }
-
                 if (groupbyEnabled) {
                     listItem[attrs.groupbyProp] = getGroupbyMapper(selectItem);
                 }
-                return angular.extend({}, existingModelItem, listItem);
+                listItem = common.setModelState(listItem, status);
+
+                return listItem;
             }
             /**
              * Update required validation
@@ -391,6 +386,7 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
              */
             const addItem = (selectItem: ISelectModel, modelStatus: ModelStates = ModelStates.Added,
                 existingModelItem?: IMultiSelectListModel): ng.IPromise<any> => {
+                if (!common.isAssigned(selectItem)) return common.rejectedPromise('item must be assigned');
                 const defer = $q.defer<any>();
                 const listItem = createMultiSelectModel(selectItem, modelStatus, existingModelItem);
                 const existingListItem = findListItem(listItem);
@@ -419,7 +415,6 @@ function multiSelectDirective($timeout: ng.ITimeoutService, $parse: ng.IParseSer
                     } else {
                         defer.reject(multiSelectI18NService.zatenekli);
                     }
-
                 }
                 return defer.promise;
             }

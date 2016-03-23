@@ -3651,32 +3651,7 @@ function $ViewProvider() {
         if (options.view) {
           result = $templateFactory.fromConfig(options.view, options.params, options.locals);
         }
-        if (result && options.notify) {
-        /**
-         * @ngdoc event
-         * @name ui.router.state.$state#$viewContentLoading
-         * @eventOf ui.router.state.$view
-         * @eventType broadcast on root scope
-         * @description
-         *
-         * Fired once the view **begins loading**, *before* the DOM is rendered.
-         *
-         * @param {Object} event Event object.
-         * @param {Object} viewConfig The view config properties (template, controller, etc).
-         *
-         * @example
-         *
-         * <pre>
-         * $scope.$on('$viewContentLoading',
-         * function(event, viewConfig){
-         *     // Access to all the view config properties.
-         *     // and one special property 'targetView'
-         *     // viewConfig.targetView
-         * });
-         * </pre>
-         */
-          $rootScope.$broadcast('$viewContentLoading', options);
-        }
+     
         return result;
       }
     };
@@ -3920,9 +3895,7 @@ function $ViewDirective(   $state,   $injector,   $uiViewScroll,   $interpolate)
         scope.$on('$stateChangeSuccess', function() {
           updateView(false);
         });
-        scope.$on('$viewContentLoading', function() {
-          updateView(false);
-        });
+     
 
         updateView(true);
 
@@ -3955,6 +3928,20 @@ function $ViewDirective(   $state,   $injector,   $uiViewScroll,   $interpolate)
           if (!firstTime && previousLocals === latestLocals) return; // nothing to do
           newScope = scope.$new();
           latestLocals = $state.$current.locals[name];
+		  
+		   /**
+           * @ngdoc event
+           * @name ui.router.state.directive:ui-view#$viewContentLoading
+           * @eventOf ui.router.state.directive:ui-view
+           * @eventType emits on ui-view directive scope
+           * @description
+           *
+           * Fired once the view **begins loading**, *before* the DOM is rendered.
+           *
+           * @param {Object} event Event object.
+           * @param {string} viewName Name of the view.
+           */
+          newScope.$emit('$viewContentLoading', name);
 
           var clone = $transclude(newScope, function(clone) {
             renderer.enter(clone, $element, function onUiViewEnter() {
@@ -3981,7 +3968,7 @@ function $ViewDirective(   $state,   $injector,   $uiViewScroll,   $interpolate)
            *
            * @param {Object} event Event object.
            */
-          currentScope.$emit('$viewContentLoaded');
+            currentScope.$emit('$viewContentLoaded', name);
           currentScope.$eval(onloadExp);
         }
       };

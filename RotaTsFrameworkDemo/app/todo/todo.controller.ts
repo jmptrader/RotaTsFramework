@@ -19,7 +19,7 @@ class TodoController extends BaseCrudController<ITodoModel> {
 
         this.selectdata = [{ id: 1, adi: "sercan" }, { id: 2, adi: "veli" }, { id: 3, adi: "ali" }];
 
-        this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update, order: 1 });
+        //this.addValidation({ func: this.checkDay, crudFlag: CrudType.Update, order: 1 });
         this.selectvalue = 2;
     }
 

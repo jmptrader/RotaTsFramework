@@ -190,14 +190,22 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
                     }
                 } else {
                     //editing
-                    if (existingListItem.modelState === ModelStates.Deleted) {
-                        existingListItem.modelState = ModelStates.Modified;
-                        common.merge(existingListItem, modalResult);
-                    } else {
-                        logger.toastr.error({ message: localization.getLocal('rota.zatenekli') });
+                    switch (existingListItem.modelState) {
+                        case ModelStates.Added:
+                            logger.toastr.error({ message: localization.getLocal('rota.zatenekli') });
+                            break;
+                        case ModelStates.Deleted:
+                            existingListItem.modelState = ModelStates.Modified;
+                            common.merge(existingListItem, modalResult);
+                            break;
+                        case ModelStates.Detached:
+                        case ModelStates.Unchanged:
+                        case ModelStates.Modified:
+                            break;
                     }
                 }
                 updateModel();
+                updateGrid();
             });
         }
     }
