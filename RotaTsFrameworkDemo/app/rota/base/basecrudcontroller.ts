@@ -8,7 +8,7 @@ import {ICrudServerResponse, IServerFailedResponse} from '../services/common.int
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
-import {BaseModelController} from './basemodelcontroller';
+import {BaseFormController} from './baseformcontroller';
 import * as _ from 'underscore';
 
 //#endregion
@@ -17,14 +17,8 @@ import * as _ from 'underscore';
  * @description This base class should be inherited for all controllers using restful services
  * @param {TModel} is your custom model view.
  */
-abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
+abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFormController<TModel> {
     //#region Props
-    /**
-     * Model object
-     * @returns {TModel}
-     */
-    get model(): TModel { return <TModel>this._model; }
-    set model(value: TModel) { this._model = value; }
     /**
      * New item id param value name
      */
@@ -99,7 +93,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseModelController.injects.concat(['TitleBadges']);
+    static injects = BaseFormController.injects.concat(['TitleBadges']);
     protected titlebadges: ITitleBadges;
     //#endregion
 
@@ -114,18 +108,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.crudPageOptions = angular.extend({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
         this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
-        //set form watchers
-        this.$scope.$watch(() => this.rtForm.$dirty, (newValue) => {
-            if (newValue !== undefined) {
-                this.dirtyBadge.show = newValue;
-                if (!this.isNew && newValue) {
-                    this.setModelModified();
-                }
-            }
-        });
-        this.$scope.$watch(() => this.rtForm.$invalid, (newValue) => {
-            this.invalidBadge.show = newValue;
-        });
         //register 'catch changes while exiting'
         this.registerEvent('$stateChangeStart',
             (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
@@ -174,37 +156,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     }
     //#endregion
 
-    //#region ModelState Methods
-    /**
-     * Set model state to Modified
-     * @param model Model
-     */
-    setModelModified(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Modified, false);
-    }
-    /**
-     * Set model state to Deleted
-     * @param model Model
-     */
-    setModelDeleted(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Deleted);
-    }
-    /**
-     * Set model state to Added
-     * @param model Model
-     */
-    setModelAdded(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Added);
-    }
-    /**
-     * Set model state to Changed
-     * @param model Model
-     */
-    setModelUnChanged(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Unchanged);
-    }
-    //#endregion
-
     //#region Model Methods
     /**
      * Chnage url depending on new/edit modes
@@ -250,7 +201,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     private resetForm(model?: TModel): void {
         this.isNew ? this.setModelAdded() : this.setModelUnChanged();
-        //TODO:rtForm is undefined somtimes,diagnose
+        //TODO:rtForm is undefined somtimes,why ?
         this.rtForm.$setPristine();
 
         if (!this.isNew && this.isAssigned(model)) {
@@ -413,68 +364,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     }
     //#endregion
 
-    //#region BaseModelController Methods
-    /**
-     * Init crud model
-     * @param cloning Cloning flag
-     */
-    protected initModel(cloning?: boolean): ng.IPromise<TModel> {
-        //reset flags
-        this.crudPageFlags.isSaving =
-            this.crudPageFlags.isDeleting = false;
-        this.crudPageFlags.isCloning = cloning;
-        this.orjModel = null;
-
-        return super.initModel({ id: this.$stateParams.id });
-    }
-    /**
-     * Set model getter method
-     * @param modelFilter Model Filter
-     */
-    defineModel(modelFilter?: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel {
-        return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
-    }
-    /**
-     * Reset form after setting model 
-     * @param model Model
-     */
-    updateModel(model: TModel): ng.IPromise<TModel> {
-        return super.updateModel(model).then((model: TModel) => {
-            this.resetForm(model);
-            return model;
-        });
-    }
-    /**
-     * Do some stuff after model loaded
-     * @param model Model
-     */
-    loadedModel(model: TModel): void {
-        //model not found in edit mode
-        if (!this.isNew && !this.isAssigned(model)) {
-            this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
-            this.initNewModel();
-            return;
-        }
-        //set navbuttons enable
-        this.navButtonsEnabled = {
-            next: !!this.getNavModel(NavigationDirection.Next),
-            prev: !!this.getNavModel(NavigationDirection.Prev)
-        }
-        //set cloning warning & notify
-        if (this.crudPageFlags.isCloning) {
-            this.toastr.info({ message: BaseCrudController.localizedValues.kayitkopyalandi });
-            this.cloningBadge.show = true;
-            //set form dirty when cloning
-            this.rtForm.$setDirty();
-        }
-    }
-    /**
-    * @abstract Get model
-    * @param args Model
-    */
-    abstract getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel;
-    //#endregion
-
     //#region Navigation
     /**
      * Init model navigation
@@ -588,6 +477,88 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param options Delete options
      */
     abstract deleteModel(options: IDeleteOptions): ng.IPromise<any>;
+    //#endregion
+
+    //#region BaseModelController Methods
+    /**
+     * Init crud model
+     * @param cloning Cloning flag
+     */
+    protected initModel(cloning?: boolean): ng.IPromise<TModel> {
+        //reset flags
+        this.crudPageFlags.isSaving =
+            this.crudPageFlags.isDeleting = false;
+        this.crudPageFlags.isCloning = cloning;
+        this.orjModel = null;
+
+        return super.initModel({ id: this.$stateParams.id });
+    }
+    /**
+     * Set model getter method
+     * @param modelFilter Model Filter
+     */
+    defineModel(modelFilter?: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel {
+        return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
+    }
+    /**
+     * Reset form after setting model 
+     * @param model Model
+     */
+    updateModel(model: TModel): ng.IPromise<TModel> {
+        return super.updateModel(model).then((model: TModel) => {
+            this.resetForm(model);
+            return model;
+        });
+    }
+    /**
+     * Do some stuff after model loaded
+     * @param model Model
+     */
+    loadedModel(model: TModel): void {
+        //model not found in edit mode
+        if (!this.isNew && !this.isAssigned(model)) {
+            this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
+            this.initNewModel();
+            return;
+        }
+        //set navbuttons enable
+        this.navButtonsEnabled = {
+            next: !!this.getNavModel(NavigationDirection.Next),
+            prev: !!this.getNavModel(NavigationDirection.Prev)
+        }
+        //set cloning warning & notify
+        if (this.crudPageFlags.isCloning) {
+            this.toastr.info({ message: BaseCrudController.localizedValues.kayitkopyalandi });
+            this.cloningBadge.show = true;
+            //set form dirty when cloning
+            this.rtForm.$setDirty();
+        }
+    }
+    /**
+    * @abstract Get model
+    * @param args Model
+    */
+    abstract getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel;
+    //#endregion
+
+    //#region BaseFormController methods
+    /**
+     * Form invalid flag changes
+     * @param invalidFlag Invalid flag of main form
+     */
+    onFormInvalidFlagChanged(invalidFlag: boolean): void {
+        this.invalidBadge.show = invalidFlag;
+    }
+    /**
+     * Form dirty flag changes
+     * @param dirtyFlag Dirty flag of main form
+     */
+    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
+        this.dirtyBadge.show = dirtyFlag;
+        if (!this.isNew && dirtyFlag) {
+            this.setModelModified();
+        }
+    }
     //#endregion
 }
 //Export

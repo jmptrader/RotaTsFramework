@@ -102,7 +102,10 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     protected loadedModel(model: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>): void {
     }
 
-
+    /**
+     * Overridable model definition method
+     * @param modelFilter Optional Model filter 
+     */
     defineModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<IBaseListModel<TModel>> |
         IBaseListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel> {
         return this.getModel(modelFilter);

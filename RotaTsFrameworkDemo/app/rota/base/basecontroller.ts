@@ -14,6 +14,9 @@ import * as _ from 'underscore';
 
 class BaseController {
     //#region Props
+    /**
+     * Main form controller used with rtForm form directive
+     */
     rtForm: ng.IFormController;
     /**
      * Notification Service

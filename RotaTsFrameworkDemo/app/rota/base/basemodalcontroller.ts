@@ -1,23 +1,14 @@
 ﻿//#region Imports
-import {IBaseModel, IBaseCrudModel, IBundle, IBaseModelFilter, ModelStates} from "./interfaces"
+import {IBaseCrudModel, IBundle, IBaseModelFilter, ModelStates} from "./interfaces"
 import {IModalInstanceOptions} from '../services/dialogs.interface';
 //deps
-import {BaseModelController} from './basemodelcontroller';
+import {BaseFormController} from './baseformcontroller';
 //#endregion
 
 //#region BaseModal controller
-class BaseModalController<TModel extends IBaseModel, TResult extends {}> extends BaseModelController<TModel> {
-    //#region Props
-    /**
-    * Model object
-    * @returns {TModel}
-    */
-    get model(): TModel { return <TModel>this._model; }
-    set model(value: TModel) { this._model = value; }
-    //#endregion
-
+class BaseModalController<TModel extends IBaseCrudModel, TResult extends {}> extends BaseFormController<TModel> {
     //#region Bundle Services
-    static injects = BaseModelController.injects.concat(['$uibModalInstance', 'instanceOptions']);
+    static injects = BaseFormController.injects.concat(['$uibModalInstance', 'instanceOptions']);
     protected $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance;
     /**
      * Instance Options
@@ -58,7 +49,7 @@ class BaseModalController<TModel extends IBaseModel, TResult extends {}> extends
     }
     //#endregion
 
-    //#region BaseModalController
+    //#region BaseModelController
     /**
      * Get model
      */
@@ -66,6 +57,22 @@ class BaseModalController<TModel extends IBaseModel, TResult extends {}> extends
         return this.common.makePromise<TModel>(this.instanceOptions.model);
     }
 
+    //#endregion
+
+    //#region BaseFormController methods
+    /**
+     * Form invalid flag changes
+     * @param invalidFlag Invalid flag of main form
+     */
+    onFormInvalidFlagChanged(invalidFlag: boolean): void {
+    }
+    /**
+     * Form dirty flag changes
+     * @param dirtyFlag Dirty flag of main form
+     */
+    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
+        this.setModelModified();
+    }
     //#endregion
 }
 
