@@ -11,6 +11,7 @@ import "./rtFocus"
 import "./rtSelect"
 import "./rtMultiSelect"
 import "./rtGridSelect"
+import "./rtEditor"
 
 angular.module('rota.directives',
     ['rota.directives.rtmenu',
@@ -25,5 +26,6 @@ angular.module('rota.directives',
         'rota.directives.rtfocus',
         'rota.directives.rtselect',
         'rota.directives.rtmultiselect',
-        'rota.directives.rtgridselect'
+        'rota.directives.rtgridselect',
+        'rota.directives.rteditor'
     ]);

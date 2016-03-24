@@ -1,19 +1,15 @@
-﻿//import "./i18n"
-//import "./underscore.min"
-//import "./underscore.string.min"
-import "spinner"
+﻿import "spinner"
 import "bootstrap"
 import "grid"
 import "hotkeys"
 import "scroll"
 import "select"
-//import "./xxx"
+import "wysiwyg"
 
 angular.module('rota.lib',
     [
         //Grid plugins
         'ui.grid', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.pagination', 'ui.grid.exporter', 'ui.grid.grouping',
-
         ////Datetime picker
         //'ui.dateTimeInput',
         //'ui.bootstrap.datetimepicker',
@@ -24,7 +20,7 @@ angular.module('rota.lib',
         ////ui-router plugins - sticky states for modal support
         //'ct.ui.router.extras.sticky',
         //'ct.ui.router.extras.previous',
-        //'wysiwyg.module',
+        'wysiwyg.module',
         //Scroll
         'duScroll'
     ]);

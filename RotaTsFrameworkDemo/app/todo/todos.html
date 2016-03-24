@@ -5,21 +5,20 @@
             <div class="form-group col-md-7">
                 <label class="control-label col-md-3">Todo Text</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control" ng-model="vm.filter.Text" />
+                    <input type="text" class="form-control" ng-model="vm.filter.Text"/>
+                </div>
+            </div>
+            <button ng-click="vm.disabled=!vm.disabled">Disabled</button>
+            <div class="form-group">
+                <label class="control-label col-md-3">Select test</label>
+                <div class="col-md-9">
+                    {{vm.selected}}
+                    <rt-editor ng-model="vm.selected" ng-disabled="vm.disabled" ng-required="true"></rt-editor>
                 </div>
             </div>
             <div class="clearfix"></div>
-
-            {{vm.selected}}
-            <rt-grid-select ng-model="vm.dataModel"
-                            value-prop="text"
-                            options="vm.dataOptions">
-
-            </rt-grid-select>
-            
-
-
         </rt-panel>
+        <input colorpicker-with-input ng-model="hexPicker.color" type="text">
         <rt-grid></rt-grid>
     </rt-form>
 </div>

@@ -10,30 +10,13 @@ import "./todos.service";
 class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
 
     todoApi: ITodoApi;
-    dataOptions: IGridSelectOptions<ITodoModel>;
-    dataModel: ITodoModel[];
 
     constructor(bundle: IBundle) {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
-
-        this.dataOptions = {
-            showDeleteButton: true,
-            showEditButton: true,
-            columnDefs: [
-                {
-                    field: 'text',
-                    width: '*'
-
-                }],
-            newItemOptions: {
-                templateUrl: 'app/todo/todo.modal.html'
-            }
-        }
-
     }
 
     loadedModel(model: ITodoModel[]): void {
-        this.dataModel = model;
+        //this.dataModel = model;
     }
 
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
@@ -61,7 +44,9 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
             displayName: 'Text',
             width: '*',
             field: "text"
-        }
+        }, {
+                field: 'modelState'
+            }
         ];
     }
 

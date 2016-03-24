@@ -56,12 +56,12 @@ interface IMapper<TContext, TTarget> {
 }
 //#endregion
 
-
 //#region GridSelect Directive
 function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common: ICommon, logger: ILogger, localization: ILocalization) {
 
     function link(scope: IGridSelectScope, element: ng.IAugmentedJQuery,
         attrs: IGridSelectAttributes, modelCtrl: ng.INgModelController): void {
+        //#region Init props
         /**
          * Added items store 
          */
@@ -70,12 +70,13 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
         * Model value prop getter function
         */
         const valuePropGetter = attrs.valueProp && $parse(attrs.valueProp);
+        //#endregion
 
-        const initGrid = (): void => {
-            scope.options.enablePaginationControls =
-                scope.options.enablePagination = false;
-            scope.options.enableHorizontalScrollbar = 0;
-
+        //#region Set grid options
+        /**
+         * Get action buttons according to options
+         */
+        const getActionButtons = (): uiGrid.IColumnDef[] => {
             const buttons: uiGrid.IColumnDef[] = [];
             const getButtonColumn = (name: string, template: string): any => {
                 return {
@@ -101,10 +102,19 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
                     'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
                 buttons.push(editbutton);
             }
-            scope.options.columnDefs = scope.options.columnDefs.concat(buttons);
+            return buttons;
         }
+        /**
+         * Init grid options
+         */
+        const initGrid = (): void => {
+            scope.options.enablePaginationControls =
+                scope.options.enablePagination = false;
+            scope.options.enableHorizontalScrollbar = 0;
+            scope.options.columnDefs = scope.options.columnDefs.concat(getActionButtons());
+        }
+        //#endregion
 
-        initGrid();
         //#region Mappers
         /**
          * Base mapper function
@@ -119,6 +129,8 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
         }
         const getModelValueMapper: IMapper<IGridSelectModel, number> = (context: IGridSelectModel) => getMappedValue<IGridSelectModel, number>(context, valuePropGetter);
         //#endregion
+
+        //#region Utils
         /**
        * Find list item by list item or value
        * @param value List item object or value
@@ -130,25 +142,53 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
                 return modelValue === findValue;
             });
         }
+        //#endregion
 
+        //#region Model Methods
+        /**
+        * Update grid internal data filtering deleted rows
+        */
         const updateGrid = () => {
             const rows = _.filter(addedItems, item => {
                 return item.modelState !== ModelStates.Deleted;
             });
             scope.options.data = rows;
         }
-
+        /**
+         * Update external model
+         */
         const updateModel = () => {
             //Set model
             modelCtrl.$setViewValue(addedItems);
             modelCtrl.$setDirty();
 
-            //if (!scope.visibleItems.length && common.isDefined(attrs.required) && attrs.required) {
-            //    modelCtrl.$setValidity('required', false);
-            //}
+            if (!scope.options.data.length && common.isDefined(attrs.required) && attrs.required) {
+                modelCtrl.$setValidity('required', false);
+            }
         };
+        /**
+         * Update all model and grid
+         */
+        const refresh = () => {
+            updateGrid();
+            updateModel();
+        }
+        /**
+         * Watch model changes
+         */
+        modelCtrl.$formatters.push(val => {
+            addedItems = val;
+            updateGrid();
+            return val;
+        });
+        //#endregion
 
-
+        //#region Actions
+        /**
+         * Remove item from list         
+         * @param model Model to be deleted
+         * @param event Angular event
+         */
         scope.removeItem = (model: IGridSelectModel, event: ng.IAngularEvent) => {
             common.preventClick(event);
             if (model.modelState === ModelStates.Added) {
@@ -157,17 +197,12 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
             } else {
                 common.setModelState(model, ModelStates.Deleted);
             }
-            updateModel();
+            refresh();
         }
-
-
-
-        modelCtrl.$formatters.push(val => {
-            addedItems = val;
-            updateGrid();
-            return val;
-        });
-
+        /**
+         * Add/Update an item
+         * @param model Model to be updated/added
+         */
         scope.addNewItem = (model: IGridSelectModel): ng.IPromise<any> => {
             //get modal options expanded model param
             const modalOptions = common.extend<IModalOptions<IGridSelectModel>>
@@ -195,8 +230,8 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
                             logger.toastr.error({ message: localization.getLocal('rota.zatenekli') });
                             break;
                         case ModelStates.Deleted:
-                            existingListItem.modelState = ModelStates.Modified;
                             common.merge(existingListItem, modalResult);
+                            existingListItem.modelState = ModelStates.Modified;
                             break;
                         case ModelStates.Detached:
                         case ModelStates.Unchanged:
@@ -204,15 +239,14 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
                             break;
                     }
                 }
-                updateModel();
-                updateGrid();
+                refresh();
             });
         }
-    }
+        //#endregion
 
-    /**
-         * Directive definition
-         */
+        initGrid();
+    }
+    //#region Directive definition
     const directive = <ng.IDirective>{
         restrict: 'E',
         require: 'ngModel',
@@ -230,12 +264,15 @@ function gridSelectDirective($parse: ng.IParseService, dialogs: IDialogs, common
         link: link
     };
     return directive;
+    //#endregion
 }
+//#region Injections
 gridSelectDirective.$inject = ['$parse', 'Dialogs', 'Common', 'Logger', 'Localization'];
+//#endregion
+
 //#endregion
 
 //#region Register
 const module: ng.IModule = angular.module('rota.directives.rtgridselect', []);
 module.directive('rtGridSelect', gridSelectDirective);
-
 //#endregion

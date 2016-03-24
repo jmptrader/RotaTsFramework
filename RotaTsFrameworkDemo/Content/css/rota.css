@@ -122,6 +122,7 @@ table.rota > thead > tr > th {
 }
 
 
+rt-editor.ng-invalid div.rt-editor,
 .ng-invalid > div.rt-grid-select > div.grid,
 rt-date-picker.ng-invalid input,
 div.ng-invalid rt-date-picker input,
