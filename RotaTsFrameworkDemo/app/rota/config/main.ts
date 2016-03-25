@@ -22,7 +22,8 @@
         hotkeys: './app/rota/lib/hotkeys.min',
         select: './app/rota/lib/select.min',
         'bootstrap-colorpicker-module': './app/rota/lib/bootstrap-colorpicker-module.min',
-        wysiwyg: '../app/rota/lib/angular-wysiwyg.min',
+        wysiwyg: './app/rota/lib/angular-wysiwyg.min',
+        currency: './app/rota/lib/ng-currency',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',

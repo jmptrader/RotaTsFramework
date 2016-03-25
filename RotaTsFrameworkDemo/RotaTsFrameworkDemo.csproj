@@ -195,6 +195,7 @@
     <Content Include="app\rota\lib\hotkeys.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
+    <Content Include="app\rota\lib\ng-currency.js" />
     <Content Include="app\rota\lib\pdfmake.min.js" />
     <Content Include="app\rota\lib\select.min.js" />
     <Content Include="app\rota\lib\spin.min.js" />
@@ -295,6 +296,7 @@
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtEditor.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtNumber.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSelect.interface.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtButton.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtCrudButtons.ts" />

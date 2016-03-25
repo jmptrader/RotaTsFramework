@@ -5,6 +5,7 @@ import "hotkeys"
 import "scroll"
 import "select"
 import "wysiwyg"
+import "currency"
 
 angular.module('rota.lib',
     [
@@ -22,5 +23,7 @@ angular.module('rota.lib',
         //'ct.ui.router.extras.previous',
         'wysiwyg.module',
         //Scroll
-        'duScroll'
+        'duScroll',
+        //Currency directive
+        'ng-currency'
     ]);

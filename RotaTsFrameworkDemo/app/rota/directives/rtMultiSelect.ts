@@ -6,7 +6,7 @@ import {IDialogs, IModalOptions} from '../services/dialogs.interface';
 import {IBaseModel, ModelStates, IBaseCrudModel} from '../base/interfaces';
 import {IBaseService} from '../services/service.interface';
 import {ISelectAttributes, ISelectScope, ISelectModel, IDataSource, IItemsDataSource,
-    IItemsDataSourceMethod, ISelectedEventArgs} from './rtSelect.interface';
+IItemsDataSourceMethod, ISelectedEventArgs} from './rtSelect.interface';
 //deps
 import * as _ from "underscore";
 import * as _s from "underscore.string";
