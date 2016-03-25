@@ -5,7 +5,7 @@ import "hotkeys"
 import "scroll"
 import "select"
 import "wysiwyg"
-import "currency"
+import "ngcurrency"
 
 angular.module('rota.lib',
     [

@@ -6,6 +6,7 @@
         'jquery': './app/rota/core/jquery-2.1.4.min',
         'angular': './app/rota/core/angular',
         'angular-ui-router': './app/rota/core/angular-ui-router',
+        'angular-local': './app/rota/core/angular-locale_tr-tr',
         'angular-bootstrap': './app/rota/core/ui-bootstrap-tpls-1.1.2.min',
         'angular-sanitize': './app/rota/core/angular-sanitize',
         'angular-animate': './app/rota/core/angular-animate',
@@ -23,7 +24,7 @@
         select: './app/rota/lib/select.min',
         'bootstrap-colorpicker-module': './app/rota/lib/bootstrap-colorpicker-module.min',
         wysiwyg: './app/rota/lib/angular-wysiwyg.min',
-        currency: './app/rota/lib/ng-currency',
+        ngcurrency: './app/rota/lib/ng-currency',
         //relative paths
         base: './app/rota/base',
         config: './app/rota/config',
@@ -68,6 +69,9 @@
         'angular-animate': {
             deps: ['angular']
         },
+        'angular-local': {
+            deps: ['angular']
+        },
         pdfMake: {
             exports: 'pdfMake'
         },
@@ -98,6 +102,9 @@
         },
         wysiwyg: {
             deps: ['angular', 'bootstrap-colorpicker-module']
+        },
+        ngcurrency: {
+            deps: ['angular']
         }
     }
 });

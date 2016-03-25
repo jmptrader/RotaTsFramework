@@ -184,6 +184,7 @@
     <Content Include="app\resources\nls\resources.js" />
     <Content Include="app\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\core\angular-animate.js" />
+    <Content Include="app\rota\core\angular-locale_tr-tr.js" />
     <Content Include="app\rota\core\angular-sanitize.js" />
     <Content Include="app\rota\core\angular-ui-router.js" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />

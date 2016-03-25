@@ -5,22 +5,32 @@ interface INumberDirectiveAttrs extends ng.IAttributes {
 //#endregion
 
 //#region ngCurrency wrapper
-function numberDirective() {
-    function compile(cElement: ng.IAugmentedJQuery, cAttrs: INumberDirectiveAttrs) {
-        cAttrs.$set('fraction', cAttrs.rtNumber || 0);
-        cAttrs.$set('ng-currency', '');
-        cAttrs.$set('currency-symbol', '');
-        return (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: INumberDirectiveAttrs): void => {
-        }
+function numberDirective($compile: ng.ICompileService) {
+
+    function link(scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: INumberDirectiveAttrs): void {
+        element.attr('fraction', attrs.rtNumber || 0);
+        element.attr('ng-currency', '');
+        element.attr('currency-symbol', '');
+        //remove rtnumber to stop infinite loop
+        element.removeAttr("rt-number");
+        $compile(element)(scope);
     }
+
     //#region Directive Definition
     const directive = <ng.IDirective>{
         restrict: 'A',
-        compile: compile
+        replace: false,
+        terminal: true,
+        priority: 1000,
+        link: link
     };
     return directive;
     //#endregion
 }
+//#endregion
+
+//#region Injections
+numberDirective.$inject = ['$compile'];
 //#endregion
 
 //#region Register
