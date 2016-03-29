@@ -121,6 +121,8 @@ table.rota > thead > tr > th {
     color: #8A8989;
 }
 
+
+.range-date-picker.ng-invalid input,
 rt-editor.ng-invalid div.rt-editor,
 .ng-invalid > div.rt-grid-select > div.grid,
 input.ng-invalid,

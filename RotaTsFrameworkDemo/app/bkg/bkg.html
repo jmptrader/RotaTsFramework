@@ -23,7 +23,9 @@
         <div class="form-group">
             <label class="control-label col-md-3" i18n="todo.todo"></label>
             <div class="col-md-9">
-                <rt-datetime ng-model="vm.deneme" ng-required="true" ng-disabled="disabled" show-time></rt-datetime>
+                Start {{vm.dateStart | date : 'dd-MM-yyyy hh-mm'}}
+                End {{vm.endDate | date : 'dd-MM-yyyy hh-mm'}}
+                <rt-date-range date-start="vm.dateStart" date-end="vm.endDate" set="month"></rt-date-range>
             </div>
         </div>
 

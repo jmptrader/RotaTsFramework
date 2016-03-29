@@ -18,7 +18,9 @@ class BkgController extends BaseCrudController<IBooking> {
         this.deneme = new Date();
     }
 
-
+    render(options): void {
+        debugger;
+    }
 
     saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {
         return this.common.promise();
