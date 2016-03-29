@@ -174,7 +174,7 @@ class Routing implements IRouting {
     */
     private registerShellSections(): void {
         //shell sections
-        var shellSections = [
+        const shellSections = [
             { 'shell@': { templateUrl: 'shell.html', controller: 'ShellController', controllerAs: this.routeconfig.shellControllerAlias } },
             { 'header@shell': { templateUrl: 'header.html' } },
             { 'footer@shell': { templateUrl: 'footer.html' } }
@@ -260,10 +260,12 @@ class Routing implements IRouting {
         }
         //set temlate path based on baseUrl - works both html and dynamic file server
         const templateFilePath = (this.common.isHtml(<string>state.templateUrl) ?
-            this.routeconfig.basePath : '') + state.templateUrl; //#region Define State Object
+            this.routeconfig.basePath : '') + state.templateUrl;
+        //#region Define State Object
         //find menu
         //State Object
         const stateObj: IRotaState = {
+            abstract: state.abstract,
             templateUrl: templateFilePath,
             controller: state.controller,
             //ControllerAs syntax used as default 'vm'
@@ -271,7 +273,7 @@ class Routing implements IRouting {
             hierarchicalMenu: state.hierarchicalMenu,
             url: '/' + state.url,
             //HACK:Tum paramlara navItems array parmetresini ekliyoruz!
-            params: angular.extend({ id: 'new', navItems: { array: true } }, state.params),
+            params: angular.extend({ id: 'new', navItems: { array: true }, model: null }, state.params),
             //Resolve params
             resolve: {
                 $modalInstance: () => angular.noop(),

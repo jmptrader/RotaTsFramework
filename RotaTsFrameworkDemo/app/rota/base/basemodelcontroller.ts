@@ -17,7 +17,11 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
      * @returns {IModelType<TModel>}
      */
     get model(): TModel | IBaseListModel<TModel> | IPagingListModel<TModel> { return this._model; }
-    set model(value: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) { this._model = value; }
+    set model(value: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) {
+        if (this.common.isAssigned(value)) {
+            this._model = value;
+        }
+    }
     //#endregion
 
     //#region Bundle Services
@@ -50,19 +54,6 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     abstract getModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel> | TModel | ng.IPromise<IBaseListModel<TModel>> |
         IBaseListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
-     * Update model after fetching data
-     * @param model Model
-     */
-    updateModel(model: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>): ng.IPromise<TModel | IBaseListModel<TModel> | IPagingListModel<TModel>> {
-        const updatedModel = this.setModel(model);
-        return this.common.makePromise(updatedModel).then((data: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) => {
-            if (data) {
-                this.model = data;
-            }
-            return data;
-        });
-    }
-    /**
      * Fired if there is an error while model processing
      * @param reason Error reason
      */
@@ -89,13 +80,6 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
         }
     }
     /**
-     * Set model for some optional modifications
-     * @param model Model
-     */
-    protected setModel(model: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>): TModel | IBaseListModel<TModel> | IPagingListModel<TModel> {
-        return model;
-    }
-    /**
      * Loaded model method triggered at last
      * @param model
      */
@@ -117,10 +101,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     protected initModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel | IBaseListModel<TModel> | IPagingListModel<TModel>> {
         const defineModelResult = this.defineModel(modelFilter);
         return this.modelPromise = this.common.makePromise(defineModelResult).then((data: TModel | IBaseListModel<TModel> | IPagingListModel<TModel>) => {
-            return this.updateModel(data).then(() => {
-                this.loadedModel(data);
-                return data;
-            });
+            this.loadedModel(this.model = data);
+            return data;
         }, (reason: any) => {
             //TODO: can be changed depending on server excepion response
             this.errorModel(reason.data || reason);

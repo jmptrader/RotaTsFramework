@@ -79,7 +79,7 @@ interface IBaseCrudModel extends IBaseModel {
      * Model state
      * @description Should be used along with entityframework entity state
      */
-    modelState?: ModelStates;
+    modelState: ModelStates;
 }
 /**
  * Base model for all listing page
@@ -307,6 +307,21 @@ export enum CrudType {
 }
 //#endregion
 
+//#region BaseFormController
+/**
+ * Crud page options given through constructor
+ */
+interface IFormPageOptions {
+    /**
+     * New item field name ,default 'new'
+     */
+    newItemFieldName?: string;
+
+    newItemFieldValue?: string;
+}
+//#endregion
+
+
 //#region Common
 /**
  * Bundle for all pages including all built-it and custom dependencies
@@ -380,4 +395,4 @@ IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, ICrudPageStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IBaseListModel, ICrudPageOptions, ICrudPageFlags,
 IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
-IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions}
+IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions, IFormPageOptions}

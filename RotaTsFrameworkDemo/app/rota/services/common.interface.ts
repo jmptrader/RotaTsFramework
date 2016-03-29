@@ -27,12 +27,28 @@ interface IBaseServerResponse {
 }
 /**
  * Common server error response
- */
+ * @example {
+  "message": "The request entity's media type 'text/plain' is not supported for this resource.",
+  "exceptionMessage": "No MediaTypeFormatter is available to read an object of type 'RotaLoginCredentials' from content with media type 'text/plain'.",
+  "exceptionType": "System.Net.Http.UnsupportedMediaTypeException",
+  "stackTrace": "   at System.Net.Http.HttpContentExtensions.ReadAsAsync[T](HttpContent content, Type type,
+     IEnumerable`1 formatters, IFormatterLogger formatterLogger, CancellationToken cancellationToken)\r\n
+     at System.Web.Http.ModelBinding.FormatterParameterBinding.ReadContentAsync(HttpRequestMessage request, Type type,
+     IEnumerable`1 formatters, IFormatterLogger formatterLogger, CancellationToken cancellationToken)"
+} */
 interface IServerFailedResponse extends IBaseServerResponse {
+    /**
+     * Generic exception message
+     */
+    message: string;
     /**
      * Exception message when debugging
      */
     exceptionMessage: string;
+    /**
+     * Server type of exception
+     */
+    exceptionType: string;
     /**
      * Stack trace used for debugging
      */

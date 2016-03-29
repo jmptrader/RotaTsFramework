@@ -1,7 +1,8 @@
 ﻿//#region Imports
-import {IBaseCrudModel, IBundle, ModelStates} from "./interfaces"
+import {IBaseCrudModel, IBundle, ModelStates, IFormPageOptions} from "./interfaces"
 //deps
 import {BaseModelController} from './basemodelcontroller';
+import * as _ from 'underscore';
 //#endregion
 
 //#region BaseModal controller
@@ -27,16 +28,25 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
     */
     abstract onFormDirtyFlagChanged(dirtyFlag: boolean): void;
 
-    constructor(bundle: IBundle) {
+    constructor(bundle: IBundle, options?: IFormPageOptions) {
         super(bundle);
-
+        //watch form drity status
         this.$scope.$watch(() => this.rtForm.$dirty, (newValue) => {
             if (newValue !== undefined) {
                 this.onFormDirtyFlagChanged(newValue);
             }
         });
+        //watch form invalid status
         this.$scope.$watch(() => this.rtForm.$invalid, (newValue) => {
             this.onFormInvalidFlagChanged(newValue);
+        });
+        //watch model to set modelState to Modified
+        this.$scope.$watch(() => this.model, (newValue, oldValue) => {
+            if (this.common.isAssigned(oldValue) && this.common.isAssigned(newValue) &&
+                newValue.modelState === oldValue.modelState &&
+                newValue.modelState !== ModelStates.Modified) {
+                this.setModelModified();
+            }
         });
     }
     //#endregion

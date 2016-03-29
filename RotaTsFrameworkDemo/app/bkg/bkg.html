@@ -1,0 +1,20 @@
+﻿<rt-form>
+    <rt-crud-buttons></rt-crud-buttons>
+
+    <a ui-sref="shell.content.bkg.genelbilgiler({model:vm.modelPromise})">Genel Bilgiler</a>
+    <a ui-sref="shell.content.bkg.konteynerler">Konteynerlar</a>
+
+    {{vm.model.bkgNo}}
+
+    <!--uib-tabset>
+        <uib-tab heading="Genel Bilgiler"
+                 select="vm.routing.go('shell.content.bkg.genelbilgiler')"
+                 active="vm.routing.$state.is('shell.content.bkg.genelbilgiler')">
+        </uib-tab>
+        <uib-tab heading="Konteynerlar"
+                 select="vm.routing.go('shell.content.bkg.konteynerler')"
+                 active="vm.routing.$state.is('shell.content.bkg.konteynerler')">>
+        </uib-tab>
+    </uib-tabset>-->
+    <div ui-view></div>
+</rt-form>

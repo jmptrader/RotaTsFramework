@@ -180,6 +180,10 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\TodoController.cs" />
     <Compile Include="Startup.cs" />
+    <Content Include="app\bkg\bkg.konteyner.html" />
+    <Content Include="app\bkg\bkg.konteynerlar.html" />
+    <Content Include="app\bkg\bkg.genelbilgiler.html" />
+    <Content Include="app\bkg\bkg.html" />
     <Content Include="app\resources\nls\en-us\resources.js" />
     <Content Include="app\resources\nls\resources.js" />
     <Content Include="app\resources\nls\tr-tr\resources.js" />
@@ -277,6 +281,11 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="app\bkg\bkg.konteyner.controller.ts" />
+    <TypeScriptCompile Include="app\bkg\bkg.konteynerlar.controller.ts" />
+    <TypeScriptCompile Include="app\bkg\bkg.genelbilgiler.controller.ts" />
+    <TypeScriptCompile Include="app\bkg\bkg.controller.ts" />
+    <TypeScriptCompile Include="app\bkg\interfaces.ts" />
     <TypeScriptCompile Include="app\rota\base\baseapi.ts" />
     <TypeScriptCompile Include="app\rota\base\baseconfig.ts" />
     <TypeScriptCompile Include="app\rota\base\basecontroller.ts" />

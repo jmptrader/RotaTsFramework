@@ -8,7 +8,7 @@ import {ICrudServerResponse, IServerFailedResponse} from '../services/common.int
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
-import {BaseFormController} from './baseformcontroller';
+import {BaseModelController} from './basemodelcontroller';
 import * as _ from 'underscore';
 
 //#endregion
@@ -17,8 +17,14 @@ import * as _ from 'underscore';
  * @description This base class should be inherited for all controllers using restful services
  * @param {TModel} is your custom model view.
  */
-abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFormController<TModel> {
+abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
     //#region Props
+    /**
+   * Model object
+   * @returns {TModel}
+   */
+    get model(): TModel { return <TModel>this._model; }
+    set model(value: TModel) { this._model = value; }
     /**
      * New item id param value name
      */
@@ -93,7 +99,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseFormController.injects.concat(['TitleBadges']);
+    static injects = BaseModelController.injects.concat(['TitleBadges']);
     protected titlebadges: ITitleBadges;
     //#endregion
 
@@ -105,9 +111,21 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
             saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
             deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
-        this.crudPageOptions = angular.extend({ parsers: parsers }, options);
+        this.crudPageOptions = this.common.extend<ICrudPageOptions>({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
         this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
+        //set form watchers
+        this.$scope.$watch(() => this.rtForm.$dirty, (newValue) => {
+            if (newValue !== undefined) {
+                this.dirtyBadge.show = newValue;
+                if (!this.isNew && newValue) {
+                    this.setModelModified();
+                }
+            }
+        });
+        this.$scope.$watch(() => this.rtForm.$invalid, (newValue) => {
+            this.invalidBadge.show = newValue;
+        });
         //register 'catch changes while exiting'
         this.registerEvent('$stateChangeStart',
             (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
@@ -190,9 +208,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     newModel(clonedModel?: TModel): ng.IPromise<TModel> | TModel {
         if (clonedModel) {
             clonedModel.id = 0;
+            clonedModel.modelState = ModelStates.Added;
             return clonedModel;
         }
-        return <TModel>{ id: 0 };
+        return <TModel>{ id: 0, modelState: ModelStates.Added };
     }
     /**
      * Reset form
@@ -281,6 +300,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
             const saveResult = this.saveModel(options);
             //success
             saveResult.then((response: ICrudServerResponse) => {
+                if (!this.common.isAssigned(response)) {
+                    defer.reject("response must be defined");
+                    return;
+                }
                 //show messages
                 if (options.showMessage) {
                     this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
@@ -291,11 +314,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
                 }
                 //set entity from result of saving
                 this.isNew = false;
-                this.updateModel(<TModel>response.model).then((model: TModel) => {
-                    defer.resolve(model);
-                }, () => {
-                    defer.reject(response);
-                });
+                this.model = <TModel>response.model;
+                defer.resolve(<TModel>response.model);
             });
             //fail save
             saveResult.catch((response: IServerFailedResponse) => {
@@ -479,6 +499,37 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     abstract deleteModel(options: IDeleteOptions): ng.IPromise<any>;
     //#endregion
 
+    //#region ModelState Methods
+    /**
+     * Set model state to Modified
+     * @param model Model
+     */
+    setModelModified(model?: IBaseCrudModel) {
+        return this.common.setModelState(model || this.model, ModelStates.Modified, false);
+    }
+    /**
+     * Set model state to Deleted
+     * @param model Model
+     */
+    setModelDeleted(model?: IBaseCrudModel) {
+        return this.common.setModelState(model || this.model, ModelStates.Deleted);
+    }
+    /**
+     * Set model state to Added
+     * @param model Model
+     */
+    setModelAdded(model?: IBaseCrudModel) {
+        return this.common.setModelState(model || this.model, ModelStates.Added);
+    }
+    /**
+     * Set model state to Changed
+     * @param model Model
+     */
+    setModelUnChanged(model?: IBaseCrudModel) {
+        return this.common.setModelState(model || this.model, ModelStates.Unchanged);
+    }
+    //#endregion
+
     //#region BaseModelController Methods
     /**
      * Init crud model
@@ -501,20 +552,11 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
         return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
     }
     /**
-     * Reset form after setting model 
-     * @param model Model
-     */
-    updateModel(model: TModel): ng.IPromise<TModel> {
-        return super.updateModel(model).then((model: TModel) => {
-            this.resetForm(model);
-            return model;
-        });
-    }
-    /**
      * Do some stuff after model loaded
      * @param model Model
      */
     loadedModel(model: TModel): void {
+        this.resetForm(model);
         //model not found in edit mode
         if (!this.isNew && !this.isAssigned(model)) {
             this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
@@ -555,9 +597,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      */
     onFormDirtyFlagChanged(dirtyFlag: boolean): void {
         this.dirtyBadge.show = dirtyFlag;
-        if (!this.isNew && dirtyFlag) {
-            this.setModelModified();
-        }
     }
     //#endregion
 }

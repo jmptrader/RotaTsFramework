@@ -1,14 +1,14 @@
 ﻿//#region Imports
-import {IBaseCrudModel, IBundle, IBaseModelFilter, ModelStates} from "./interfaces"
+import {IBaseModel, IBundle, IBaseModelFilter, ModelStates} from "./interfaces"
 import {IModalInstanceOptions} from '../services/dialogs.interface';
 //deps
-import {BaseFormController} from './baseformcontroller';
+import {BaseModelController} from './basemodelcontroller';
 //#endregion
 
 //#region BaseModal controller
-class BaseModalController<TModel extends IBaseCrudModel, TResult extends {}> extends BaseFormController<TModel> {
+class BaseModalController<TModel extends IBaseModel, TResult extends {}> extends BaseModelController<TModel> {
     //#region Bundle Services
-    static injects = BaseFormController.injects.concat(['$uibModalInstance', 'instanceOptions']);
+    static injects = BaseModelController.injects.concat(['$uibModalInstance', 'instanceOptions']);
     protected $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance;
     /**
      * Instance Options
@@ -39,7 +39,7 @@ class BaseModalController<TModel extends IBaseCrudModel, TResult extends {}> ext
      * @param data Result
      */
     modalResult(data: TResult): void {
-        this.$uibModalInstance.close(data);
+        this.$uibModalInstance.close(data || this.instanceOptions.model);
     }
     /**
      * Close modal with dismiss
@@ -58,24 +58,7 @@ class BaseModalController<TModel extends IBaseCrudModel, TResult extends {}> ext
     }
 
     //#endregion
-
-    //#region BaseFormController methods
-    /**
-     * Form invalid flag changes
-     * @param invalidFlag Invalid flag of main form
-     */
-    onFormInvalidFlagChanged(invalidFlag: boolean): void {
-    }
-    /**
-     * Form dirty flag changes
-     * @param dirtyFlag Dirty flag of main form
-     */
-    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
-        this.setModelModified();
-    }
-    //#endregion
 }
-
 //#endregion
 
 export {BaseModalController}
