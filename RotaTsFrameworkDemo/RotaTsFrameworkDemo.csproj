@@ -197,6 +197,8 @@
     <Content Include="app\rota\lib\angular-wysiwyg.min.js" />
     <Content Include="app\rota\lib\bootstrap-colorpicker-module.min.js" />
     <Content Include="app\rota\lib\bootstrap.min.js" />
+    <Content Include="app\rota\lib\dateTimeInput.js" />
+    <Content Include="app\rota\lib\datetimepicker.js" />
     <Content Include="app\rota\lib\hotkeys.min.js" />
     <Content Include="app\rota\lib\i18n.js" />
     <Content Include="app\rota\lib\moment.min.js" />
@@ -209,8 +211,11 @@
     <Content Include="app\rota\lib\underscore.min.js" />
     <Content Include="app\rota\lib\underscore.string.min.js" />
     <Content Include="app\rota\lib\vfs_fonts.js" />
+    <Content Include="app\rota\resources\nls\en-us\moment-lang.js" />
     <Content Include="app\rota\resources\nls\en-us\resources.js" />
+    <Content Include="app\rota\resources\nls\moment-lang.js" />
     <Content Include="app\rota\resources\nls\resources.js" />
+    <Content Include="app\rota\resources\nls\tr-tr\moment-lang.js" />
     <Content Include="app\rota\resources\nls\tr-tr\resources.js" />
     <Content Include="app\rota\shell\views\badges.html" />
     <Content Include="app\rota\shell\views\breadcrumb.html" />
@@ -305,6 +310,7 @@
     <TypeScriptCompile Include="app\rota\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtDateTime.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtEditor.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtNumber.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSelect.interface.ts" />

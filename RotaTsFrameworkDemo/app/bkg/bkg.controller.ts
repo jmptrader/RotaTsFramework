@@ -8,11 +8,14 @@ import {IBooking} from "./interfaces";
 
 
 class BkgController extends BaseCrudController<IBooking> {
+
+    deneme: Date;
+
     constructor(bundle: IBundle) {
         super(bundle);
 
         this.model = { id: 1, bkgNo: "22", modelState: ModelStates.Added };
-
+        this.deneme = new Date();
     }
 
 

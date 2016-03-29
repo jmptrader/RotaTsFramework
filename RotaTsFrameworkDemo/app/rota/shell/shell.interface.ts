@@ -3,6 +3,7 @@
 interface IShellScope extends ng.IScope {
     currentLanguage: ILanguage;
     supportedLanguages?: ILanguage[];
+    isCollapsed: boolean;
 
 }
 

@@ -1,11 +1,10 @@
 ﻿<rt-form>
     <rt-crud-buttons></rt-crud-buttons>
 
-    <a ui-sref="shell.content.bkg.genelbilgiler({model:vm.modelPromise})">Genel Bilgiler</a>
+    <!--<a ui-sref="shell.content.bkg.genelbilgiler({model:vm.modelPromise})">Genel Bilgiler</a>
     <a ui-sref="shell.content.bkg.konteynerler">Konteynerlar</a>
 
-    {{vm.model.bkgNo}}
-
+    {{vm.model.bkgNo}}-->
     <!--uib-tabset>
         <uib-tab heading="Genel Bilgiler"
                  select="vm.routing.go('shell.content.bkg.genelbilgiler')"
@@ -16,5 +15,18 @@
                  active="vm.routing.$state.is('shell.content.bkg.konteynerler')">>
         </uib-tab>
     </uib-tabset>-->
-    <div ui-view></div>
+    <!--<div ui-view></div>-->
+
+    <rt-panel title-i18n="todo.todo" icon="bookmark">
+        <button ng-click="disabled=!disabled">disabled</button>
+
+        <div class="form-group">
+            <label class="control-label col-md-3" i18n="todo.todo"></label>
+            <div class="col-md-9">
+                <rt-datetime ng-model="vm.deneme" ng-required="true" ng-disabled="disabled" show-time></rt-datetime>
+            </div>
+        </div>
+
+    </rt-panel>
+
 </rt-form>

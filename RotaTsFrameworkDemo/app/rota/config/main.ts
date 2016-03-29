@@ -98,7 +98,7 @@
             deps: ['underscore']
         },
         'bootstrap-colorpicker-module': {
-            deps: ['angular']
+            deps: ['angular', 'bootstrap']
         },
         wysiwyg: {
             deps: ['angular', 'bootstrap-colorpicker-module']

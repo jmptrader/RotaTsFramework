@@ -1,9 +1,10 @@
-﻿import {IBaseModel, IBaseListModelFilter} from "../rota/base/interfaces";
+﻿import {IBaseModel,IBaseCrudModel, IBaseListModelFilter} from "../rota/base/interfaces";
 
-interface ITodoModel extends IBaseModel {
+interface ITodoModel extends IBaseCrudModel {
     text?: string;
     done?: boolean;
     id: number;
+    
 }
 
 interface ITodoFilter extends IBaseListModelFilter {

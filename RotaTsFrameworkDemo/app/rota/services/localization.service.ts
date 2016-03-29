@@ -5,6 +5,8 @@ import {IMainConfig} from '../config/config.interface';
 //deps - resource files
 import * as rotaresource from 'i18n!rota-resources/nls/resources';
 import * as appresource from 'i18n!app-resources/nls/resources';
+//moment localization
+import 'i18n!rota-resources/nls/moment-lang';
 import * as _ from 'underscore';
 //#endregion
 
@@ -30,7 +32,6 @@ class Localization implements ILocalization {
         this.$window.localStorage.setItem(Localization.activeLanguageCacheName, value.code);
         this.$window.location.reload();
     }
-
     //#endregion
 
     //#region Init

@@ -13,6 +13,7 @@ import "./rtMultiSelect"
 import "./rtGridSelect"
 import "./rtEditor"
 import "./rtNumber"
+import "./rtDateTime"
 
 angular.module('rota.directives',
     ['rota.directives.rtmenu',
@@ -29,5 +30,6 @@ angular.module('rota.directives',
         'rota.directives.rtmultiselect',
         'rota.directives.rtgridselect',
         'rota.directives.rteditor',
-        'rota.directives.rtnumber'
+        'rota.directives.rtnumber',
+        'rota.directives.rtdatetime'
     ]);

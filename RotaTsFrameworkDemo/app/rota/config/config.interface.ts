@@ -29,7 +29,13 @@ interface IEvents {
      */
     menuChanged: string;
 }
-
+/**
+ * Date time formats used in rtDatetime directive
+ */
+interface IDateTimeFormat {
+    timeFormat: string;
+    dateFormat: string;
+}
 /**
  * Main config settings
  */
@@ -83,6 +89,10 @@ interface IMainConfig extends IBaseConfig {
      * Elmah logging endpoint
      */
     serverExceptionLoggingBackendUrl?: string;
+    /**
+     * DateTime formats
+     */
+    datetimeFormat?: IDateTimeFormat;
 }
 /**
  * Main config provider

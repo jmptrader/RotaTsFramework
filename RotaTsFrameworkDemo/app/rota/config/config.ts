@@ -26,7 +26,8 @@ class Config extends BaseConfig<IMainConfig> {
             gridFullFeatureList: 'ui-grid-selection ui-grid-pinning ui-grid-pagination ui-grid-exporter',
             supportedLanguages: [{ code: 'tr-tr', fullname: 'Türkçe' }, { code: 'en-us', fullname: 'English' }],
             setModelStateForEntityFramework: true,
-            serverExceptionLoggingEnabled: false
+            serverExceptionLoggingEnabled: false,
+            datetimeFormat: { timeFormat: 'DD-MM-YYYY HH:mm', dateFormat: 'DD-MM-YYYY' }
         };
         this.config = config;
     }

@@ -71,7 +71,7 @@ class ShellController {
         this.setTitleBadgesListener();
         //forms availablty in modal
         $rootScope.forms = {};
-        $rootScope.isCollapsed = true;
+        $scope.isCollapsed = true;
         $scope.supportedLanguages = this.config.supportedLanguages;
         $scope.currentLanguage = localization.currentLanguage;
     }

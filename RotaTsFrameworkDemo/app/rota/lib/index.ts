@@ -6,15 +6,17 @@ import "scroll"
 import "select"
 import "wysiwyg"
 import "ngcurrency"
+import "./dateTimeInput"
+import "./datetimepicker"
 
 angular.module('rota.lib',
     [
         //Grid plugins
         'ui.grid', 'ui.grid.selection', 'ui.grid.pinning', 'ui.grid.pagination', 'ui.grid.exporter', 'ui.grid.grouping',
-        ////Datetime picker
-        //'ui.dateTimeInput',
-        //'ui.bootstrap.datetimepicker',
-        ////Dropdown select-ui
+        //Datetime picker
+        'ui.dateTimeInput',
+        'ui.bootstrap.datetimepicker',
+        //Dropdown select-ui
         'ui.select',
         //Hotkeys keyboard support
         'cfp.hotkeys',
