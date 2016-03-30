@@ -1,6 +1,8 @@
 ﻿//#region Imports
 import {IMainConfig} from '../config/config.interface';
 import {ICommon} from '../services/common.interface';
+//deps
+import * as moment from "moment";
 //#endregion
 
 //#region Interfaces
@@ -19,6 +21,9 @@ interface IDatetimeScope extends ng.IScope {
     onTimeSet: (newValue: Date, oldValue: Date) => void;
     onSelected: (date: any) => void;
     ngDisabled: any;
+    minDate: Date;
+    maxDate: Date;
+    beforeRender: Function;
 }
 //#endregion
 
@@ -34,6 +39,7 @@ function dateTimePickerDirective(config: IMainConfig, common: ICommon) {
         //#endregion
 
         return (scope: IDatetimeScope, element: ng.IAugmentedJQuery, attrs: IDateTimeDirectiveAttrs, modelCtrl: ng.INgModelController): void => {
+            //#region Picker actions
             //open
             scope.openPicker = ($event: ng.IAngularEvent): void => {
                 common.preventClick($event);
@@ -47,7 +53,6 @@ function dateTimePickerDirective(config: IMainConfig, common: ICommon) {
                     scope.onSelected({ date: newDate });
                 }
             };
-
             //clear value
             $(element).bind('keydown', (e: JQueryEventObject) => {
                 switch (e.which) {
@@ -59,6 +64,42 @@ function dateTimePickerDirective(config: IMainConfig, common: ICommon) {
                         break;
                 }
             });
+            //#endregion
+
+            //#region Range validations
+            modelCtrl.$formatters.push(value => {
+                let isMinCheck = true,
+                    isMaxCheck = true;
+
+                if (common.isDefined(scope.minDate)) {
+                    isMinCheck = moment(value).isAfter(scope.minDate);
+                }
+
+                if (angular.isDefined(scope.maxDate)) {
+                    isMaxCheck = moment(value).isBefore(scope.maxDate);
+                }
+
+                modelCtrl.$setValidity('range', isMinCheck && isMaxCheck);
+                return value;
+            });
+
+            scope.beforeRender = ($view, $dates, $leftDate, $upDate, $rightDate) => {
+                if (scope.maxDate) {
+                    const activeDate = moment(scope.maxDate);
+                    for (let i = 0; i < $dates.length; i++) {
+                        if ($dates[i].localDateValue() >= activeDate.valueOf()) $dates[i].selectable = false;
+                    }
+                }
+                if (scope.minDate) {
+                    const activeDate = moment(scope.minDate);
+                    for (let i = 0; i < $dates.length; i++) {
+                        if ($dates[i].localDateValue() <= activeDate.valueOf()) {
+                            $dates[i].selectable = false;
+                        }
+                    }
+                }
+            }
+            //#endregion
         }
     }
     //#region Directive Definition
@@ -72,16 +113,18 @@ function dateTimePickerDirective(config: IMainConfig, common: ICommon) {
             ngRequired: '=',
             ngDisabled: '=',
             onSelected: '&?',
-            onBeforeRender: '&?'
+            minDate: '=?',
+            maxDate: '=?'
         },
-        template: '<span class="rt-datepicker" uib-dropdown is-open="openIt">' +
+        template: '<span class="rt-date-picker" uib-dropdown is-open="openIt">' +
         '<div class="input-group">' +
         '<input ng-disabled=ngDisabled ng-model-options="{debounce:50}" ng-required="ngRequired" ' +
         'data-date-parse-strict="false" ng-model=ngModel type="text" class="form-control"> ' +
         '<span style="cursor:pointer;" ng-click="openPicker($event)" class="input-group-addon">' +
         '<i class="fa fa-calendar"></i></span></div>' +
         '<ul uib-dropdown-menu role="menu" aria-labelledby="dLabel">' +
-        '<datetimepicker ng-model=ngModel data-on-set-time=onTimeSet(newDate)/></ul></span>'
+        '<datetimepicker ng-model=ngModel data-on-set-time=onTimeSet(newDate) ' +
+        'data-before-render="beforeRender($view, $dates, $leftDate, $upDate, $rightDate)"/></ul></span>'
     };
     return directive;
     //#endregion

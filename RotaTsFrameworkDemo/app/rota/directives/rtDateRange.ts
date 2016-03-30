@@ -78,16 +78,14 @@ function gridDirective($parse: ng.IParseService, config: IMainConfig, common: IC
             } else {
                 scope.fixedrange = attrs.fixedRange;
             }
-
             //Watch fixed range
             scope.$watch('fixedrange', (newValue: number) => {
                 if (newValue) {
-                    const strDate: Date = moment().subtract(newValue - 1, 'days').startOf('day').toDate();
-                    const endDate: Date = moment().endOf('day').toDate();
+                    const strDate = moment().subtract(newValue - 1, 'days').startOf('day').toDate();
+                    const endDate = moment().endOf('day').toDate();
                     setDates(strDate, endDate);
                 }
             });
-
             //#region Range validation method
             scope.$watchGroup(['dateStart', 'dateEnd'], (dates: Date[]) => {
                 const sd = dates[0], ed = dates[1];
