@@ -49,8 +49,7 @@ function buttonDirective(timeout: ng.ITimeoutService, hotkeys: ng.hotkeys.Hotkey
             //methods
             const setButtonAttrs = (buttonAttrs: { caption: string; icon: string; showSpin?: boolean; disable: boolean }) => {
                 scope.caption = buttonAttrs.caption;
-                scope.icon = buttonAttrs.icon;
-                scope.spin = buttonAttrs.showSpin && 'fa-spin';
+                scope.icon = `${buttonAttrs.icon} ${buttonAttrs.showSpin && 'fa-spin'}`;
                 scope.isBusy = buttonAttrs.disable;
             }
             const startAjax = () => {
@@ -100,11 +99,11 @@ module.run([
             '<a href ng-class="[\'btn\', \'btn-\' + color,\'btn-\' +size]" ng-click="doclick($event)" ' +
             'tooltip-placement="bottom">' +
             '<span class="hidden-sm hidden-xs">' +
-            '{{caption}}</span>&nbsp;<i ng-if="icon" ng-class="[\'fa\', \'fa-\' + icon,spin]"></i></a>');
+            '{{caption}}</span>&nbsp;<i ng-if="icon" ng-class="[\'fa\', \'fa-\' + icon]"></i></a>');
         $templateCache.put('rota/rtbutton-l.tpl.html',
             '<a href  ng-class="[\'btn\', \'btn-\' + color,\'btn-\' +size]" ng-click="doclick($event)" ' +
             'tooltip-placement="bottom">' +
-            '<i ng-if="icon" ng-class="[\'fa\', \'fa-\' + icon,spin]"></i><span class="hidden-sm hidden-xs">' +
+            '<i ng-if="icon" ng-class="[\'fa\', \'fa-\' + icon]"></i><span class="hidden-sm hidden-xs">' +
             '{{caption}}</span></a>');
     }
 ]);

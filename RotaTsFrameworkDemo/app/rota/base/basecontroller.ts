@@ -15,9 +15,25 @@ import * as _ from 'underscore';
 class BaseController {
     //#region Props
     /**
+     * Form Scope
+     */
+    formScope: any;
+    /**
      * Main form controller used with rtForm form directive
      */
-    rtForm: ng.IFormController;
+    get rtForm(): ng.IFormController {
+        return this.formScope.rtForm;
+    }
+    /**
+     * Initiliaze form controller using form scope object
+     * @param forms
+     * @description this is a hack method to prevent form controller being undefined
+     * formScope is set from rtForm directive
+     *  https://stackoverflow.com/questions/21574472/angularjs-cant-access-form-object-in-controller-scope/21574537#21574537
+     */
+    initFormScope(formScope: ng.IScope): void {
+        this.formScope = formScope;
+    }
     /**
      * Notification Service
      * @returns {IBaseLogger}

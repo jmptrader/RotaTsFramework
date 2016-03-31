@@ -115,7 +115,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
         this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
         //set form watchers
-        this.$scope.$watch(() => this.rtForm.$dirty, (newValue) => {
+        this.$scope.$watch('rtForm.$dirty', (newValue: boolean) => {
             if (newValue !== undefined) {
                 this.dirtyBadge.show = newValue;
                 if (!this.isNew && newValue) {
@@ -123,7 +123,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                 }
             }
         });
-        this.$scope.$watch(() => this.rtForm.$invalid, (newValue) => {
+        this.$scope.$watch('rtForm.$invalid', (newValue: boolean) => {
             this.invalidBadge.show = newValue;
         });
         //register 'catch changes while exiting'
