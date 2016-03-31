@@ -81,9 +81,9 @@ class Routing implements IRouting {
         });
         this.$rootScope.$on('$stateChangeSuccess', (event, toState: IRotaState) => {
             //Breadcrumb datasini hazirlar
-            var setBreadcrumb = (): void => {
-                var menu = toState.hierarchicalMenu;
-                var routelist: IBreadcrumb[] = [];
+            const setBreadcrumb = (): void => {
+                let menu = toState.hierarchicalMenu;
+                const routelist: IBreadcrumb[] = [];
 
                 while (menu) {
                     routelist.push(
@@ -97,9 +97,9 @@ class Routing implements IRouting {
                 this._breadcrumbs = routelist.length && routelist.reverse();
             }
             //Aktif menuyu rootScopea atiyoruz
-            var setActiveMenu = (): void => {
+            const setActiveMenu = (): void => {
                 //Eger modaldan farkli ise ve master page tiklandiysa
-                var menu = toState && toState.hierarchicalMenu;
+                const menu = toState && toState.hierarchicalMenu;
                 if (toState.name === 'shell' || menu) {
                     //Set active menu
                     this._activeMenu = menu;
@@ -196,7 +196,7 @@ class Routing implements IRouting {
      */
     private getStatesByParentId(parentId?: number): IMenuModel[] {
         const menus = _.filter(this._states, (item: IMenuModel) => {
-            return item.parentId === parentId;
+            return item.parentId === parentId && !item.isPartial && !item.isLink;
         }); //get it ordered
         const menusOrdered = _.sortBy(menus, "order");
         return menusOrdered;

@@ -27,7 +27,7 @@ function panelDirective(localization: ILocalization) {
         transclude: true,
         template: '<div ng-class="color" class="rt-panel"><ul class="nav nav-tabs">' +
         '<li class="active" ng-if="caption"><a class="title" href><b><i ng-class="[\'fa\', \'fa-\' + icon]">' +
-        '</i> {{caption}}<span class="badge alert-danger" ' +
+        '</i> {{::caption}}<span class="badge alert-danger" ' +
         'ng-if="badge">{{badge}}</span></b></a></li>' +
         '<li ng-if="buttons.length" class="rightside">' +
         '<ul class="list-inline">' +

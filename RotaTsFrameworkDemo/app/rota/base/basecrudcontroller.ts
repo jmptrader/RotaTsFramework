@@ -267,7 +267,11 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             const afterSaveModelResult = this.afterSaveModel(options);
             this.common.makePromise(afterSaveModelResult).then(() => {
                 //change url new --> edit
-                this.changeUrl(model.id).then(() => { deferSave.resolve(model); });
+                this.changeUrl(model.id).then(() => {
+                    deferSave.resolve(model);
+                    //set form to pristine and 
+                    this.resetForm(model);
+                });
             }, (response: IServerFailedResponse) => {
                 //if afterSaveModel failed
                 this.errorModel(response);
@@ -312,8 +316,9 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
                     if (response.warningMessages)
                         this.toastr.warn({ message: response.warningMessages.join('</br>') });
                 }
-                //set entity from result of saving
+                //model is not 'new' anymore
                 this.isNew = false;
+                //set model from result of saving
                 this.model = <TModel>response.model;
                 defer.resolve(<TModel>response.model);
             });
@@ -556,6 +561,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param model Model
      */
     loadedModel(model: TModel): void {
+        //after model loaded,set form pristine and set modelState
         this.resetForm(model);
         //model not found in edit mode
         if (!this.isNew && !this.isAssigned(model)) {

@@ -15,10 +15,6 @@ class TodosController extends BaseListController<ITodoModel, ITodoFilter> {
         super(bundle, { editState: "shell.content.todo", pagingEnabled: false });
     }
 
-    loadedModel(model: ITodoModel[]): void {
-        //this.dataModel = model;
-    }
-
     getModel(modelFilter: ITodoFilter): ng.IPromise<ITodoModel[]> {
         return this.todoApi.getTodos(modelFilter);
     }

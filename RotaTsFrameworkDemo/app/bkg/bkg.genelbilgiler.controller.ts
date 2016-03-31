@@ -11,18 +11,14 @@ interface IBkgParams extends ng.ui.IStateParamsService {
     model: IBooking;
 }
 
+
+
 class BkgGenelBilgilerController extends BaseModelController<IBooking> {
-    protected $stateParams: IBkgParams;
     constructor(bundle: IBundle) {
         debugger;
         super(bundle);
-        this.initModel();
-
     }
 
-    loadedModel(model: IBooking): void {
-        this.$stateParams.model = model;
-    }
 
     getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
         return this.common.promise<IBooking>({
@@ -33,4 +29,29 @@ class BkgGenelBilgilerController extends BaseModelController<IBooking> {
     }
 }
 
+
+//App.controllerProvider.register('bkgGenelBilgilerController', BkgGenelBilgilerController);
 App.addController("bkgGenelBilgilerController", BkgGenelBilgilerController);
+
+//class BkgGenelBilgilerController extends BaseController {
+//    protected $stateParams: IBkgParams;
+//    constructor(bundle: IBundle) {
+//        super(bundle);
+//        //this.initModel();
+
+//    }
+
+//    //loadedModel(model: IBooking): void {
+//    //    this.$stateParams.model = model;
+//    //}
+
+//    //getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
+//    //    return this.common.promise<IBooking>({
+//    //        id: 2,
+//    //        bkgNo: "dwqwddq",
+//    //        tasimalar: []
+//    //    });
+//    //}
+//}
+
+//App.addController("bkgGenelBilgilerController", BkgGenelBilgilerController);

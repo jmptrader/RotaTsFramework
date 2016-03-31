@@ -191,6 +191,7 @@
     <Content Include="app\rota\core\angular-locale_tr-tr.js" />
     <Content Include="app\rota\core\angular-sanitize.js" />
     <Content Include="app\rota\core\angular-ui-router.js" />
+    <Content Include="app\rota\core\_angular-ui-router.js" />
     <Content Include="app\rota\core\jquery-2.1.4.min.js" />
     <Content Include="app\rota\core\ui-bootstrap-tpls-1.1.2.min.js" />
     <Content Include="app\rota\lib\angular-scroll.min.js" />
@@ -328,6 +329,7 @@
     <TypeScriptCompile Include="app\rota\directives\rtPanel.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSelect.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtSpinner.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtTabs.ts" />
     <TypeScriptCompile Include="app\rota\filters\index.ts" />
     <TypeScriptCompile Include="app\rota\filters\rtI18n.ts" />
     <TypeScriptCompile Include="app\rota\lib\index.ts" />

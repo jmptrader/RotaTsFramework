@@ -1,5 +1,5 @@
 ﻿import {App} from "app/rota/config/app";
-import {BaseCrudController} from "app/rota/base/basecrudcontroller";
+import {BaseModelController} from "app/rota/base/basemodelcontroller";
 import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions,
     IValidationItem, IValidationResult, CrudType} from 'app/rota/base/interfaces';
 import {ICrudServerResponse} from 'app/rota/services/common.interface';
@@ -7,25 +7,18 @@ import {ICrudServerResponse} from 'app/rota/services/common.interface';
 import {IBooking} from "./interfaces";
 
 
-class BkgKonteynerController extends BaseCrudController<IBooking> {
+class BkgKonteynerController extends BaseModelController<IBooking> {
     constructor(bundle: IBundle) {
+        debugger;
         super(bundle);
-
     }
-
-
-
-    saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {
-        return this.common.promise();
-    }
-
-    deleteModel(options: IDeleteOptions): ng.IPromise<any> {
-        return this.common.promise();
-    }
-
 
     getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
-        return this.common.promise();
+        return this.common.promise<IBooking>({
+            id: 2,
+            bkgNo: "dwqwddq",
+            tasimalar: []
+        });
     }
 }
 

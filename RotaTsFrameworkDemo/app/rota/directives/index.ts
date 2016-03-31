@@ -15,6 +15,7 @@ import "./rtEditor"
 import "./rtNumber"
 import "./rtDatePicker"
 import "./rtDateRange"
+import "./rtTabs"
 
 angular.module('rota.directives',
     ['rota.directives.rtmenu',
@@ -33,5 +34,6 @@ angular.module('rota.directives',
         'rota.directives.rteditor',
         'rota.directives.rtnumber',
         'rota.directives.rtdatepicker',
-        'rota.directives.rtdaterange'
+        'rota.directives.rtdaterange',
+        'rota.directives.rttabs'
     ]);

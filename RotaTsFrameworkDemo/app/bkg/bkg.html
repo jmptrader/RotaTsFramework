@@ -1,34 +1,12 @@
 ﻿<rt-form>
     <rt-crud-buttons></rt-crud-buttons>
 
-    <!--<a ui-sref="shell.content.bkg.genelbilgiler({model:vm.modelPromise})">Genel Bilgiler</a>
+
+    <rt-tabs data="vm.mytabs"></rt-tabs>
+
+    <!--<a ui-sref="shell.content.bkg.genelbilgiler">Genel Bilgiler</a>
     <a ui-sref="shell.content.bkg.konteynerler">Konteynerlar</a>
 
-    {{vm.model.bkgNo}}-->
-    <!--uib-tabset>
-        <uib-tab heading="Genel Bilgiler"
-                 select="vm.routing.go('shell.content.bkg.genelbilgiler')"
-                 active="vm.routing.$state.is('shell.content.bkg.genelbilgiler')">
-        </uib-tab>
-        <uib-tab heading="Konteynerlar"
-                 select="vm.routing.go('shell.content.bkg.konteynerler')"
-                 active="vm.routing.$state.is('shell.content.bkg.konteynerler')">>
-        </uib-tab>
-    </uib-tabset>-->
-    <!--<div ui-view></div>-->
-
-    <rt-panel title-i18n="todo.todo" icon="bookmark">
-        <button ng-click="disabled=!disabled">disabled</button>
-
-        <div class="form-group">
-            <label class="control-label col-md-3" i18n="todo.todo"></label>
-            <div class="col-md-9">
-                Start {{vm.dateStart | date : 'dd-MM-yyyy hh-mm'}}
-                End {{vm.endDate | date : 'dd-MM-yyyy hh-mm'}}
-                <rt-date-range date-start="vm.dateStart" date-end="vm.endDate" set="month"></rt-date-range>
-            </div>
-        </div>
-
-    </rt-panel>
+    <div ui-view></div>-->
 
 </rt-form>

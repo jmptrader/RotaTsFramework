@@ -9,8 +9,6 @@ import {IServerFailedResponse} from '../services/common.interface';
 import {BaseModelController} from "./basemodelcontroller"
 import * as _ from 'underscore';
 //#endregion
-
-//#region BaseListController
 /**
  * Base List Controller
  * @description This base class should be inherited for all controllers using restful services
@@ -127,23 +125,18 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     abstract getModel(modelFilter?: IBaseListModelFilter): ng.IPromise<IBaseListModel<TModel>> |
         IBaseListModel<TModel> | ng.IPromise<IPagingListModel<TModel>> | IPagingListModel<TModel>;
     /**
-     * Set model after data fetched
+     * Override loadedMethod to show notfound message
      * @param model Model
      */
-    protected setModel(model: IBaseListModel<TModel> | IPagingListModel<TModel>): IBaseListModel<TModel> | IPagingListModel<TModel> {
+    protected loadedModel(model: IBaseListModel<TModel> | IPagingListModel<TModel>): void {
+        //set grid datasource
         if (this.listPageOptions.pagingEnabled) {
             this.gridOptions.totalItems = (<IPagingListModel<TModel>>model).total || 0;
             this.gridOptions.data = (<IPagingListModel<TModel>>model).data;
         } else {
             this.gridOptions.data = <IBaseListModel<TModel>>model;
         }
-        return model;
-    }
-    /**
-     * Override loadedMethod to show notfound message
-     * @param model Model
-     */
-    protected loadedModel(model: IBaseListModel<TModel> | IPagingListModel<TModel>): void {
+        //set warnings and recordcount 
         let recCount = 0;
         if (model) {
             if (this.listPageOptions.pagingEnabled) {
@@ -408,6 +401,5 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
     //#endregion
 }
-//#endregion
 
 export {BaseListController}

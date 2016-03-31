@@ -78,6 +78,14 @@ interface IRotaState extends ng.ui.IState {
  */
 interface IMenuModel extends IRotaState, IMenuItem, IBaseModel {
     id: number;
+    /**
+     * Flag that state will be added as menu
+     */
+    isMenu?: boolean;
+    /**
+     * Flag that indicates state will be child state
+     */
+    isPartial?: boolean;
 }
 /**
  * Breadcrumb object

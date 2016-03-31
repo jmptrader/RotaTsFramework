@@ -122,6 +122,7 @@ table.rota > thead > tr > th {
 }
 
 
+.rt-date-picker.ng-invalid input,
 .range-date-picker.ng-invalid input,
 rt-editor.ng-invalid div.rt-editor,
 .ng-invalid > div.rt-grid-select > div.grid,
@@ -211,7 +212,7 @@ rt-date-picker ul.dropdown-menu {
 /*#endregion */
 
 /*#region Panel & Tabs*/
-tab-heading {
+uib-tab-heading {
     font-weight: bold;
 }
 
@@ -241,6 +242,7 @@ ul.nav-tabs {
     }
 
     .tab-content,
+    .rt-tabs .body,
     .rt-panel .body {
         border-left: 1px solid #ddd;
         border-right: 1px solid #ddd;
@@ -249,6 +251,14 @@ ul.nav-tabs {
         background-color: #fff;
     }
 
+.rt-tabs .tab-content {
+    border: none;
+    padding: 0;
+}
+
+.rt-tabs ul.nav-tabs + .tab-content {
+    margin: 0;
+}
 /*#endregion */
 
 /*#region MultiSelect */

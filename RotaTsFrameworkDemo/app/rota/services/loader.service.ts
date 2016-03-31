@@ -39,6 +39,7 @@ class Loader implements ILoader {
             //lazy loading promise
             load: ['$q', '$rootScope', ($q: ng.IQService, $rootScope: ng.IRootScopeService) => {
                 var defer = $q.defer();
+                //TODO: apply icinde call dene
                 require([fileFullPath], () => {
                     defer.resolve();
                     $rootScope.$apply();
