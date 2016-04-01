@@ -9,7 +9,6 @@ import {IBooking} from "./interfaces";
 
 class BkgKonteynerController extends BaseModelController<IBooking> {
     constructor(bundle: IBundle) {
-        debugger;
         super(bundle);
     }
 

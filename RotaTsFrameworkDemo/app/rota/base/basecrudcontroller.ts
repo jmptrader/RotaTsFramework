@@ -131,7 +131,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
             (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
                 if (toState.hierarchicalMenu &&
                     toState.name !== fromState.name &&
-                    this.rtForm.$dirty && this.rtForm.$valid) {
+                    this.isFormDirty && this.isFormValid) {
                     event.preventDefault();
                     this.dialogs.showConfirm({ message: BaseCrudController.localizedValues.crudonay }).then(() => {
                         //save and go to state
@@ -220,9 +220,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     private resetForm(model?: TModel): void {
         this.isNew ? this.setModelAdded() : this.setModelUnChanged();
-        //TODO:rtForm is undefined somtimes,why ?
-        this.rtForm.$setPristine();
-
+        //check form controller initialized
+        if (this.common.isAssigned(this.rtForm)) {
+            this.rtForm.$setPristine();
+        }
         if (!this.isNew && this.isAssigned(model)) {
             this.orjModel = angular.copy(model);
         }
@@ -232,7 +233,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     private revertBack(): void {
         this.model = angular.extend(this.model, this.orjModel);
-        this.resetForm(<TModel>this.model);
+        this.resetForm(this.model);
     }
     //#endregion
 

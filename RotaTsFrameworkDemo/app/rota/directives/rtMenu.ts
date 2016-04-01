@@ -1,6 +1,8 @@
 ﻿//#region Imports
 import {IHierarchicalMenuItem, IRouting} from '../services/routing.interface';
+//deps
 import * as $ from "jquery";
+import * as _ from "underscore";
 //#endregion
 
 //#region Interfaces
@@ -16,13 +18,19 @@ function menuDirective($compile: ng.ICompileService, routing: IRouting) {
         var createMenu = (menus: IHierarchicalMenuItem[], isSubMenu: boolean = false): string => {
             var menuHtml = '';
             menus.forEach(menu => {
+                if (!menu.isMenu) return;
+
                 if (menu.startGroup) {
                     menuHtml += '<li class="nav-divider"></li>';
                 }
-                var isSubMenuExists = menu.subMenus && menu.subMenus.length;
-                menuHtml += `<li class="${isSubMenuExists ? 'dropdown' : ''}${isSubMenuExists && isSubMenu ? ' dropdown-submenu' : ''}" 
-                             ui-sref-active='active'><a ${!isSubMenuExists ? 'ui-sref="' + menu.state + '"' : 'href'}
-                             ${isSubMenuExists ? ' class="dropdown-toggle" data-toggle="dropdown" ' : ''}
+
+                const isSubMenuExists = menu.subMenus && _.some(menu.subMenus, (menu: IHierarchicalMenuItem): boolean => {
+                    return menu.isMenu;
+                });
+
+                const url = isSubMenuExists ? '#' : !menu.menuUrl ? routing.getUrlByState(menu.state) : menu.menuUrl;
+                menuHtml += `<li class="${isSubMenuExists ? 'dropdown' : ''}${isSubMenuExists && isSubMenu ? ' dropdown-submenu' : ''}">
+                             <a href="${url}" ${isSubMenuExists ? ' class="dropdown-toggle" data-toggle="dropdown" ' : ''}
                              ${isSubMenuExists && isSubMenu ? 'ng-click=\'subMenuHandler($event)\'' : ''}>
                              <i class="fa ${!isSubMenu ? 'fa-lg fa-fw text-primary' : ''} fa-${menu.menuIcon}"></i> 
                              ${menu.title}${isSubMenuExists && !isSubMenu ? '<span class="caret"></span>' : ''}</a>`;
@@ -35,7 +43,7 @@ function menuDirective($compile: ng.ICompileService, routing: IRouting) {
         };
 
         scope.$watch(() => routing.menus, menus => {
-            if (menus) {
+            if (menus && menus.length) {
                 const htmlMarkup = `<ul class="nav navbar-nav">${createMenu(menus)}</ul>`;
                 const liveHtml = $compile(htmlMarkup)(scope);
                 element.append(liveHtml);

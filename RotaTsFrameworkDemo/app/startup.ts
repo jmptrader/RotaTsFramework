@@ -14,13 +14,34 @@ App.configure(["ConfigProvider", (config: IBaseConfigProvider<IMainConfig>) => {
 App.run(["Routing", (routing: IRouting) => {
     routing.addMenus([
         {
+            id: 0,
+            isMenu: true,
+            menuUrl: 'http://ynl.bimar.com',
+            title: 'Ynl',
+            menuIcon:'microphone'
+        },
+        {
+            id: 10,
+            title: 'Booking İşlemleri',
+            isMenu: true,
+            menuIcon: 'cog'
+        },
+        {
+            id: 11,
+            title: 'Todo İşlemleri',
+            isMenu: true,
+            menuIcon: 'circle-o'
+        },
+        {
             title: 'Todos',
             menuIcon: 'list',
             id: 1,
+            parentId: 11,
             name: 'shell.content.todos',
             controller: 'todosController',
             templateUrl: 'app/todo/todos.html',
-            url: 'todos'
+            url: 'todos',
+            isMenu: true
         }, {
             id: 2,
             menuIcon: 'flag-o',
@@ -30,21 +51,27 @@ App.run(["Routing", (routing: IRouting) => {
             controller: 'todoController',
             templateUrl: 'app/todo/todo.html',
             url: 'todos/:id'
-
         },
         {
             id: 3,
             menuIcon: 'user',
             title: 'Booking',
+            abstract: true,
+            parentId: 10,
             name: 'shell.content.bkg',
             controller: 'bkgController',
             controllerUrl: 'app/bkg/bkg.controller.js',
             templateUrl: 'app/bkg/bkg.html',
-            url: 'bkg/:id'
+            url: 'bkg/:id',
+            isMenu: true,
+            menuUrl: '#/bkg/new/genelbilgiler'
         },
         {
             id: 4,
             name: 'shell.content.bkg.genelbilgiler',
+            parentId: 3,
+            title: 'Booking',
+            menuIcon: 'flag-o',
             controller: 'bkgGenelBilgilerController',
             controllerUrl: 'app/bkg/bkg.genelbilgiler.controller.js',
             templateUrl: 'app/bkg/bkg.genelbilgiler.html',
@@ -54,6 +81,8 @@ App.run(["Routing", (routing: IRouting) => {
         {
             id: 5,
             name: 'shell.content.bkg.konteynerler',
+            parentId: 3,
+            title: 'Konteynerlar',
             controller: 'bkgKonteynerlarController',
             controllerUrl: 'app/bkg/bkg.konteynerlar.controller.js',
             templateUrl: 'app/bkg/bkg.konteynerlar.html',
@@ -70,6 +99,5 @@ App.run(["Routing", (routing: IRouting) => {
         //    params: { konteynerId: 'new' },
         //    isPartial: true
         //}
-
-    ]).start('shell.content.bkg');
+    ]);
 }]);

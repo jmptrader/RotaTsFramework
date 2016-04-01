@@ -13,7 +13,6 @@ class BkgController extends BaseCrudController<IBooking> {
     mytabs: ITab[];
 
     constructor(bundle: IBundle) {
-        debugger;
         super(bundle);
 
         this.mytabs = [
@@ -26,8 +25,6 @@ class BkgController extends BaseCrudController<IBooking> {
                 heading: 'Konteynerlar',
                 icon: 'cloud'
             }];
-
-        this.routing.go('shell.content.bkg.genelbilgiler');
     }
 
     saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {

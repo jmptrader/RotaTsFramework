@@ -29,9 +29,9 @@ class TabsController {
     tabs: ITab[];
     constructor($rootScope: ng.IRootScopeService, private $scope: ITabsScope,
         private $state: ng.ui.IStateService, private common: ICommon, private routing: IRouting) {
-        //if (!common.isArray($scope.tabs)) {
-        //    throw new Error('tabs must be defined as array of ITab');
-        //}
+        if (!common.isArray(this.tabs)) {
+            throw new Error('tabs must be defined as array of ITab');
+        }
 
         const offBinds: Function[] = [];
         ['$stateChangeSuccess', '$stateChangeError', '$stateChangeCancel', '$stateNotFound'].forEach((event: string): void => {
@@ -62,6 +62,7 @@ class TabsController {
         this.tabs.forEach((tab: ITab): void => {
             tab.params = tab.params || {};
             tab.active = this.isActive(tab);
+            tab.disable = tab.disable;
         });
     }
 }

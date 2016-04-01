@@ -26,9 +26,13 @@ interface IMenuItem {
      */
     menuIcon?: string;
     /**
-     * Flag that menu will be link that direct the page 
+     * Url to where menu item clicked to go when isLink set to true
      */
-    isLink?: boolean;
+    menuUrl?: string;
+    /**
+     * Flag that state is partial child state
+     */
+    isPartial?: boolean;
     /**
      * Starts a new group
      */
@@ -40,7 +44,7 @@ interface IMenuItem {
     /**
      * Flag that state menu will be visible on menu list
      */
-    showMenu?: boolean;
+    isMenu?: boolean;
     /**
      * State unique name
      * @description it must be omitted if only menu is used
@@ -78,21 +82,13 @@ interface IRotaState extends ng.ui.IState {
  */
 interface IMenuModel extends IRotaState, IMenuItem, IBaseModel {
     id: number;
-    /**
-     * Flag that state will be added as menu
-     */
-    isMenu?: boolean;
-    /**
-     * Flag that indicates state will be child state
-     */
-    isPartial?: boolean;
 }
 /**
  * Breadcrumb object
  */
 interface IBreadcrumb {
     text: string;
-    state: string;
+    url: string;
 }
 
 //#endregion
@@ -192,6 +188,12 @@ interface IRouting extends IBaseService {
      * @param params State parameters     
      */
     start(stateName: string, params?: any): void;
+    /**
+    * Get href uri from state
+    * @param stateName State Name
+    * @param params Optional params
+    */
+    getUrlByState(stateName: string, params?: any): string;
 }
 
 //#endregion

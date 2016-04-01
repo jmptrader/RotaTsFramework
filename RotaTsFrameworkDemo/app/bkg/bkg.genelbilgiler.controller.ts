@@ -15,7 +15,6 @@ interface IBkgParams extends ng.ui.IStateParamsService {
 
 class BkgGenelBilgilerController extends BaseModelController<IBooking> {
     constructor(bundle: IBundle) {
-        debugger;
         super(bundle);
     }
 

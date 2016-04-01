@@ -76,38 +76,46 @@ class Routing implements IRouting {
      * Register state events 
      */
     private registerEvents(): void {
-        this.$rootScope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
-            //UNDONE:Removed 
-        });
         this.$rootScope.$on('$stateChangeSuccess', (event, toState: IRotaState) => {
-            //Breadcrumb datasini hazirlar
+            /**
+             * Find parent abstract state if state is partial
+             */
+            const getMenu = (_menu?: IHierarchicalMenuItem): IHierarchicalMenuItem => {
+                let menu = _menu || toState.hierarchicalMenu;
+                while (menu && menu.isPartial) {
+                    menu = menu.parentMenu;
+                }
+                return menu;
+            }
+            /**
+             * Set breadcrumb datasource
+             */
             const setBreadcrumb = (): void => {
-                let menu = toState.hierarchicalMenu;
+                let menu = getMenu();
                 const routelist: IBreadcrumb[] = [];
-
                 while (menu) {
                     routelist.push(
                         {
                             text: menu.title,
-                            state: menu.state
+                            url: menu.menuUrl || this.getUrlByState(menu.state)
                         });
-                    menu = menu.parentMenu;
+                    menu = menu.parentMenu && getMenu(menu.parentMenu);
                 }
-                //Tum listeyi cevirip gonder
-                this._breadcrumbs = routelist.length && routelist.reverse();
+                this._breadcrumbs = routelist.reverse();
             }
-            //Aktif menuyu rootScopea atiyoruz
+            /**
+             * Set current main menu 
+             */
             const setActiveMenu = (): void => {
-                //Eger modaldan farkli ise ve master page tiklandiysa
-                const menu = toState && toState.hierarchicalMenu;
-                if (toState.name === 'shell' || menu) {
-                    //Set active menu
+                //find parent abstract state if state is partial
+                const menu = getMenu();
+                if (toState.name === 'shell' || menu !== this.activeMenu) {
                     this._activeMenu = menu;
-                    //Broadcast menu changes
                     this.$rootScope.$broadcast(this.config.eventNames.menuChanged, menu);
                 }
             }
 
+            if (!toState) return;
             setActiveMenu();
             setBreadcrumb();
         });
@@ -151,7 +159,8 @@ class Routing implements IRouting {
      * @param sticky Sticky flag
      * @param resolve Resolve promise
      */
-    private registerShellSection(statename: string, sections: any[], url?: string, sticky?: boolean, resolve?: any): void {
+    private registerShellSection(statename: string, sections: any[], abstract?: boolean,
+        url?: string, sticky?: boolean, resolve?: any): void {
         var views: { [name: string]: ng.ui.IState } = {};
         sections.forEach(section => {
             for (let state in section) {
@@ -163,6 +172,7 @@ class Routing implements IRouting {
             }
         });
         this.stateProvider.state(statename, <ng.ui.IStickyState>{
+            abstract: abstract,
             url: url,
             views: views,
             sticky: sticky,
@@ -186,9 +196,9 @@ class Routing implements IRouting {
             ];
         //register shell state
         //UNDONE:add shell promise
-        this.registerShellSection("shell", shellSections, this.routeconfig.baseUrl, true);
+        this.registerShellSection("shell", shellSections, false, this.routeconfig.baseUrl, true);
         //register content state
-        this.registerShellSection("shell.content", contentSections);
+        this.registerShellSection("shell.content", contentSections, true);
     }
     /**
      * Get states by parentId
@@ -196,7 +206,7 @@ class Routing implements IRouting {
      */
     private getStatesByParentId(parentId?: number): IMenuModel[] {
         const menus = _.filter(this._states, (item: IMenuModel) => {
-            return item.parentId === parentId && !item.isPartial && !item.isLink;
+            return item.parentId === parentId;
         }); //get it ordered
         const menusOrdered = _.sortBy(menus, "order");
         return menusOrdered;
@@ -241,7 +251,7 @@ class Routing implements IRouting {
     private registerStates(): void {
         //filter to get real states 
         const states: IMenuModel[] = _.filter(this._states, (state: IMenuModel) => {
-            return state.url && !state.isLink;
+            return !!state.url && !!state.templateUrl;
         });
         //register states
         states.forEach((state: IMenuModel) => {
@@ -352,6 +362,15 @@ class Routing implements IRouting {
             }, 0);
         }
     }
+    /**
+     * Get href uri from state
+     * @param stateName State Name
+     * @param params Optional params
+     */
+    getUrlByState(stateName: string, params?: any): string {
+        return this.$state.href(stateName, params);
+    }
+
 }
 //#endregion
 
