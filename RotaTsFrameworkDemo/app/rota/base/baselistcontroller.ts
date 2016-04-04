@@ -6,7 +6,7 @@ import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IServerFailedResponse} from '../services/common.interface';
 //deps
-import {BaseModelController} from "./basemodelcontroller"
+import {BaseFormController} from "./baseformcontroller"
 import * as _ from 'underscore';
 //#endregion
 /**
@@ -15,8 +15,9 @@ import * as _ from 'underscore';
  * @param {TModel} is your custom model view.
  */
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
-    extends BaseModelController<TModel> {
+    extends BaseFormController<TModel> {
     //#region Props
+    private static newItemParamName = 'id';
     /**
      * Localized values for crud page
      */
@@ -72,7 +73,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseModelController.injects.concat(['TitleBadges', 'uiGridConstants', 'uiGridExporterConstants']);
+    static injects = BaseFormController.injects.concat(['TitleBadges', 'uiGridConstants', 'uiGridExporterConstants']);
     protected titlebadges: ITitleBadges;
     protected uigridconstants: uiGrid.IUiGridConstants;
     protected uigridexporterconstants: uiGrid.exporter.IUiGridExporterConstants;
@@ -80,11 +81,13 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
 
     //#region Init
     constructor(bundle: IBundle, options?: IListPageOptions) {
-        super(bundle);
+        super(bundle, options);
 
-        this.listPageOptions = angular.extend({
+        this.listPageOptions = this.common.extend<IListPageOptions>({
             initialLoad: true,
-            pagingEnabled: true
+            pagingEnabled: true,
+            newItemFieldName: BaseListController.newItemParamName,
+            editState: undefined
         }, options);
 
         this.recordcountBadge.show = true;
@@ -297,7 +300,9 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
      * @param key Unique key
      */
     getModelItemByKey(key: number): TModel {
-        return _.findWhere(this.gridData, { id: key });
+        const filter = {};
+        filter[this.listPageOptions.newItemFieldName] = key;
+        return _.findWhere(this.gridData, filter);
     }
     /**
      * Remove model item from grid datasource
@@ -335,8 +340,11 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     */
     goToDetailState(id: string): ng.IPromise<any> {
         //for list navigation
-        const idList = _.pluck(this.gridData, 'id');
-        return this.routing.go(this.listPageOptions.editState, id && { id: id, navItems: idList });
+        const idList = _.pluck(this.gridData, this.listPageOptions.newItemFieldName);
+        const params = {};
+        params[this.listPageOptions.newItemFieldName] = id;
+        params['navItems'] = idList;
+        return this.routing.go(this.listPageOptions.editState, params);
     }
     /**
      * Init deletion model by unique key
@@ -399,6 +407,21 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         });
     }
 
+    //#endregion
+
+    //#region BaseFormController methods
+    /**
+     * Form invalid flag changes
+     * @param invalidFlag Invalid flag of main form
+     */
+    onFormInvalidFlagChanged(invalidFlag: boolean): void {
+    }
+    /**
+     * Form dirty flag changes
+     * @param dirtyFlag Dirty flag of main form
+     */
+    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
+    }
     //#endregion
 }
 

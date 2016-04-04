@@ -3,10 +3,15 @@
 interface IBooking extends IBaseCrudModel {
     bkgNo?: string;
     tasimalar?: ITasima[];
+    konteynerlar: IKonteyner[];
+}
+
+interface IKonteyner extends IBaseCrudModel {
+    prefix?: string;
 }
 
 interface ITasima extends IBaseCrudModel {
-
+    yokNo: string;
 }
 
-export {IBooking, ITasima}
+export {IBooking, ITasima, IKonteyner}

@@ -1,11 +1,7 @@
 ﻿<rt-form>
     <rt-crud-buttons></rt-crud-buttons>
 
+    {{vm.model | json}}
+  
     <rt-tabs data="vm.mytabs"></rt-tabs>
-
-    <!--<a ui-sref="shell.content.bkg.genelbilgiler">Genel Bilgiler</a>
-    <a ui-sref="shell.content.bkg.konteynerler">Konteynerlar</a>
-
-    <div ui-view></div>-->
-
 </rt-form>

@@ -91,7 +91,7 @@ interface ICommon extends IBaseService {
     * Return promise with provided arg
     * @param p Arg
     */
-    promise<T>(p?: any): ng.IPromise<T>;
+    promise<T>(p?: T): ng.IPromise<T>;
     /**
     * Return rejected promise with reason
     * @param reason Arg

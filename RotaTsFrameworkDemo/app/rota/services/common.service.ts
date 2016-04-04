@@ -18,7 +18,7 @@ class Common implements ICommon {
      * Return promise with provided arg
      * @param p Arg
      */
-    promise<T>(p?: any): ng.IPromise<T> {
+    promise<T>(p?: T): ng.IPromise<T> {
         return this.$q.when<T>(p);
     }
     /**
@@ -52,6 +52,7 @@ class Common implements ICommon {
      * @param value Arg
      */
     isHtml(value: string): boolean {
+        if (!this.isAssigned(value)) return false;
         return value.indexOf('html', value.length - 4) > -1;
     }
     /**

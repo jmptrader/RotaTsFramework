@@ -18,7 +18,7 @@ App.run(["Routing", (routing: IRouting) => {
             isMenu: true,
             menuUrl: 'http://ynl.bimar.com',
             title: 'Ynl',
-            menuIcon:'microphone'
+            menuIcon: 'microphone'
         },
         {
             id: 10,
@@ -70,34 +70,49 @@ App.run(["Routing", (routing: IRouting) => {
             id: 4,
             name: 'shell.content.bkg.genelbilgiler',
             parentId: 3,
-            title: 'Booking',
+            title: 'Genel Bilgiler',
             menuIcon: 'flag-o',
             controller: 'bkgGenelBilgilerController',
             controllerUrl: 'app/bkg/bkg.genelbilgiler.controller.js',
             templateUrl: 'app/bkg/bkg.genelbilgiler.html',
             url: 'genelbilgiler',
-            isPartial: true
+            isNestedState: true
+        },
+        {
+            id: 99,
+            parentId: 4,
+            isMultiViewState: true
+        },
+        {
+            id: 15,
+            parentId: 3,
+            name: 'shell.content.bkg.konteynerler',
+            abstract: true,
+            url: 'konteynerlar',
+            isNestedState: true
         },
         {
             id: 5,
-            name: 'shell.content.bkg.konteynerler',
-            parentId: 3,
+            name: 'shell.content.bkg.konteynerler.liste',
+            parentId: 15,
             title: 'Konteynerlar',
+            menuIcon: 'road',
             controller: 'bkgKonteynerlarController',
             controllerUrl: 'app/bkg/bkg.konteynerlar.controller.js',
             templateUrl: 'app/bkg/bkg.konteynerlar.html',
-            url: 'konteynerlar',
-            isPartial: true
+            url: 'liste',
+            isNestedState: true
+        },
+        {
+            id: 6,
+            parentId: 15,
+            name: 'shell.content.bkg.konteynerler.new',
+            controller: 'bkgKonteynerController',
+            controllerUrl: 'app/bkg/bkg.konteyner.controller.js',
+            templateUrl: 'app/bkg/bkg.konteyner.html',
+            url: ':konteynerId',
+            params: { konteynerId: 'new' },
+            isNestedState: true
         }
-        //{
-        //    id: 6,
-        //    name: 'shell.content.bkg.konteyner',
-        //    controller: 'bkgKonteynerController',
-        //    controllerUrl: 'app/bkg/bkg.konteyner.controller.js',
-        //    templateUrl: 'app/bkg/bkg.konteyner.html',
-        //    url: 'konteynerlar/:konteynerId',
-        //    params: { konteynerId: 'new' },
-        //    isPartial: true
-        //}
     ]);
 }]);

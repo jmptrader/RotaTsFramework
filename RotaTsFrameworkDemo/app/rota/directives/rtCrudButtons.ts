@@ -23,13 +23,13 @@ function crudButtonsDirective() {
         '&nbsp;</div>' +
         '<div class="btn-group">' +
         '<rt-button text-i18n="rota.kaydet" icon="floppy-o" color="success" click="vm.initSaveModel()" shortcut="ctrl+enter" ' +
-        'ng-disabled="vm.rtForm.$invalid || vm.rtForm.$pending || vm.rtForm.$pristine"></rt-button>' +
+        'ng-disabled="vm.isFormInvalid || vm.isFormPending || vm.isFormPristine"></rt-button>' +
         '<rt-button text-i18n="rota.kaydetdevam" icon="play" color="success" click="vm.initSaveAndContinue()" shortcut="ctrl+shift+ins" ' +
-        'ng-disabled="vm.rtForm.$invalid || vm.rtForm.$pending || vm.rtForm.$pristine"></rt-button>&nbsp;' +
+        'ng-disabled="vm.isFormInvalid || vm.isFormPending || vm.isFormPristine"></rt-button>&nbsp;' +
         '</div>' +
         '<div class="btn-group">' +
         '<rt-button text-i18n="rota.gerial" icon="refresh" color="warning" click="vm.revertBack()" shortcut="shift+del" ' +
-        'ng-disabled="vm.isNew || !vm.rtForm.$dirty"></rt-button>' +
+        'ng-disabled="vm.isNew || !vm.isFormDirty"></rt-button>' +
         '<rt-button text-i18n="rota.sil" icon="remove" color="danger" click="vm.initDeleteModel()" shortcut="ctrl+del" ' +
         'ng-disabled="vm.isNew"></rt-button>' +
         '</div>' +

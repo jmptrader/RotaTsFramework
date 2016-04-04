@@ -8,7 +8,7 @@ import {ICrudServerResponse, IServerFailedResponse} from '../services/common.int
 import {INotification, LogType} from '../services/logger.interface';
 import {IRotaState} from '../services/routing.interface';
 //deps
-import {BaseModelController} from './basemodelcontroller';
+import {BaseFormController} from './baseformcontroller';
 import * as _ from 'underscore';
 
 //#endregion
@@ -17,8 +17,12 @@ import * as _ from 'underscore';
  * @description This base class should be inherited for all controllers using restful services
  * @param {TModel} is your custom model view.
  */
-abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
+abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFormController<TModel> {
     //#region Props
+    /**
+   * Navigation buttons enabled flags
+   */
+    private navButtonsEnabled: { [index: number]: boolean };
     /**
    * Model object
    * @returns {TModel}
@@ -26,9 +30,13 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     get model(): TModel { return <TModel>this._model; }
     set model(value: TModel) { this._model = value; }
     /**
-     * New item id param value name
+     * New item id param value default name
      */
-    private static newItemParamName = 'new';
+    private static newItemParamValue = 'new';
+    /**
+     * New item id param default name
+     */
+    private static newItemParamName = 'id';
     /**
      * Localized values for crud page
      */
@@ -36,7 +44,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     /**
      * Crud page state params
      */
-    protected $stateParams: ICrudPageStateParams;
+    protected $stateParams: ICrudPageStateParams<TModel>;
     /**
      * Crud page options
      */
@@ -44,12 +52,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     /**
      * Crud page flags
      */
-    private crudPageFlags: ICrudPageFlags;
-    /**
-     * Navigation buttons enabled flags
-     */
-    private navButtonsEnabled: { [index: number]: boolean };
-
+    protected crudPageFlags: ICrudPageFlags;
     /**
      * Stored model to be restored when reverting
      */
@@ -99,33 +102,26 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseModelController.injects.concat(['TitleBadges']);
+    static injects = BaseFormController.injects.concat(['TitleBadges']);
     protected titlebadges: ITitleBadges;
     //#endregion
 
     //#region Init
     constructor(bundle: IBundle, options?: ICrudPageOptions) {
-        super(bundle);
+        super(bundle, options);
         //set default options
         const parsers: ICrudParsers = {
             saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
             deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
-        this.crudPageOptions = this.common.extend<ICrudPageOptions>({ parsers: parsers }, options);
+        this.crudPageOptions = this.common.extend<ICrudPageOptions>({
+            parsers: parsers,
+            newItemFieldName: BaseCrudController.newItemParamName,
+            newItemFieldValue: BaseCrudController.newItemParamValue,
+            badgesEnabled: this.basePageOptions.isNestedState
+        }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
-        this.isNew = this.$stateParams.id === BaseCrudController.newItemParamName;
-        //set form watchers
-        this.$scope.$watch('rtForm.$dirty', (newValue: boolean) => {
-            if (newValue !== undefined) {
-                this.dirtyBadge.show = newValue;
-                if (!this.isNew && newValue) {
-                    this.setModelModified();
-                }
-            }
-        });
-        this.$scope.$watch('rtForm.$invalid', (newValue: boolean) => {
-            this.invalidBadge.show = newValue;
-        });
+        this.isNew = this.$stateParams[this.crudPageOptions.newItemFieldName] === this.crudPageOptions.newItemFieldValue;
         //register 'catch changes while exiting'
         this.registerEvent('$stateChangeStart',
             (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
@@ -160,7 +156,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     protected storeLocalization(): void {
         if (BaseCrudController.localizedValues) return;
-
         BaseCrudController.localizedValues = {
             crudonay: this.localization.getLocal('rota.crudonay'),
             kayitkopyalandi: this.localization.getLocal('rota.kayitkopyalandı'),
@@ -180,7 +175,10 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      * @param id "New" or id 
      */
     private changeUrl(id: number | string): ng.IPromise<any> {
-        return this.routing.go(this.routing.current.name, { id: id },
+        const idParam = {};
+        idParam[BaseCrudController.newItemParamName] = id;
+        const params = this.common.extend(this.$stateParams, idParam);
+        return this.routing.go(this.routing.current.name, params,
             { notify: false, reload: false });
     }
     /**
@@ -189,7 +187,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     initNewModel(cloning?: boolean): ng.IPromise<TModel> {
         //chnage url
-        const changeUrlPromise = this.changeUrl(BaseCrudController.newItemParamName);
+        const changeUrlPromise = this.changeUrl(BaseCrudController.newItemParamValue);
         return changeUrlPromise.then(() => {
             this.isNew = true;
             (<INotification>this.notification).removeAll();
@@ -548,7 +546,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
         this.crudPageFlags.isCloning = cloning;
         this.orjModel = null;
 
-        return super.initModel({ id: this.$stateParams.id });
+        return super.initModel({ id: this.$stateParams[this.crudPageOptions.newItemFieldName] });
     }
     /**
      * Set model getter method
@@ -604,6 +602,9 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseMod
      */
     onFormDirtyFlagChanged(dirtyFlag: boolean): void {
         this.dirtyBadge.show = dirtyFlag;
+        if (!this.isNew && dirtyFlag) {
+            this.setModelModified();
+        }
     }
     //#endregion
 }

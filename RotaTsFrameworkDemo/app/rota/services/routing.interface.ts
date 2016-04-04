@@ -30,9 +30,13 @@ interface IMenuItem {
      */
     menuUrl?: string;
     /**
-     * Flag that state is partial child state
+     * Flag that state is partial child state,default false
      */
-    isPartial?: boolean;
+    isNestedState?: boolean;
+    /**
+     * Flag that state is multi view state,default false
+     */
+    isMultiViewState?: boolean;
     /**
      * Starts a new group
      */
@@ -194,6 +198,11 @@ interface IRouting extends IBaseService {
     * @param params Optional params
     */
     getUrlByState(stateName: string, params?: any): string;
+    /**
+   * Get state by name
+   * @param stateName
+   */
+    getState(stateName: string): IRotaState;
 }
 
 //#endregion

@@ -82,7 +82,7 @@ class Routing implements IRouting {
              */
             const getMenu = (_menu?: IHierarchicalMenuItem): IHierarchicalMenuItem => {
                 let menu = _menu || toState.hierarchicalMenu;
-                while (menu && menu.isPartial) {
+                while (menu && menu.isNestedState) {
                     menu = menu.parentMenu;
                 }
                 return menu;
@@ -251,7 +251,7 @@ class Routing implements IRouting {
     private registerStates(): void {
         //filter to get real states 
         const states: IMenuModel[] = _.filter(this._states, (state: IMenuModel) => {
-            return !!state.url && !!state.templateUrl;
+            return !!state.name;
         });
         //register states
         states.forEach((state: IMenuModel) => {
@@ -276,6 +276,7 @@ class Routing implements IRouting {
         //State Object
         const stateObj: IRotaState = {
             abstract: state.abstract,
+            template: state.template,
             templateUrl: templateFilePath,
             controller: state.controller,
             //ControllerAs syntax used as default 'vm'
@@ -286,6 +287,7 @@ class Routing implements IRouting {
             params: angular.extend({ id: 'new', navItems: { array: true }, model: null }, state.params),
             //Resolve params
             resolve: {
+                stateOptions: () => { return { isNestedState: state.hierarchicalMenu.isNestedState }; },
                 $modalInstance: () => angular.noop(),
                 modalParams: () => angular.noop(),
                 //UNDONE:authoritye gore set edilmeli - return menu && menu.authority;
@@ -301,6 +303,11 @@ class Routing implements IRouting {
                 templateUrl: <string>state.templateUrl
             });
             stateObj.resolve = angular.extend(stateObj.resolve, cntResolve);
+        } else {
+            //if no controller defined and abstarct is set,generic template injected here
+            if (state.abstract) {
+                stateObj.template = '<div ui-view></div>';
+            }
         }
 
         //Authentication
@@ -314,7 +321,8 @@ class Routing implements IRouting {
      * Get state by name
      * @param stateName
      */
-    private getState(stateName: string): IRotaState {
+    getState(stateName: string): IRotaState {
+        if (!this.common.isAssigned(stateName)) return undefined;
         return <IRotaState>this.$state.get(stateName);
     }
     /**

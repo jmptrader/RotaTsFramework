@@ -1,6 +1,6 @@
 ﻿//#region Imports
 import {IBaseModel, IBundle, IPagingListModel, IBaseModelFilter,
-    IBaseListModel, IParserException} from "./interfaces"
+    IBaseListModel, IParserException, IModelPageOptions} from "./interfaces"
 import {LogType} from '../services/logger.interface';
 import {IServerFailedResponse, IChainableMethod} from '../services/common.interface';
 //deps
@@ -31,8 +31,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
     //#endregion
 
     //#region Init
-    constructor(bundle: IBundle) {
-        super(bundle);
+    constructor(bundle: IBundle, options?: IModelPageOptions) {
+        super(bundle, options);
     }
     /**
     * Update bundle

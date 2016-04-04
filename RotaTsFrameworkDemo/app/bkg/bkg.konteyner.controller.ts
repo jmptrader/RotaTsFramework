@@ -1,23 +1,35 @@
 ﻿import {App} from "app/rota/config/app";
-import {BaseModelController} from "app/rota/base/basemodelcontroller";
-import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions,
+import {BaseCrudController} from "app/rota/base/basecrudcontroller";
+import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions, ModelStates,
     IValidationItem, IValidationResult, CrudType} from 'app/rota/base/interfaces';
 import {ICrudServerResponse} from 'app/rota/services/common.interface';
 
-import {IBooking} from "./interfaces";
+import {IKonteyner} from "./interfaces";
 
 
-class BkgKonteynerController extends BaseModelController<IBooking> {
+class BkgKonteynerController extends BaseCrudController<IKonteyner> {
     constructor(bundle: IBundle) {
-        super(bundle);
+        super(bundle, { newItemFieldName: 'konteynerId', formName: 'tasimaForm' });
     }
 
-    getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
-        return this.common.promise<IBooking>({
-            id: 2,
-            bkgNo: "dwqwddq",
-            tasimalar: []
+    saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {
+        return this.common.promise();
+    }
+
+    deleteModel(options: IDeleteOptions): ng.IPromise<any> {
+        return this.common.promise();
+    }
+
+    newModel(): ng.IPromise<IKonteyner> {
+        return this.common.promise<IKonteyner>({
+            id: 0,
+            prefix: 'yukno123',
+            modelState: ModelStates.Added
         });
+    }
+
+    getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IKonteyner> {
+        return this.common.promise<IKonteyner>(this.$stateParams.model);
     }
 }
 

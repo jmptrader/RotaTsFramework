@@ -8,8 +8,9 @@ import {ITab} from "app/rota/directives/rtTabs";
 
 import {IBooking} from "./interfaces";
 
-class BkgController extends BaseCrudController<IBooking> {
 
+
+class BkgController extends BaseCrudController<IBooking> {
     mytabs: ITab[];
 
     constructor(bundle: IBundle) {
@@ -17,13 +18,10 @@ class BkgController extends BaseCrudController<IBooking> {
 
         this.mytabs = [
             {
-                state: 'shell.content.bkg.genelbilgiler',
-                heading: 'Genel Bilgiler',
-                icon: 'check'
+                state: 'shell.content.bkg.genelbilgiler'
             }, {
-                state: 'shell.content.bkg.konteynerler',
-                heading: 'Konteynerlar',
-                icon: 'cloud'
+                state: 'shell.content.bkg.konteynerler.liste',
+                activeState: 'shell.content.bkg.konteynerler'
             }];
     }
 
@@ -33,14 +31,6 @@ class BkgController extends BaseCrudController<IBooking> {
 
     deleteModel(options: IDeleteOptions): ng.IPromise<any> {
         return this.common.promise();
-    }
-
-    newModel(): IBooking {
-        return {
-            id: 0,
-            tasimalar: [],
-            modelState: ModelStates.Added
-        }
     }
 
     getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {

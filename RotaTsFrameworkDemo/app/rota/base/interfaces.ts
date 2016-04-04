@@ -6,6 +6,9 @@ import {IServerFailedResponse, IChainableMethod} from '../services/common.interf
 //#endregion
 
 //#region Main Base Classes
+interface IStateOptions {
+    isNestedState?: boolean;
+}
 /**
  * Base config for configuration objects
  */
@@ -101,6 +104,19 @@ interface IPagingListModel<TModel extends IBaseModel> {
 }
 //#endregion
 
+//#region BaseController
+interface IBasePageOptions {
+    isNestedState?: boolean;
+}
+//#endregion
+
+//#region BaseModelController
+interface IModelPageOptions extends IBasePageOptions {
+
+}
+
+//#endregion
+
 //#region BaseListController 
 /**
  * Base filter for all list pages
@@ -136,7 +152,7 @@ interface IPager {
 /**
  * List page options
  */
-interface IListPageOptions {
+interface IListPageOptions extends IFormPageOptions {
     /**
      * Detail page state name of listing page
      */
@@ -149,10 +165,6 @@ interface IListPageOptions {
      * Grid paging is enabled or not
      */
     pagingEnabled?: boolean;
-    /**
-     * New item field name ,default 'new'
-     */
-    newItemFieldName?: string;
 }
 /**
  * List page localization  
@@ -178,15 +190,13 @@ interface IBaseCrudModelFilter extends IBaseModelFilter {
 /**
  * General State params for crud pages
  */
-interface ICrudPageStateParams extends ng.ui.IStateParamsService {
-    /**
-     * Model id ,'new' for new model,and number for edit model
-     */
-    id: number | string;
+interface ICrudPageStateParams<TModel extends IBaseCrudModel> extends ng.ui.IStateParamsService {
     /**
      * For navigation capability,this prop containes all id params of current list dispatched from list page
      */
     navItems: Array<number>;
+
+    model: TModel;
 }
 /**
  * Flags for Crud pages
@@ -212,15 +222,13 @@ interface ICrudPageFlags {
 /**
  * Crud page options given through constructor
  */
-interface ICrudPageOptions {
-    /**
-     * New item field name ,default 'new'
-     */
-    newItemFieldName?: string;
+interface ICrudPageOptions extends IFormPageOptions {
     /**
      * Insert,Update,Delete process pipelines
      */
     parsers?: ICrudParsers;
+
+    badgesEnabled?: boolean;
 }
 /**
  * Navigation direction for navigation buttons on crudButtons
@@ -311,16 +319,19 @@ export enum CrudType {
 /**
  * Crud page options given through constructor
  */
-interface IFormPageOptions {
+interface IFormPageOptions extends IModelPageOptions {
     /**
-     * New item field name ,default 'new'
+      * New item field name ,default 'new'
+      */
+    newItemFieldValue?: string;
+    /**
+     * New item field value ,default 'id'
      */
     newItemFieldName?: string;
 
-    newItemFieldValue?: string;
+    formName?: string;
 }
 //#endregion
-
 
 //#region Common
 /**
@@ -395,4 +406,5 @@ IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, ICrudPageStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IBaseListModel, ICrudPageOptions, ICrudPageFlags,
 IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
-IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions, IFormPageOptions}
+IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions, IFormPageOptions,
+IBasePageOptions, IModelPageOptions, IStateOptions}
