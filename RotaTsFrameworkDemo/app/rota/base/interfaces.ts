@@ -106,7 +106,6 @@ interface IPagingListModel<TModel extends IBaseModel> {
 
 //#region BaseController
 interface IBasePageOptions {
-    isNestedState?: boolean;
 }
 //#endregion
 
@@ -190,18 +189,16 @@ interface IBaseCrudModelFilter extends IBaseModelFilter {
 /**
  * General State params for crud pages
  */
-interface ICrudPageStateParams<TModel extends IBaseCrudModel> extends ng.ui.IStateParamsService {
+interface ICrudPageStateParams<TModel extends IBaseCrudModel> extends IFormPageStateParams<TModel> {
     /**
      * For navigation capability,this prop containes all id params of current list dispatched from list page
      */
     navItems: Array<number>;
-
-    model: TModel;
 }
 /**
  * Flags for Crud pages
  */
-interface ICrudPageFlags {
+interface ICrudPageFlags extends IFormPageFlags {
     /**
      * Saving flag
      */
@@ -214,10 +211,6 @@ interface ICrudPageFlags {
      * Copying flag
      */
     isCloning: boolean;
-    /**
-     * Show that model is in new mode
-     */
-    isNew: boolean;
 }
 /**
  * Crud page options given through constructor
@@ -227,8 +220,6 @@ interface ICrudPageOptions extends IFormPageOptions {
      * Insert,Update,Delete process pipelines
      */
     parsers?: ICrudParsers;
-
-    badgesEnabled?: boolean;
 }
 /**
  * Navigation direction for navigation buttons on crudButtons
@@ -316,6 +307,17 @@ export enum CrudType {
 //#endregion
 
 //#region BaseFormController
+
+interface IFormPageStateParams<TModel extends IBaseCrudModel> extends ng.ui.IStateParamsService {
+    model: TModel;
+}
+
+interface IFormPageFlags {
+    /**
+    * Show that model is in new mode
+    */
+    isNew: boolean;
+}
 /**
  * Crud page options given through constructor
  */
@@ -407,4 +409,4 @@ IListPageOptions, ICrudPageStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IBaseListModel, ICrudPageOptions, ICrudPageFlags,
 IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
 IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions, IFormPageOptions,
-IBasePageOptions, IModelPageOptions, IStateOptions}
+IBasePageOptions, IModelPageOptions, IStateOptions, IFormPageFlags, IFormPageStateParams}

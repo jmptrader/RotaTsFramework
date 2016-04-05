@@ -24,20 +24,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
    */
     private navButtonsEnabled: { [index: number]: boolean };
     /**
-   * Model object
-   * @returns {TModel}
-   */
-    get model(): TModel { return <TModel>this._model; }
-    set model(value: TModel) { this._model = value; }
-    /**
-     * New item id param value default name
-     */
-    private static newItemParamValue = 'new';
-    /**
-     * New item id param default name
-     */
-    private static newItemParamName = 'id';
-    /**
      * Localized values for crud page
      */
     private static localizedValues: ICrudPageLocalization;
@@ -59,15 +45,16 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     private orjModel: TModel;
     /**
     * Get if the page is in new state mode
+    * @description Overriden baseformcontroller isNew property,Better way should be replaced when implemented for ES5
+     * https://github.com/Microsoft/TypeScript/issues/338
     * @returns {boolean} 
     */
-    get isNew(): boolean { return this.crudPageFlags.isNew; }
+    get isNew(): boolean { return this.formPageFlags.isNew; }
     set isNew(value: boolean) {
-        this.crudPageFlags.isNew = value;
+        this.formPageFlags.isNew = value;
         this.editmodeBadge.show = !value;
         this.newmodeBadge.show = value;
     }
-
     //#region Badge Shortcuts
     /**
    * Edit Mode badge
@@ -114,18 +101,12 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
             saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
             deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
-        this.crudPageOptions = this.common.extend<ICrudPageOptions>({
-            parsers: parsers,
-            newItemFieldName: BaseCrudController.newItemParamName,
-            newItemFieldValue: BaseCrudController.newItemParamValue,
-            badgesEnabled: this.basePageOptions.isNestedState
-        }, options);
+        this.crudPageOptions = this.common.extend<ICrudPageOptions>({ parsers: parsers }, options);
         this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
-        this.isNew = this.$stateParams[this.crudPageOptions.newItemFieldName] === this.crudPageOptions.newItemFieldValue;
-        //register 'catch changes while exiting'
+        //register catch changes
         this.registerEvent('$stateChangeStart',
             (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
-                if (toState.hierarchicalMenu &&
+                if (toState.hierarchicalMenu && !toState.hierarchicalMenu.isNestedState &&
                     toState.name !== fromState.name &&
                     this.isFormDirty && this.isFormValid) {
                     event.preventDefault();
@@ -140,8 +121,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
                     });
                 }
             });
-        //initialize getting model
-        this.initModel();
     }
     /**
     * Update bundle
@@ -170,17 +149,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     //#endregion
 
     //#region Model Methods
-    /**
-     * Chnage url depending on new/edit modes
-     * @param id "New" or id 
-     */
-    private changeUrl(id: number | string): ng.IPromise<any> {
-        const idParam = {};
-        idParam[BaseCrudController.newItemParamName] = id;
-        const params = this.common.extend(this.$stateParams, idParam);
-        return this.routing.go(this.routing.current.name, params,
-            { notify: false, reload: false });
-    }
+
     /**
      * Initialize new model
      * @param cloning Cloning flag
@@ -217,11 +186,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      * @param model Model
      */
     private resetForm(model?: TModel): void {
-        this.isNew ? this.setModelAdded() : this.setModelUnChanged();
-        //check form controller initialized
-        if (this.common.isAssigned(this.rtForm)) {
-            this.rtForm.$setPristine();
-        }
+        super.resetForm(model);
         if (!this.isNew && this.isAssigned(model)) {
             this.orjModel = angular.copy(model);
         }
@@ -503,37 +468,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     abstract deleteModel(options: IDeleteOptions): ng.IPromise<any>;
     //#endregion
 
-    //#region ModelState Methods
-    /**
-     * Set model state to Modified
-     * @param model Model
-     */
-    setModelModified(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Modified, false);
-    }
-    /**
-     * Set model state to Deleted
-     * @param model Model
-     */
-    setModelDeleted(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Deleted);
-    }
-    /**
-     * Set model state to Added
-     * @param model Model
-     */
-    setModelAdded(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Added);
-    }
-    /**
-     * Set model state to Changed
-     * @param model Model
-     */
-    setModelUnChanged(model?: IBaseCrudModel) {
-        return this.common.setModelState(model || this.model, ModelStates.Unchanged);
-    }
-    //#endregion
-
     //#region BaseModelController Methods
     /**
      * Init crud model
@@ -546,11 +480,12 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
         this.crudPageFlags.isCloning = cloning;
         this.orjModel = null;
 
-        return super.initModel({ id: this.$stateParams[this.crudPageOptions.newItemFieldName] });
+        return super.initModel();
     }
     /**
      * Set model getter method
      * @param modelFilter Model Filter
+     * @description Overriden baseFormController's to pass cloned copy
      */
     defineModel(modelFilter?: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel {
         return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
@@ -561,7 +496,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      */
     loadedModel(model: TModel): void {
         //after model loaded,set form pristine and set modelState
-        this.resetForm(model);
+        super.loadedModel(model);
         //model not found in edit mode
         if (!this.isNew && !this.isAssigned(model)) {
             this.notification.error({ message: BaseCrudController.localizedValues.modelbulunamadi });
@@ -601,10 +536,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      * @param dirtyFlag Dirty flag of main form
      */
     onFormDirtyFlagChanged(dirtyFlag: boolean): void {
+        super.onFormDirtyFlagChanged(dirtyFlag);
         this.dirtyBadge.show = dirtyFlag;
-        if (!this.isNew && dirtyFlag) {
-            this.setModelModified();
-        }
     }
     //#endregion
 }

@@ -13,13 +13,7 @@ import * as _ from 'underscore';
 //#endregion
 /**
  * Base controller for all controllers
- * @description All standard services injected
- * Some workarounds applied so that form controller would not be undefined
- * 1 - ng-init added on rtForm to initialize th formScope through initFormScope
- * https://stackoverflow.com/questions/21574472/angularjs-cant-access-form-object-in-controller-scope/21574537#21574537
- * 2 - formController set to object ref from primitive
- * 3 - Dirty watch set to  $scope.$watch('rtForm.$dirty',..)  in BaseCrudController
- * 4 - Some checks added to null controller as is isFormDirty
+ * @description All standard services injected 
  */
 class BaseController {
     /**

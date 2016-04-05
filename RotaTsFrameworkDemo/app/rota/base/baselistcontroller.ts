@@ -6,7 +6,7 @@ import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IServerFailedResponse} from '../services/common.interface';
 //deps
-import {BaseFormController} from "./baseformcontroller"
+import {BaseModelController} from "./basemodelcontroller"
 import * as _ from 'underscore';
 //#endregion
 /**
@@ -15,7 +15,7 @@ import * as _ from 'underscore';
  * @param {TModel} is your custom model view.
  */
 abstract class BaseListController<TModel extends IBaseModel, TModelFilter extends IBaseListModelFilter>
-    extends BaseFormController<TModel> {
+    extends BaseModelController<TModel> {
     //#region Props
     private static newItemParamName = 'id';
     /**
@@ -73,7 +73,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
     //#endregion
 
     //#region Bundle Services
-    static injects = BaseFormController.injects.concat(['TitleBadges', 'uiGridConstants', 'uiGridExporterConstants']);
+    static injects = BaseModelController.injects.concat(['TitleBadges', 'uiGridConstants', 'uiGridExporterConstants']);
     protected titlebadges: ITitleBadges;
     protected uigridconstants: uiGrid.IUiGridConstants;
     protected uigridexporterconstants: uiGrid.exporter.IUiGridExporterConstants;
@@ -407,21 +407,6 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         });
     }
 
-    //#endregion
-
-    //#region BaseFormController methods
-    /**
-     * Form invalid flag changes
-     * @param invalidFlag Invalid flag of main form
-     */
-    onFormInvalidFlagChanged(invalidFlag: boolean): void {
-    }
-    /**
-     * Form dirty flag changes
-     * @param dirtyFlag Dirty flag of main form
-     */
-    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
-    }
     //#endregion
 }
 
