@@ -1,13 +1,15 @@
-﻿<div class="pull-right">
-    <a ui-sref="shell.content.bkg.konteynerler.liste">Konteyner Listesi</a>
-</div>
-
-<div ng-form="tasimaForm" ng-init="vm.initFormScope(this)" class="pull-left">
-    <div class="form-group">
+﻿
+<div ng-form="tasimaForm" ng-init="vm.initFormScope(this)">
+    <div class="pull-right">
+        <rt-crud-buttons></rt-crud-buttons>
+        <a class="btn btn-primary" ui-sref="shell.content.bkg.konteynerler.liste">Konteyner Listesi</a>
+    </div>
+    <div class="form-group pull-left">
         <label class="control-label col-md-3">Konteyner No</label>
         <div class="col-md-5">
-            <input type="text" ng-model="vm.model.prefix" required  class="form-control"/>
+            <input type="text" ng-model="vm.model.prefix" required class="form-control" />
+            {{vm.BkgService.bkgModel | json}}
         </div>
     </div>
+    <div class="clearfix"></div>
 </div>
-<div class="clearfix"></div>

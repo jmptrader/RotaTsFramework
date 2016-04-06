@@ -84,7 +84,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         super(bundle, options);
 
         this.listPageOptions = this.common.extend<IListPageOptions>({
-            initialLoad: true,
+            initializeModel: true,
             pagingEnabled: true,
             newItemFieldName: BaseListController.newItemParamName,
             editState: undefined
@@ -171,7 +171,7 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         this.gridOptions.enablePagination =
             this.gridOptions.enablePaginationControls = this.listPageOptions.pagingEnabled;
         //load initially if enabled
-        if (this.listPageOptions.initialLoad) {
+        if (this.listPageOptions.initializeModel) {
             this.initSearchModel();
         }
     }
@@ -194,14 +194,14 @@ abstract class BaseListController<TModel extends IBaseModel, TModelFilter extend
         if (this.listPageOptions.editState && this.gridOptions.showEditButton) {
             const editbutton = getButtonColumn('edit-button',
                 '<a class="btn btn-default btn-xs" ng-click="grid.appScope.vm.goToDetailState(row.entity[\'id\'])"' +
-                ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="glyphicon glyphicon-edit"></i></a>');
+                ' uib-tooltip=\'Detay\' tooltip-placement="top"><i class="fa fa-edit"></i></a>');
             buttons.push(editbutton);
         }
         //delete button
         if (this.gridOptions.showDeleteButton) {
             const editbutton = getButtonColumn('delete-button', '<a class="btn btn-default btn-xs" ' +
                 'ng-click="grid.appScope.vm.initDeleteModel(row.entity[\'id\'])" uib-tooltip=\'Sil\'' +
-                'tooltip-placement="top"><i class="glyphicon glyphicon-trash text-danger"></i></a>');
+                'tooltip-placement="top"><i class="fa fa-trash text-danger"></i></a>');
             buttons.push(editbutton);
         }
         return buttons;

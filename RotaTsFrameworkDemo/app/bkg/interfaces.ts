@@ -8,6 +8,7 @@ interface IBooking extends IBaseCrudModel {
 
 interface IKonteyner extends IBaseCrudModel {
     prefix?: string;
+    bkgId:number;
 }
 
 interface ITasima extends IBaseCrudModel {

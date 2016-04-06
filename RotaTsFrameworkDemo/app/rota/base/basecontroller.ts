@@ -4,7 +4,7 @@ import {ILogger, IBaseLogger} from "../services/logger.interface";
 import {ICommon, IChainableMethod} from "../services/common.interface";
 import {IRotaRootScope} from "../services/common.interface";
 import {IDialogs} from '../services/dialogs.interface';
-import {IBundle, IStateOptions, IBasePageOptions} from './interfaces';
+import {IBundle, IBasePageOptions} from './interfaces';
 import {IMainConfig} from '../config/config.interface';
 import {IRouting} from '../services/routing.interface';
 import {ILocalization} from '../services/localization.interface';
@@ -68,8 +68,6 @@ class BaseController {
      * Routing service
      */
     protected routing: IRouting;
-
-    protected stateOptions: IStateOptions;
     /**
      * Localization service
      */
@@ -79,7 +77,6 @@ class BaseController {
     //#region Init
     constructor(bundle: IBundle, options?: IBasePageOptions) {
         this.initBundle(bundle);
-        this.basePageOptions = this.common.extend<IBasePageOptions>({ isNestedState: false }, options);
         //init 
         this.events = [];
         this.registerEvent("$destroy", () => {
@@ -114,8 +111,6 @@ class BaseController {
         this.config = bundle.systemBundles["config"];
         this.routing = bundle.systemBundles["routing"];
         this.localization = bundle.systemBundles["localization"];
-        this.stateOptions = bundle.systemBundles["stateoptions"];
-
         //custom bundles
         for (let customBundle in bundle.customBundles) {
             ((bundleName: string) => {

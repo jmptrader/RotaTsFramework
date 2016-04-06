@@ -124,6 +124,12 @@ class Common implements ICommon {
 
     //#region Utils
     /**
+     * Gets unique number
+     */
+    getUniqueNumber(): number {
+        return new Date().valueOf();
+    }
+    /**
      * Extend TSource
      * @param source Source of TSource
      * @param destinations Destinations of any

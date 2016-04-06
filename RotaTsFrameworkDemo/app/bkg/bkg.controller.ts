@@ -1,17 +1,19 @@
 ﻿import {App} from "app/rota/config/app";
-import {BaseCrudController} from "app/rota/base/basecrudcontroller";
-import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions, ModelStates,
+import {CrudController} from "app/rota/base/crudcontroller";
+import {IBundle, IBaseFormModelFilter, ISaveOptions, IDeleteOptions, ModelStates,
     IValidationItem, IValidationResult, CrudType} from 'app/rota/base/interfaces';
 import {ICrudServerResponse} from 'app/rota/services/common.interface';
 
 import {ITab} from "app/rota/directives/rtTabs";
 
 import {IBooking} from "./interfaces";
+import {IBkgService} from './bkg.service';
 
 
 
-class BkgController extends BaseCrudController<IBooking> {
+class BkgController extends CrudController<IBooking> {
     mytabs: ITab[];
+    BkgService: IBkgService;
 
     constructor(bundle: IBundle) {
         super(bundle);
@@ -33,58 +35,10 @@ class BkgController extends BaseCrudController<IBooking> {
         return this.common.promise();
     }
 
-    getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
-        return undefined;
+    getModel(modelFilter: IBaseFormModelFilter): IBooking {
+        return this.BkgService.bkgModel;
     }
 }
 
-//App.controllerProvider.register('bkgController', BkgController);
-App.addController("bkgController", BkgController);
+App.addController("bkgController", BkgController, 'BkgService');
 
-//class BkgController extends BaseController {
-
-//    mytabs: ITab[];
-
-//    constructor(bundle: IBundle) {
-//        super(bundle);
-
-
-
-//        this.mytabs = [
-//            {
-//                state: 'shell.content.bkg.genelbilgiler',
-//                heading: 'Genel Bilgiler',
-//                icon: 'check'
-//            }, {
-//                state: 'shell.content.bkg.konteynerler',
-//                heading: 'Konteynerlar',
-//                icon: 'cloud'
-//            }];
-//    }
-
-//    //render(options): void {
-//    //    debugger;
-//    //}
-
-//    //saveModel(options: ISaveOptions): ng.IPromise<ICrudServerResponse> {
-//    //    return this.common.promise();
-//    //}
-
-//    //deleteModel(options: IDeleteOptions): ng.IPromise<any> {
-//    //    return this.common.promise();
-//    //}
-
-//    //newModel(): IBooking {
-//    //    return {
-//    //        id: 0,
-//    //        tasimalar: [],
-//    //        modelState: ModelStates.Added
-//    //    }
-//    //}
-
-//    //getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<IBooking> {
-//    //    return undefined;
-//    //}
-//}
-
-//App.addController("bkgController", BkgController);

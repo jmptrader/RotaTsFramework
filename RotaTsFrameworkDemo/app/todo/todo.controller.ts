@@ -1,6 +1,6 @@
 ﻿import {App} from "app/rota/config/app";
 import {BaseCrudController} from "app/rota/base/basecrudcontroller";
-import {IBundle, IBaseCrudModelFilter, ISaveOptions, IDeleteOptions,
+import {IBundle, IBaseFormModelFilter, ISaveOptions, IDeleteOptions,
     IValidationItem, IValidationResult, CrudType} from 'app/rota/base/interfaces';
 import {ICrudServerResponse} from 'app/rota/services/common.interface';
 
@@ -40,7 +40,7 @@ class TodoController extends BaseCrudController<ITodoModel> {
         return this.routing.go('shell.content.todos');
     }
 
-    getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<ITodoModel> {
+    getModel(modelFilter: IBaseFormModelFilter): ng.IPromise<ITodoModel> {
         var s = this.todoApi.getTodoById(modelFilter.id);
         return s;
     }

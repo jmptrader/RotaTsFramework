@@ -291,6 +291,8 @@
     <TypeScriptCompile Include="app\bkg\bkg.konteynerlar.controller.ts" />
     <TypeScriptCompile Include="app\bkg\bkg.genelbilgiler.controller.ts" />
     <TypeScriptCompile Include="app\bkg\bkg.controller.ts" />
+    <TypeScriptCompile Include="app\bkg\bkg.service.ts" />
+    <TypeScriptCompile Include="app\bkg\bkg.model.ts" />
     <TypeScriptCompile Include="app\bkg\interfaces.ts" />
     <TypeScriptCompile Include="app\rota\base\baseapi.ts" />
     <TypeScriptCompile Include="app\rota\base\baseconfig.ts" />
@@ -300,6 +302,7 @@
     <TypeScriptCompile Include="app\rota\base\baselistcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodalcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\basemodelcontroller.ts" />
+    <TypeScriptCompile Include="app\rota\base\crudcontroller.ts" />
     <TypeScriptCompile Include="app\rota\base\index.ts" />
     <TypeScriptCompile Include="app\rota\base\interfaces.ts" />
     <TypeScriptCompile Include="app\rota\config\app.interface.ts" />
@@ -311,6 +314,7 @@
     <TypeScriptCompile Include="app\rota\config\vendor.index.ts" />
     <TypeScriptCompile Include="app\rota\core\index.ts" />
     <TypeScriptCompile Include="app\rota\directives\index.ts" />
+    <TypeScriptCompile Include="app\rota\directives\rtBadges.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtDateRange.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtDatePicker.ts" />
     <TypeScriptCompile Include="app\rota\directives\rtEditor.ts" />

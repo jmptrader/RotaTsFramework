@@ -1,7 +1,7 @@
 ﻿//#region Imports
 import {IBaseApi, BaseApi} from "../base/baseapi";
 import {IRotaApp} from './app.interface';
-import {IBundle} from '../base/interfaces';
+import {IBundle, IBaseModel} from '../base/interfaces';
 import {IMainConfigProvider} from './config.interface';
 //deps
 import {BaseController} from '../base/basecontroller';
@@ -83,21 +83,26 @@ class RotaApp implements IRotaApp {
 
     addApi(apiName: string, api: typeof BaseApi, dependencies?: string[]): void {
         //Built-in dependencies - Ek dependencies ile birleştiriliyor
-        const deps: any[] = ['$rootScope', '$q', '$http', 'Config'].concat(dependencies || []);
+        const deps: any[] = ['$rootScope', '$q', '$http', 'Config', 'Common'].concat(dependencies || []);
         const apiCtor: Function = (...args: any[]): IBaseApi => {
             var bundle: { [s: string]: any; } = {
                 '$rootScope': args[0],
                 '$q': args[1],
                 '$http': args[2],
-                'config': args[3]
+                'config': args[3],
+                'common': args[4]
             }
-            var instance: IBaseApi = new api(bundle, args[4]);
+            var instance: IBaseApi = new api(bundle, args[5]);
             //Instance'i dondur
             return instance;
         }; //Fonksiyonu son obje olarak dizinin sonuna ekle
         deps.push(apiCtor);
         //Register et
         this.provideService.service(apiName, deps);
+    }
+
+    addValue<TModel extends IBaseModel>(serviceName: string, service: TModel): void {
+        this.provideService.value(serviceName, service);
     }
 
     configure(fn: any): IRotaApp {

@@ -22,6 +22,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
             this._model = value;
         }
     }
+
+    protected modelPageOptions: IModelPageOptions;
     //#endregion
 
     //#region Bundle Services
@@ -32,7 +34,8 @@ abstract class BaseModelController<TModel extends IBaseModel> extends BaseContro
 
     //#region Init
     constructor(bundle: IBundle, options?: IModelPageOptions) {
-        super(bundle, options);
+        super(bundle, {});
+        this.modelPageOptions = this.common.extend<IModelPageOptions>({ initializeModel: true }, options);
     }
     /**
     * Update bundle

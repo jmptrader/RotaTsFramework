@@ -88,6 +88,11 @@ interface ICrudServerResponse extends IBaseServerResponse {
  */
 interface ICommon extends IBaseService {
     /**
+     * Gets unique number
+     * @returns {number} 
+     */
+    getUniqueNumber(): number;
+    /**
     * Return promise with provided arg
     * @param p Arg
     */

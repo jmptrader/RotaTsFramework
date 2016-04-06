@@ -2,7 +2,7 @@
 import {BadgeTypes} from '../services/titlebadges.service';
 import {ITitleBadge, ITitleBadges} from '../services/titlebadges.interface';
 import {IBaseCrudModel, IBundle, ICrudPageStateParams, ICrudPageOptions, ICrudPageFlags, ModelStates,
-    IBaseCrudModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
+    IBaseFormModelFilter, NavigationDirection, ICrudPageLocalization, ISaveOptions,
     IValidationItem, IValidationResult, ICrudParsers, IParserException, CrudType, IDeleteOptions} from "./interfaces"
 import {ICrudServerResponse, IServerFailedResponse} from '../services/common.interface';
 import {INotification, LogType} from '../services/logger.interface';
@@ -15,120 +15,53 @@ import * as _ from 'underscore';
 /**
  * Base CRUD page implementing save,update,delete processes
  * @description This base class should be inherited for all controllers using restful services
+ * @abstract This is abstract controller class that must be inherited
+ * @example This controller must be used with main state view because this controller is in interaction with badges and notifications
+ * For nested state,use BaseFormController instead
  * @param {TModel} is your custom model view.
  */
 abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFormController<TModel> {
     //#region Props
     /**
-   * Navigation buttons enabled flags
-   */
-    private navButtonsEnabled: { [index: number]: boolean };
-    /**
-     * Localized values for crud page
-     */
-    private static localizedValues: ICrudPageLocalization;
-    /**
-     * Crud page state params
-     */
-    protected $stateParams: ICrudPageStateParams<TModel>;
-    /**
-     * Crud page options
-     */
+    * Crud page options
+    */
     private crudPageOptions: ICrudPageOptions;
     /**
      * Crud page flags
      */
     protected crudPageFlags: ICrudPageFlags;
     /**
+    * Navigation buttons enabled flags
+    */
+    private navButtonsEnabled: { [index: number]: boolean };
+    /**
+     * Localized values for crud page
+     */
+    protected static localizedValues: ICrudPageLocalization;
+    /**
+     * Crud page state params
+     */
+    protected $stateParams: ICrudPageStateParams<TModel>;   
+    /**
      * Stored model to be restored when reverting
      */
     private orjModel: TModel;
-    /**
-    * Get if the page is in new state mode
-    * @description Overriden baseformcontroller isNew property,Better way should be replaced when implemented for ES5
-     * https://github.com/Microsoft/TypeScript/issues/338
-    * @returns {boolean} 
-    */
-    get isNew(): boolean { return this.formPageFlags.isNew; }
-    set isNew(value: boolean) {
-        this.formPageFlags.isNew = value;
-        this.editmodeBadge.show = !value;
-        this.newmodeBadge.show = value;
-    }
-    //#region Badge Shortcuts
-    /**
-   * Edit Mode badge
-   * @returns {ITitleBadge}
-   */
-    get editmodeBadge(): ITitleBadge {
-        return this.titlebadges.badges[BadgeTypes.Editmode];
-    }
-    /**
-    * New Mode badge
-    * @returns {ITitleBadge}
-    */
-    get newmodeBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Newmode]; }
-    /**
-    * Dirty badge
-    * @returns {ITitleBadge}
-    */
-    get dirtyBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Dirty]; }
-    /**
-    * Invalid badge
-    * @returns {ITitleBadge}
-    */
-    get invalidBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Invalid]; }
-    /**
-    * Copying badge
-    * @returns {ITitleBadge}
-    */
-    get cloningBadge(): ITitleBadge { return this.titlebadges.badges[BadgeTypes.Cloning]; }
-
-    //#endregion
-
-    //#endregion
-
-    //#region Bundle Services
-    static injects = BaseFormController.injects.concat(['TitleBadges']);
-    protected titlebadges: ITitleBadges;
-    //#endregion
+    //#endregion    
 
     //#region Init
     constructor(bundle: IBundle, options?: ICrudPageOptions) {
-        super(bundle, options);
+        const crudOptions = angular.extend({ initializeModel: false }, options);
+        //call base constructor
+        super(bundle, crudOptions);
         //set default options
         const parsers: ICrudParsers = {
             saveParsers: [this.checkAuthority, this.applyValidatitons, this.beforeSaveModel],
             deleteParsers: [this.checkAuthority, this.applyValidatitons, this.beforeDeleteModel]
         };
         this.crudPageOptions = this.common.extend<ICrudPageOptions>({ parsers: parsers }, options);
-        this.crudPageFlags = { isNew: true, isCloning: false, isDeleting: false, isSaving: false };
-        //register catch changes
-        this.registerEvent('$stateChangeStart',
-            (event: ng.IAngularEvent, toState: IRotaState, toParams: ng.ui.IStateParamsService, fromState: IRotaState) => {
-                if (toState.hierarchicalMenu && !toState.hierarchicalMenu.isNestedState &&
-                    toState.name !== fromState.name &&
-                    this.isFormDirty && this.isFormValid) {
-                    event.preventDefault();
-                    this.dialogs.showConfirm({ message: BaseCrudController.localizedValues.crudonay }).then(() => {
-                        //save and go to state
-                        this.initSaveModel().then(() => {
-                            this.routing.go(toState.name, toParams);
-                        });
-                    }).catch(() => {
-                        this.resetForm();
-                        this.routing.go(toState.name, toParams);
-                    });
-                }
-            });
-    }
-    /**
-    * Update bundle
-    * @param bundle IBundle
-    */
-    initBundle(bundle: IBundle): void {
-        super.initBundle(bundle);
-        this.titlebadges = bundle.systemBundles["titlebadges"];
+        this.crudPageFlags = { isCloning: false, isDeleting: false, isSaving: false };       
+        //initialize getting model
+        this.initModel();
     }
     /**
      * Store localized value for performance issues (called in basecontroller)
@@ -149,17 +82,16 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     //#endregion
 
     //#region Model Methods
-
     /**
      * Initialize new model
      * @param cloning Cloning flag
      */
     initNewModel(cloning?: boolean): ng.IPromise<TModel> {
         //chnage url
-        const changeUrlPromise = this.changeUrl(BaseCrudController.newItemParamValue);
+        const changeUrlPromise = this.changeUrl(BaseCrudController.newItemFieldValue);
         return changeUrlPromise.then(() => {
             this.isNew = true;
-            (<INotification>this.notification).removeAll();
+            (this.notification as INotification).removeAll();
 
             if (cloning) {
                 this.revertBack();
@@ -178,14 +110,14 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
             clonedModel.modelState = ModelStates.Added;
             return clonedModel;
         }
-        return <TModel>{ id: 0, modelState: ModelStates.Added };
+        return super.newModel();
     }
     /**
      * Reset form
      * @description Set modelState param and form to pristine state
      * @param model Model
      */
-    private resetForm(model?: TModel): void {
+    protected resetForm(model?: TModel): void {
         super.resetForm(model);
         if (!this.isNew && this.isAssigned(model)) {
             this.orjModel = angular.copy(model);
@@ -221,36 +153,38 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
             showMessage: true, model: this.model
         }, options);
         this.crudPageFlags.isSaving = true;
-        (<INotification>this.notification).removeAll();
+        (this.notification as INotification).removeAll();
         //save process
         const deferSave = this.$q.defer<TModel>();
         //validate and save model if valid
         const saveModelResult = this.parseAndSaveModel(options);
-        saveModelResult.then((model: TModel) => {
-            //call aftersave method
-            const afterSaveModelResult = this.afterSaveModel(options);
-            this.common.makePromise(afterSaveModelResult).then(() => {
-                //change url new --> edit
-                this.changeUrl(model.id).then(() => {
-                    deferSave.resolve(model);
-                    //set form to pristine and 
-                    this.resetForm(model);
+        if (this.common.isAssigned(saveModelResult)) {
+            saveModelResult.then((model: TModel) => {
+                //call aftersave method
+                const afterSaveModelResult = this.afterSaveModel(options);
+                this.common.makePromise(afterSaveModelResult).then(() => {
+                    //change url new --> edit
+                    this.changeUrl(model.id).then(() => {
+                        deferSave.resolve(model);
+                        //set form to pristine and 
+                        this.resetForm(model);
+                    });
+                }, (response: IServerFailedResponse) => {
+                    //if afterSaveModel failed
+                    this.errorModel(response);
+                    deferSave.reject(response);
                 });
-            }, (response: IServerFailedResponse) => {
-                //if afterSaveModel failed
-                this.errorModel(response);
-                deferSave.reject(response);
+            }, (reason) => {
+                //save or validation failed
+                deferSave.reject(reason);
             });
-        }, (reason) => {
-            //save or validation failed
-            deferSave.reject(reason);
-        });
-        saveModelResult.finally(() => {
-            if (this.crudPageFlags.isCloning)
-                this.cloningBadge.show = false;
-            this.crudPageFlags.isCloning =
-                this.crudPageFlags.isSaving = false;
-        });
+            saveModelResult.finally(() => {
+                this.crudPageFlags.isCloning =
+                    this.crudPageFlags.isSaving = false;
+            });
+        } else {
+            deferSave.reject('no response returned');
+        }
         //return
         return deferSave.promise;
     }
@@ -263,39 +197,47 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
         //iterate save pipeline
         const parseResult = this.initParsers<any>(this.crudPageOptions.parsers.saveParsers, options);
         //save if validation parsers resolved
-        parseResult.then(() => {
-            //call user savemodel method
-            const saveResult = this.saveModel(options);
-            //success
-            saveResult.then((response: ICrudServerResponse) => {
-                if (!this.common.isAssigned(response)) {
-                    defer.reject("response must be defined");
-                    return;
+        if (this.common.isAssigned(parseResult)) {
+            parseResult.then(() => {
+                //call user savemodel method
+                const saveResult = this.saveModel(options);
+                if (this.common.isAssigned(saveResult)) {
+                    //success
+                    saveResult.then((response: ICrudServerResponse) => {
+                        if (!this.common.isAssigned(response)) {
+                            defer.reject('no response returned');
+                            return;
+                        }
+                        //show messages
+                        if (options.showMessage) {
+                            this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
+                            if (response.infoMessages)
+                                this.toastr.info({ message: response.infoMessages.join('</br>') });
+                            if (response.warningMessages)
+                                this.toastr.warn({ message: response.warningMessages.join('</br>') });
+                        }
+                        //model is not 'new' anymore
+                        this.isNew = false;
+                        //set model from result of saving
+                        this.model = <TModel>response.model;
+                        defer.resolve(<TModel>response.model);
+                    });
+                    //fail save
+                    saveResult.catch((response: IServerFailedResponse) => {
+                        this.errorModel(response);
+                        defer.reject(response);
+                    });
+                } else {
+                    defer.reject('no response returned');
                 }
-                //show messages
-                if (options.showMessage) {
-                    this.toastr.success({ message: BaseCrudController.localizedValues.succesfullyprocessed });
-                    if (response.infoMessages)
-                        this.toastr.info({ message: response.infoMessages.join('</br>') });
-                    if (response.warningMessages)
-                        this.toastr.warn({ message: response.warningMessages.join('</br>') });
-                }
-                //model is not 'new' anymore
-                this.isNew = false;
-                //set model from result of saving
-                this.model = <TModel>response.model;
-                defer.resolve(<TModel>response.model);
             });
-            //fail save
-            saveResult.catch((response: IServerFailedResponse) => {
-                this.errorModel(response);
+            //fail parsers
+            parseResult.catch((response: IServerFailedResponse) => {
                 defer.reject(response);
             });
-        });
-        //fail parsers
-        parseResult.catch((response: IServerFailedResponse) => {
-            defer.reject(response);
-        });
+        } else {
+            defer.reject('no response returned');
+        }
         return defer.promise;
     }
     /**
@@ -487,7 +429,7 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      * @param modelFilter Model Filter
      * @description Overriden baseFormController's to pass cloned copy
      */
-    defineModel(modelFilter?: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel {
+    defineModel(modelFilter?: IBaseFormModelFilter): ng.IPromise<TModel> | TModel {
         return this.isNew ? this.newModel(this.crudPageFlags.isCloning && <TModel>this.model) : this.getModel(modelFilter);
     }
     /**
@@ -495,7 +437,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
      * @param model Model
      */
     loadedModel(model: TModel): void {
-        //after model loaded,set form pristine and set modelState
         super.loadedModel(model);
         //model not found in edit mode
         if (!this.isNew && !this.isAssigned(model)) {
@@ -511,7 +452,6 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
         //set cloning warning & notify
         if (this.crudPageFlags.isCloning) {
             this.toastr.info({ message: BaseCrudController.localizedValues.kayitkopyalandi });
-            this.cloningBadge.show = true;
             //set form dirty when cloning
             this.rtForm.$setDirty();
         }
@@ -520,26 +460,8 @@ abstract class BaseCrudController<TModel extends IBaseCrudModel> extends BaseFor
     * @abstract Get model
     * @param args Model
     */
-    abstract getModel(modelFilter: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel;
-    //#endregion
-
-    //#region BaseFormController methods
-    /**
-     * Form invalid flag changes
-     * @param invalidFlag Invalid flag of main form
-     */
-    onFormInvalidFlagChanged(invalidFlag: boolean): void {
-        this.invalidBadge.show = invalidFlag;
-    }
-    /**
-     * Form dirty flag changes
-     * @param dirtyFlag Dirty flag of main form
-     */
-    onFormDirtyFlagChanged(dirtyFlag: boolean): void {
-        super.onFormDirtyFlagChanged(dirtyFlag);
-        this.dirtyBadge.show = dirtyFlag;
-    }
-    //#endregion
+    abstract getModel(modelFilter: IBaseFormModelFilter): ng.IPromise<TModel> | TModel;
+    //#endregion   
 }
 //Export
 export {BaseCrudController}

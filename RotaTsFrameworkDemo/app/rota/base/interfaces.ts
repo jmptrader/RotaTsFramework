@@ -6,9 +6,6 @@ import {IServerFailedResponse, IChainableMethod} from '../services/common.interf
 //#endregion
 
 //#region Main Base Classes
-interface IStateOptions {
-    isNestedState?: boolean;
-}
 /**
  * Base config for configuration objects
  */
@@ -104,16 +101,64 @@ interface IPagingListModel<TModel extends IBaseModel> {
 }
 //#endregion
 
-//#region BaseController
+//#region Page Options
+/**
+* BasePage options
+*/
 interface IBasePageOptions {
 }
-//#endregion
-
-//#region BaseModelController
+/**
+* BaseModelPage options
+*/
 interface IModelPageOptions extends IBasePageOptions {
-
+    /**
+   * Initialize model runing the initModel method of formController     
+   */
+    initializeModel?: boolean;
 }
-
+/**
+ * Crud page options 
+ */
+interface IFormPageOptions extends IModelPageOptions {
+    /**
+      * New item field name ,default 'new'
+      */
+    newItemFieldValue?: string;
+    /**
+     * New item field value ,default 'id'
+     */
+    newItemFieldName?: string;
+    /**
+     * Form name
+     */
+    formName?: string;
+    /**
+     * Create a unique number for id field when inserting
+     */
+    generateNewItemValue?: boolean;
+}
+/**
+ * List page options
+ */
+interface IListPageOptions extends IFormPageOptions {
+    /**
+     * Detail page state name of listing page
+     */
+    editState: string;
+    /**
+     * Grid paging is enabled or not
+     */
+    pagingEnabled?: boolean;
+}
+/**
+ * Crud page options given through constructor
+ */
+interface ICrudPageOptions extends IFormPageOptions {
+    /**
+     * Insert,Update,Delete process pipelines
+     */
+    parsers?: ICrudParsers;
+}
 //#endregion
 
 //#region BaseListController 
@@ -149,23 +194,6 @@ interface IPager {
     pageSize?: number;
 }
 /**
- * List page options
- */
-interface IListPageOptions extends IFormPageOptions {
-    /**
-     * Detail page state name of listing page
-     */
-    editState: string;
-    /**
-     * Flag that indicates that if grid is populated at initializing
-     */
-    initialLoad?: boolean;
-    /**
-     * Grid paging is enabled or not
-     */
-    pagingEnabled?: boolean;
-}
-/**
  * List page localization  
  */
 interface IListPageLocalization {
@@ -180,7 +208,7 @@ interface IListPageLocalization {
 /**
  * base model filtering object for crud pages
  */
-interface IBaseCrudModelFilter extends IBaseModelFilter {
+interface IBaseFormModelFilter extends IBaseModelFilter {
     /**
      * Model id
      */
@@ -200,26 +228,9 @@ interface ICrudPageStateParams<TModel extends IBaseCrudModel> extends IFormPageS
  */
 interface ICrudPageFlags extends IFormPageFlags {
     /**
-     * Saving flag
-     */
-    isSaving: boolean,
-    /**
-     * Deleting flag
-     */
-    isDeleting: boolean,
-    /**
      * Copying flag
      */
-    isCloning: boolean;
-}
-/**
- * Crud page options given through constructor
- */
-interface ICrudPageOptions extends IFormPageOptions {
-    /**
-     * Insert,Update,Delete process pipelines
-     */
-    parsers?: ICrudParsers;
+    isCloning?: boolean;
 }
 /**
  * Navigation direction for navigation buttons on crudButtons
@@ -316,22 +327,15 @@ interface IFormPageFlags {
     /**
     * Show that model is in new mode
     */
-    isNew: boolean;
-}
-/**
- * Crud page options given through constructor
- */
-interface IFormPageOptions extends IModelPageOptions {
+    isNew?: boolean;
     /**
-      * New item field name ,default 'new'
-      */
-    newItemFieldValue?: string;
-    /**
-     * New item field value ,default 'id'
+     * Saving flag
      */
-    newItemFieldName?: string;
-
-    formName?: string;
+    isSaving?: boolean,
+    /**
+     * Deleting flag
+     */
+    isDeleting?: boolean,
 }
 //#endregion
 
@@ -407,6 +411,6 @@ export {IBundle, IBaseModel, IBaseCrudModel, ICacheableModel,
 IBaseConfig, IBaseConfigProvider, IBaseApi, IPager, IPagingListModel,
 IListPageOptions, ICrudPageStateParams, IBaseListModelFilter, IBaseModelFilter,
 IGridOptions, IBaseListModel, ICrudPageOptions, ICrudPageFlags,
-IBaseCrudModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
+IBaseFormModelFilter, ICrudPageLocalization, ISaveOptions, IValidationItem, IValidationResult,
 IListPageLocalization, ICrudParsers, IParserException, IDeleteOptions, IFormPageOptions,
-IBasePageOptions, IModelPageOptions, IStateOptions, IFormPageFlags, IFormPageStateParams}
+IBasePageOptions, IModelPageOptions, IFormPageFlags, IFormPageStateParams}

@@ -5,7 +5,6 @@ import {IBundle, IFormPageOptions, IBaseCrudModel, IValidationItem, IValidationR
 import {BaseModelController} from './basemodelcontroller';
 //#endregion
 
-//#region BaseFormController
 /**
  * BaseFormController
  * @description Some workarounds applied so that form controller would not be undefined
@@ -14,17 +13,20 @@ import {BaseModelController} from './basemodelcontroller';
  * 2 - formController set to object ref from primitive
  * 3 - Dirty watch set to  $scope.$watch('rtForm.$dirty',..)  in BaseCrudController
  * 4 - Some checks added to null controller as is isFormDirty
+ * @abstract This is abstract controller class that must be inherited
+ * @example This controller must be used with nested state views
+ * @param {TModel} is your custom model view. * 
  */
 abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseModelController<TModel> {
     //#region Props
     /**
     * New item id param value default name
     */
-    protected static newItemParamValue = 'new';
+    protected static newItemFieldValue = 'new';
     /**
      * New item id param default name
      */
-    protected static newItemParamName = 'id';
+    protected static newItemFieldName = 'id';
     /**
     * Model object
     * @returns {TModel}
@@ -37,7 +39,8 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
      * @returns {string | number} 
      */
     get id(): string | number {
-        return this.$stateParams[this.formPageOptions.newItemFieldName];
+        const idValue = this.$stateParams[this.formPageOptions.newItemFieldName];
+        return this.isNew ? idValue : parseInt(idValue);
     }
     /**
     * Get if the page is in new state mode
@@ -133,11 +136,41 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
     protected changeUrl(id: number | string): ng.IPromise<any> {
         //get id param obj
         const idParam = {};
-        idParam[BaseFormController.newItemParamName] = id;
+        idParam[this.formPageOptions.newItemFieldName] = id;
         //replace the url with new id
         const params = this.common.extend(this.$stateParams, idParam);
         return this.routing.go(this.routing.current.name, params,
             { notify: false, reload: false });
+    }
+    /**
+     * Reset form
+     * @description Set modelState param and form to pristine state
+     * @param model Model
+     */
+    protected resetForm(model?: TModel): void {
+        this.isNew ? this.setModelAdded() : this.setModelUnChanged();
+        //check form controller initialized
+        if (this.common.isAssigned(this.rtForm)) {
+            this.rtForm.$setPristine();
+        }
+    }
+    /**
+     * Initialize new model
+     */
+    protected initNewModel(): ng.IPromise<TModel> {
+        //chnage url
+        const changeUrlPromise = this.changeUrl(BaseFormController.newItemFieldValue);
+        return changeUrlPromise.then(() => {
+            this.isNew = true;
+            return this.initModel();
+        });
+    }
+    /**
+     * New model event
+     */
+    protected newModel(): ng.IPromise<TModel> | TModel {
+        const uniqueId = this.formPageOptions.generateNewItemValue ? this.common.getUniqueNumber() : 0;
+        return <TModel>{ id: uniqueId, modelState: ModelStates.Added };
     }
     /**
     * Form invalid flag changes
@@ -156,22 +189,6 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
             this.setModelModified();
         }
     }
-    /**
-     * Reset form
-     * @description Set modelState param and form to pristine state
-     * @param model Model
-     */
-    protected resetForm(model?: TModel): void {
-        this.isNew ? this.setModelAdded() : this.setModelUnChanged();
-        //check form controller initialized
-        if (this.common.isAssigned(this.rtForm)) {
-            this.rtForm.$setPristine();
-        }
-    }
-    /**
-     * New Model get method
-     */
-    abstract newModel(): ng.IPromise<TModel> | TModel;
     //#endregion
 
     //#region Init
@@ -181,9 +198,11 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
         this.formPageOptions = this.common.extend<IFormPageOptions>(
             {
                 formName: BaseFormController.defaultFormName,
-                newItemFieldName: BaseFormController.newItemParamName,
-                newItemFieldValue: BaseFormController.newItemParamValue
+                newItemFieldName: BaseFormController.newItemFieldName,
+                newItemFieldValue: BaseFormController.newItemFieldValue,
+                generateNewItemValue: true
             }, options);
+        this.formPageFlags = { isNew: true };
         //set form is new/edit mode
         this.isNew = this.id === this.formPageOptions.newItemFieldValue;
         //set form watchers
@@ -195,8 +214,10 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
         });
         //reset validators
         this.validators = [];
-        //initialize getting model
-        this.initModel();
+        //initialize getting model,initializeModel is false when basecrudcontroller is used
+        if (this.modelPageOptions.initializeModel) {
+            this.initModel();
+        }
     }
     /**
     * Initiliaze form controller using form scope object
@@ -212,7 +233,6 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
     //#region BaseModelController
     /**
      * Init crud model
-     * @param cloning Cloning flag
      */
     protected initModel(): ng.IPromise<TModel> {
         return super.initModel({ id: this.id });
@@ -221,7 +241,7 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
     * Set model getter method
     * @param modelFilter Model Filter
     */
-    defineModel(modelFilter?: IBaseCrudModelFilter): ng.IPromise<TModel> | TModel {
+    defineModel(modelFilter?: IBaseModelFilter): ng.IPromise<TModel> | TModel {
         return this.isNew ? this.newModel() : this.getModel(modelFilter);
     }
     /**
@@ -340,6 +360,5 @@ abstract class BaseFormController<TModel extends IBaseCrudModel> extends BaseMod
     }
     //#endregion
 }
-//#endregion
 
 export {BaseFormController}
